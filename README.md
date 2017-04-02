@@ -1,3 +1,3 @@
 # SoftLit
 
-SW-based triangle rasterizer in progress!
+SW-based 3D rasterizer in progress!
