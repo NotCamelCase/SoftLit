@@ -5,8 +5,11 @@
 
 #include <iostream>
 #include <vector>
+#include <chrono>
 #include <assert.h>
+#include <stdint.h>
 #include <math.h>
 
 #include <SDL.h>
-#include <SDL_render.h>
+
+#include "Utils.h"

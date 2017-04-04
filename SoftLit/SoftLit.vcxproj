@@ -156,11 +156,14 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\Display.cpp" />
     <ClCompile Include="..\SoftLit.cpp" />
     <ClCompile Include="..\stdafx.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Display.h" />
     <ClInclude Include="..\Matrix.h" />
+    <ClInclude Include="..\Rasterizer.h" />
     <ClInclude Include="..\stdafx.h" />
     <ClInclude Include="..\Utils.h" />
     <ClInclude Include="..\Vector.h" />
