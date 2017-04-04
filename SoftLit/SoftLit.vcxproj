@@ -160,7 +160,10 @@
     <ClCompile Include="..\stdafx.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Matrix.h" />
     <ClInclude Include="..\stdafx.h" />
+    <ClInclude Include="..\Utils.h" />
+    <ClInclude Include="..\Vector.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

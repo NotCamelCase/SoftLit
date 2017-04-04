@@ -1,7 +1,12 @@
 #include "stdafx.h"
 
+#include "Vector.h"
+#include "Matrix.h"
+
 #define WIDTH 1024
 #define HEIGHT 768
+
+using namespace softlit;
 
 int main(int argc, char* argv[])
 {

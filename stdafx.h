@@ -6,9 +6,7 @@
 #include <iostream>
 #include <vector>
 #include <assert.h>
-#include <stdint.h>
-#include <cstdio> 
-#include <cstdlib> 
+#include <math.h>
 
 #include <SDL.h>
 #include <SDL_render.h>
