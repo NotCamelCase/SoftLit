@@ -2,22 +2,30 @@
 
 #include "Vector.h"
 
-namespace softlit {
+namespace softlit
+{
 	template<typename T, int N>
-	class Matrix
+	struct Matrix
 	{
-	public:
 		Matrix<T, N>() {}
 		~Matrix<T, N>() {}
 
-	private:
+		const T* operator[](size_t index) const
+		{
+			return data[index];
+		}
+
+		T* operator[](size_t index)
+		{
+			return data[index];
+		}
+
 		T data[N][N];
 	};
 
 	template<typename T>
-	class Matrix<T, 2>
+	struct Matrix<T, 2>
 	{
-	public:
 		Matrix<T, 2>()
 			: Matrix<T, 2>(1, 0, 0, 1)
 		{
@@ -28,7 +36,7 @@ namespace softlit {
 			data[0][0] = a1;
 			data[0][1] = a2;
 			data[1][0] = b1;
-			data[2][1] = b2;
+			data[1][1] = b2;
 		}
 
 		const T* operator[](size_t index) const
@@ -41,62 +49,13 @@ namespace softlit {
 			return data[index];
 		}
 
-		Matrix<T, 2>& transpose()
-		{
-			Matrix<T, 2> matrix = *this;
-			for (int i = 0; i < 2; i++)
-			{
-				for (int j = 0; j < 2; j++)
-				{
-					data[i][j] = matrix.data[j][i];
-				}
-			}
-
-			return *this;
-		}
-
-		Vector<T, 2> operator*(const Vector<T, 2>& v) const
-		{
-			const Vector<T, 2> a = { data[0][0], data[0][1] };
-			const Vector<T, 2> b = { data[1][0], data[1][1] };
-
-			Vector<T, 2> res = { dot(a, v), dot(b, v) };
-
-			return res;
-		}
-
-		Matrix<T, 2> operator*(T scalar) const
-		{
-			Matrix<T, 2> ret = *this;
-			for (int i = 0; i < 2; i++)
-			{
-				for (int j = 0; j < 2; j++)
-				{
-					ret.data[i][j] *= scalar;
-				}
-			}
-
-			return ret;
-		}
-
-		void operator*=(T scalar)
-		{
-			for (int i = 0; i < 2; i++)
-			{
-				for (int j = 0; j < 2; j++)
-				{
-					data[i][j] *= scalar;
-				}
-			}
-		}
-
 		T determinant() const
 		{
 			const T a1 = data[0][0];
 			const T a2 = data[0][1];
 
 			const T b1 = data[1][0];
-			const T b2 = data[2][0];
+			const T b2 = data[1][1];
 
 			return (a1 * b2) - (b1 * a2);
 		}
@@ -110,41 +69,27 @@ namespace softlit {
 			const T a2 = data[0][1];
 
 			const T b1 = data[1][0];
-			const T b2 = data[2][0];
+			const T b2 = data[1][1];
 
 			Matrix<T, 2> C = { b2, -a2, b1, a1 };
 
 			*this = C * (1 / det);
 		}
 
-		Matrix<T, 2> inverse() const
-		{
-			const T det = determinant();
-			if (det == 0) return Matrix(); // Singular
-
-			Matrix<T, 2> res = *this;
-			res.invert();
-
-			return res;
-		}
-
-	private:
 		T data[2][2];
 	};
 
 	template<typename T>
-	class Matrix<T, 3>
+	struct Matrix<T, 3>
 	{
-	public:
 		Matrix<T, 3>()
 			: Matrix<T, 3>(1, 0, 0, 0, 1, 0, 0, 0, 1)
 		{
-			// Identity
 		}
 
 		Matrix<T, 3>(T a1, T a2, T a3,
-			T b1, T b2, T b3,
-			T c1, T c2, T c3)
+				     T b1, T b2, T b3,
+					 T c1, T c2, T c3)
 		{
 			data[0][0] = a1;
 			data[0][1] = a2;
@@ -167,56 +112,6 @@ namespace softlit {
 		T* operator[](size_t index)
 		{
 			return data[index];
-		}
-
-		Matrix<T, 3>& transpose()
-		{
-			Matrix<T, 3> matrix = *this;
-			for (int i = 0; i < 3; i++)
-			{
-				for (int j = 0; j < 3; j++)
-				{
-					data[i][j] = matrix.data[j][i];
-				}
-			}
-
-			return *this;
-		}
-
-		Vector<T, 3> operator*(const Vector<T, 3>& v) const
-		{
-			const Vector<T, 3> a = { data[0][0], data[0][1], data[0][2] };
-			const Vector<T, 3> b = { data[1][0], data[1][1], data[1][2] };
-			const Vector<T, 3> c = { data[2][0], data[2][1], data[2][2] }
-
-			Vector<T, 3> res = { dot(a, v), dot(b, v), dot(c, v) };
-
-			return res;
-		}
-
-		Matrix<T, 3> operator*(T scalar) const
-		{
-			Matrix<T, 3> ret = *this;
-			for (int i = 0; i < 3; i++)
-			{
-				for (int j = 0; j < 3; j++)
-				{
-					ret.data[i][j] *= scalar;
-				}
-			}
-
-			return ret;
-		}
-
-		void operator*=(T scalar)
-		{
-			for (int i = 0; i < 3; i++)
-			{
-				for (int j = 0; j < 3; j++)
-				{
-					data[i][j] *= scalar;
-				}
-			}
 		}
 
 		T determinant() const
@@ -276,25 +171,12 @@ namespace softlit {
 			*this = C * (1 / det);
 		}
 
-		Matrix<T, 3> inverse() const
-		{
-			const T det = determinant();
-			if (det == 0.0) return Mat3(); // Singular
-
-			Matrix<T, 3> ret = *this;
-			ret.invert();
-
-			return ret;
-		}
-
-	private:
 		T data[3][3];
 	};
 
 	template<typename T>
-	class Matrix<T, 4>
+	struct Matrix<T, 4>
 	{
-	public:
 		Matrix<T, 4>()
 			: Matrix<T, 4>(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)
 		{
@@ -334,57 +216,6 @@ namespace softlit {
 		T* operator[](size_t index)
 		{
 			return data[index];
-		}
-
-		Matrix<T, 4>& transpose()
-		{
-			Matrix<T, 4> matrix = *this;
-			for (int i = 0; i < 4; i++)
-			{
-				for (int j = 0; j < 4; j++)
-				{
-					data[i][j] = matrix.data[j][i];
-				}
-			}
-
-			return *this;
-		}
-
-		Vector<T, 4> operator*(const Vector<T, 4>& v) const
-		{
-			const Vector<T, 4> a = { data[0][0], data[0][1], data[0][2], data[0][3] };
-			const Vector<T, 4> b = { data[1][0], data[1][1], data[1][2], data[1][3] };
-			const Vector<T, 4> c = { data[2][0], data[2][1], data[2][2], data[2][3] };
-			const Vector<T, 4> d = { data[3][0], data[3][1], data[3][2], data[3][3] };
-
-			Vector<T, 4> res = { dot(a, v), dot(b, v), dot(c, v), dot(d, v) };
-
-			return res;
-		}
-
-		Matrix<T, 4> operator*(T scalar) const
-		{
-			Matrix<T, 4> ret = *this;
-			for (int i = 0; i < 4; i++)
-			{
-				for (int j = 0; j < 4; j++)
-				{
-					ret.data[i][j] *= scalar;
-				}
-			}
-
-			return ret;
-		}
-
-		void operator*=(T scalar)
-		{
-			for (int i = 0; i < 4; i++)
-			{
-				for (int j = 0; j < 4; j++)
-				{
-					data[i][j] *= scalar;
-				}
-			}
 		}
 
 		T determinant() const
@@ -468,20 +299,88 @@ namespace softlit {
 			*this = C * (1 / det);
 		}
 
-		Matrix<T, 4> inverse() const
-		{
-			const T det = determinant();
-			if (det == 0) return Matrix(); // Singular
-
-			Matrix<T, 4> res = *this;
-			res.invert();
-
-			return res;
-		}
-
-	private:
 		T data[4][4];
 	};
+
+	template<typename T, int N>
+	Vector<T, N> operator*(const Matrix<T, N>& m, const Vector<T, N>& v)
+	{
+		Vector<T, N> res;
+
+		for (int i = 0; i < N; i++)
+		{
+			const Vector<T, N>& r = m[i];
+			res[i] = dot(r, v);
+		}
+
+		return res;
+	}
+
+	template<typename T, int N>
+	Matrix<T, N> operator*(const Matrix<T, N>& m, T scalar)
+	{
+		Matrix<T, N> ret = m;
+		for (int i = 0; i < N; i++)
+		{
+			for (int j = 0; j < N; j++)
+			{
+				ret[i][j] *= scalar;
+			}
+		}
+
+		return ret;
+	}
+
+	template<typename T, int N>
+	void operator*=(Matrix<T, N>& m, T scalar)
+	{
+		for (int i = 0; i < N; i++)
+		{
+			for (int j = 0; j < N; j++)
+			{
+				m[i][j] *= scalar;
+			}
+		}
+	}
+
+	template<typename T, int N>
+	Matrix<T, N>& transpose(Matrix<T, N>& m)
+	{
+		Matrix<T, N> matrix = m;
+		for (int i = 0; i < N; i++)
+		{
+			for (int j = 0; j < N; j++)
+			{
+				m[i][j] = matrix[j][i];
+			}
+		}
+
+		return m;
+	}
+
+	template<typename T, int N>
+	T determinant(const Matrix<T, N>& m)
+	{
+		return m.determinant();
+	}
+
+	template<typename T, int N>
+	void invert(Matrix<T, N>& m)
+	{
+		m.invert();
+	}
+
+	template<typename T, int N>
+	Matrix<T, N> inverse(const Matrix<T, N>& m)
+	{
+		const T det = m.determinant();
+		if (det == 0) return Matrix<T, N>(); // Singular
+
+		Matrix<T, N> res = m;
+		res.invert();
+
+		return res;
+	}
 
 	typedef Matrix<float, 2> mat2;
 	typedef Matrix<float, 3> mat3;

@@ -1,14 +1,20 @@
 #pragma once
 
-namespace softlit {
-	template<class T, int N>
-	class Vector
+namespace softlit
+{
+	template<typename T, int N>
+	struct Vector
 	{
-	public:
 		Vector<T, N>() {}
-		~Vector<T, N>() {}
+		Vector<T, N>(const T* data)
+		{
+			for (int i = 0; i < N; i++)
+			{
+				this->data[i] = data[i];
+			}
+		}
 
-		T data[N];
+		~Vector<T, N>() {}
 
 		T& operator[](short index)
 		{
@@ -19,15 +25,23 @@ namespace softlit {
 		{
 			return data[index];
 		}
+
+		T data[N];
 	};
 
-	template<class T>
-	class Vector<T, 2>
+	template<typename T>
+	struct Vector<T, 2>
 	{
-	public:
 		Vector<T, 2>() : x(T(0)), y(T(0)) {}
 		Vector<T, 2>(T all) : x(all), y(all) {}
 		Vector<T, 2>(T _x, T _y) : x(_x), y(_y) {}
+		Vector<T, 2>(const T* data)
+		{
+			for (int i = 0; i < 2; i++)
+			{
+				this->data[i] = data[i];
+			}
+		}
 		~Vector<T, 2>() {}
 
 		union
@@ -47,14 +61,20 @@ namespace softlit {
 		}
 	};
 
-	template<class T>
-	class Vector<T, 3>
+	template<typename T>
+	struct Vector<T, 3>
 	{
-	public:
 		Vector<T, 3>() : x(T(0)), y(T(0)), z(T(0)) {}
 		Vector<T, 3>(T val) : x(val), y(val), z(val) {}
 		Vector<T, 3>(T _x, T _y) : x(_x), y(_y), z(T(0)) {}
 		Vector<T, 3>(T _x, T _y, T _z) : x(_x), y(_y), z(_z) {}
+		Vector<T, 3>(const T* data)
+		{
+			for (int i = 0; i < 3; i++)
+			{
+				this->data[i] = data[i];
+			}
+		}
 
 		Vector<T, 3>(const Vector<T, 2>& other)
 		{
@@ -81,15 +101,21 @@ namespace softlit {
 		}
 	};
 
-	template<class T>
-	class Vector<T, 4>
+	template<typename T>
+	struct Vector<T, 4>
 	{
-	public:
 		Vector<T, 4>() : x(0), y(0), z(0), w(0) {}
 		Vector<T, 4>(T all) : x(all), y(all), z(all), w(all) {}
 		Vector<T, 4>(T _x, T _y) : x(_x), y(_y), z(T(0)), w(T(0)) {}
 		Vector<T, 4>(T _x, T _y, T _z) : x(_x), y(_y), z(_z), w(T(0)) {}
 		Vector<T, 4>(T _x, T _y, T _z, T _w) : x(_x), y(_y), z(_z), w(_w) {}
+		Vector<T, 4>(const T* data)
+		{
+			for (int i = 0; i < 4; i++)
+			{
+				this->data[i] = data[i];
+			}
+		}
 		~Vector<T, 4>() {}
 
 		Vector<T, 4>(const Vector<T, 3> other)
@@ -118,7 +144,7 @@ namespace softlit {
 		}
 	};
 
-	template<class T, int N>
+	template<typename T, int N>
 	Vector<T, N> operator+(const Vector<T, N>& a, const Vector<T, N> &b)
 	{
 		Vector<T, N> res;
@@ -130,7 +156,7 @@ namespace softlit {
 		return res;
 	}
 
-	template<class T, int N>
+	template<typename T, int N>
 	Vector<T, N>& operator+=(Vector<T, N>& l, const Vector<T, N>& r)
 	{
 		for (int i = 0; i < N; i++)
@@ -141,7 +167,7 @@ namespace softlit {
 		return l;
 	}
 
-	template<class T, int N>
+	template<typename T, int N>
 	Vector<T, N> operator-(const Vector<T, N>& self)
 	{
 		Vector<T, N> res;
@@ -153,7 +179,7 @@ namespace softlit {
 		return res;
 	}
 
-	template<class T, int N>
+	template<typename T, int N>
 	Vector<T, N> operator-(const Vector<T, N>& l, const Vector<T, N> &r)
 	{
 		Vector<T, N> res;
@@ -165,7 +191,7 @@ namespace softlit {
 		return res;
 	}
 
-	template<class T, int N>
+	template<typename T, int N>
 	Vector<T, N>& operator-=(Vector<T, N> &l, const Vector<T, N>& r)
 	{
 		for (int i = 0; i < N; i++)
@@ -176,7 +202,7 @@ namespace softlit {
 		return l;
 	}
 
-	template<class T, int N>
+	template<typename T, int N>
 	Vector<T, N> operator*(const Vector<T, N>& a, typename std::common_type<T>::type f)
 	{
 		Vector<T, N> res;
@@ -188,7 +214,7 @@ namespace softlit {
 		return res;
 	}
 
-	template<class T, int N>
+	template<typename T, int N>
 	Vector<T, N> operator*(const Vector<T, N>& a, const Vector<T, N> &b)
 	{
 		Vector<T, N> res;
@@ -200,7 +226,7 @@ namespace softlit {
 		return res;
 	}
 
-	template<class T, int N>
+	template<typename T, int N>
 	Vector<T, N>& operator*=(Vector<T, N>& l, const Vector<T, N> &r)
 	{
 		for (int i = 0; i < N; i++)
@@ -222,7 +248,7 @@ namespace softlit {
 		return l;
 	}
 
-	template<class T, int N>
+	template<typename T, int N>
 	Vector<T, N> operator/(const Vector<T, N>& v, typename std::common_type<T>::type f)
 	{
 		Vector<T, N> res;
@@ -234,7 +260,7 @@ namespace softlit {
 		return res;
 	}
 
-	template<class T, int N>
+	template<typename T, int N>
 	Vector<T, N>& operator/=(Vector<T, N>& a, typename std::common_type<T>::type f)
 	{
 		for (int i = 0; i < N; i++)
@@ -245,7 +271,7 @@ namespace softlit {
 		return a;
 	}
 
-	template<class T, int N>
+	template<typename T, int N>
 	bool operator==(const Vector<T, N>& a, const Vector<T, N>& b)
 	{
 		for (int i = 0; i < N; i++)
@@ -257,13 +283,13 @@ namespace softlit {
 		return true;
 	}
 
-	template<class T, int N>
+	template<typename T, int N>
 	bool operator!=(const Vector<T, N>& a, const Vector<T, N>& b)
 	{
 		return !(a == b);
 	}
 
-	template<class T, int N>
+	template<typename T, int N>
 	T dot(const Vector<T, N>& a, const Vector<T, N>& b)
 	{
 		T sum(0);
@@ -275,19 +301,19 @@ namespace softlit {
 		return sum;
 	}
 
-	template<class T, int N>
+	template<typename T, int N>
 	Vector<T, N> reflect(const Vector<T, N>& v, const Vector<T, N>& n)
 	{
 		return v - n * T(2) * dot(n, v);
 	}
 
-	template<class T>
+	template<typename T>
 	Vector<T, 3> cross(const Vector<T, 3>& l, const Vector<T, 3>& r)
 	{
 		return Vector<T, 3>(l.y * r.z - r.y * l.z, l.x * r.z - r.x * l.z, l.x * r.y - r.x * l.y);
 	}
 
-	template<class T, int N>
+	template<typename T, int N>
 	Vector<T, N> clamp(const Vector<T, N>& v)
 	{
 		Vector<T, N> res;
@@ -300,23 +326,23 @@ namespace softlit {
 		return res;
 	}
 
-	template<class T, int N>
+	template<typename T, int N>
 	Vector<T, N>& normalize(Vector<T, N>& a)
 	{
 		T norm = length2(a);
-		T invNor = 1 / sqrt(norm);
+		T invNor = T(1) / sqrt(norm);
 		a *= invNor;
 
 		return a;
 	}
 
-	template<class T, int N>
+	template<typename T, int N>
 	T length2(const Vector<T, N>& a)
 	{
 		return dot(a, a);
 	}
 
-	template<class T, int N>
+	template<typename T, int N>
 	T length(const Vector<T, N>& a)
 	{
 		return sqrt(length2(a));
