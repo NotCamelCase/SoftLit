@@ -24,10 +24,10 @@ Display::Display()
 	printf("Texture formats: \n");
 	for (Uint32 i = 0; i < info.num_texture_formats; i++)
 	{
-		printf("%s\n", SDL_GetPixelFormatName(info.texture_formats[i]));;
+		printf("%s\n", SDL_GetPixelFormatName(info.texture_formats[i]));
 	}
 
-	m_renderTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING | SDL_TEXTUREACCESS_TARGET, WIDTH, HEIGHT);
+	m_renderTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, WIDTH, HEIGHT);
 
 	//TODO: Re-size frame buffer
 }

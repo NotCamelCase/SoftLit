@@ -1,8 +1,5 @@
 #include "stdafx.h"
 
-#include "Vector.h"
-#include "Matrix.h"
-
 #include "Display.h"
 
 #define WIDTH 1024

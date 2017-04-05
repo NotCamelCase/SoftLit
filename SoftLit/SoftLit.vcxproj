@@ -157,6 +157,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Display.cpp" />
+    <ClCompile Include="..\Rasterizer.cpp" />
     <ClCompile Include="..\SoftLit.cpp" />
     <ClCompile Include="..\stdafx.cpp" />
   </ItemGroup>

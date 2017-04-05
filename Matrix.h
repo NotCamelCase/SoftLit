@@ -1,7 +1,5 @@
 #pragma once
 
-#include "Vector.h"
-
 namespace softlit
 {
 	template<typename T, int N>
@@ -88,8 +86,8 @@ namespace softlit
 		}
 
 		Matrix<T, 3>(T a1, T a2, T a3,
-				     T b1, T b2, T b3,
-					 T c1, T c2, T c3)
+			T b1, T b2, T b3,
+			T c1, T c2, T c3)
 		{
 			data[0][0] = a1;
 			data[0][1] = a2;
@@ -374,7 +372,8 @@ namespace softlit
 	Matrix<T, N> inverse(const Matrix<T, N>& m)
 	{
 		const T det = m.determinant();
-		if (det == 0) return Matrix<T, N>(); // Singular
+		if (det == 0) return Matrix<T, N>();
+		//TODO: Return identity or untouched in case of singular matrix?!
 
 		Matrix<T, N> res = m;
 		res.invert();
