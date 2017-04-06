@@ -163,6 +163,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Display.h" />
+    <ClInclude Include="..\MathUtils.h" />
     <ClInclude Include="..\Matrix.h" />
     <ClInclude Include="..\Rasterizer.h" />
     <ClInclude Include="..\stdafx.h" />

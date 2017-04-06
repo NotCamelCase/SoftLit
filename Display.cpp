@@ -4,17 +4,14 @@
 
 #include <SDL_render.h>
 
-//TODO: REMOVE
-#define WIDTH 1024
-#define HEIGHT 768
-
 using namespace softlit;
 
-Display::Display()
+Display::Display(const uint32_t w, const uint32_t h)
+	: m_width(w), m_height(h)
 {
 	SDL_Init(SDL_INIT_EVERYTHING);
 
-	SDL_Window* window = SDL_CreateWindow("SoftLit", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WIDTH, HEIGHT, SDL_WINDOW_SHOWN);
+	SDL_Window* window = SDL_CreateWindow("SoftLit", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, m_width, m_height, SDL_WINDOW_SHOWN);
 
 	SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
@@ -27,9 +24,9 @@ Display::Display()
 		printf("%s\n", SDL_GetPixelFormatName(info.texture_formats[i]));
 	}
 
-	m_renderTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, WIDTH, HEIGHT);
+	m_renderTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, m_width, m_height);
 
-	//TODO: Re-size frame buffer
+	//TODO: Allocate frame buffer
 }
 
 Display::~Display()
@@ -38,6 +35,8 @@ Display::~Display()
 	SDL_DestroyRenderer(m_renderer);
 	SDL_DestroyWindow(m_window);
 	SDL_Quit();
+
+	m_frameBuffer.clear();
 }
 
 void Display::ClearSurface()
@@ -48,7 +47,7 @@ void Display::ClearSurface()
 
 void Display::Present()
 {
-	SDL_UpdateTexture(m_renderTexture, nullptr, m_frameBuffer.data(), WIDTH * 4);
+	SDL_UpdateTexture(m_renderTexture, nullptr, m_frameBuffer.data(), m_width * 4);
 
 	SDL_RenderCopy(m_renderer, m_renderTexture, nullptr, nullptr);
 	SDL_RenderPresent(m_renderer);

@@ -6,7 +6,7 @@ namespace softlit
 	struct Vector
 	{
 		Vector<T, N>() {}
-		Vector<T, N>(const T* data)
+		Vector<T, N>(const T data[N])
 		{
 			for (int i = 0; i < N; i++)
 			{
@@ -35,12 +35,10 @@ namespace softlit
 		Vector<T, 2>() : x(T(0)), y(T(0)) {}
 		Vector<T, 2>(T all) : x(all), y(all) {}
 		Vector<T, 2>(T _x, T _y) : x(_x), y(_y) {}
-		Vector<T, 2>(const T* data)
+		Vector<T, 2>(const T data[2])
 		{
-			for (int i = 0; i < 2; i++)
-			{
-				this->data[i] = data[i];
-			}
+			this->data[0] = data[0];
+			this->data[1] = data[1];
 		}
 		~Vector<T, 2>() {}
 
@@ -68,12 +66,11 @@ namespace softlit
 		Vector<T, 3>(T val) : x(val), y(val), z(val) {}
 		Vector<T, 3>(T _x, T _y) : x(_x), y(_y), z(T(0)) {}
 		Vector<T, 3>(T _x, T _y, T _z) : x(_x), y(_y), z(_z) {}
-		Vector<T, 3>(const T* data)
+		Vector<T, 3>(const T data[3])
 		{
-			for (int i = 0; i < 3; i++)
-			{
-				this->data[i] = data[i];
-			}
+			this->data[0] = data[0];
+			this->data[1] = data[1];
+			this->data[2] = data[2];
 		}
 
 		Vector<T, 3>(const Vector<T, 2>& other)
@@ -109,16 +106,16 @@ namespace softlit
 		Vector<T, 4>(T _x, T _y) : x(_x), y(_y), z(T(0)), w(T(0)) {}
 		Vector<T, 4>(T _x, T _y, T _z) : x(_x), y(_y), z(_z), w(T(0)) {}
 		Vector<T, 4>(T _x, T _y, T _z, T _w) : x(_x), y(_y), z(_z), w(_w) {}
-		Vector<T, 4>(const T* data)
+		Vector<T, 4>(const T data[4])
 		{
-			for (int i = 0; i < 4; i++)
-			{
-				this->data[i] = data[i];
-			}
+			this->data[0] = data[0];
+			this->data[1] = data[1];
+			this->data[2] = data[2];
+			this->data[3] = data[3];
 		}
 		~Vector<T, 4>() {}
 
-		Vector<T, 4>(const Vector<T, 3> other)
+		Vector<T, 4>(const Vector<T, 3>& other)
 		{
 			x = other[0];
 			y = other[1];
@@ -327,13 +324,14 @@ namespace softlit
 	}
 
 	template<typename T, int N>
-	Vector<T, N>& normalize(Vector<T, N>& a)
+	Vector<T, N> normalize(const Vector<T, N>& a)
 	{
-		T norm = length2(a);
+		Vector<T, N> res = a;
+		T norm = length2(res);
 		T invNor = T(1) / sqrt(norm);
-		a *= invNor;
+		res *= invNor;
 
-		return a;
+		return res;
 	}
 
 	template<typename T, int N>
