@@ -40,6 +40,12 @@ namespace softlit
 			this->data[0] = data[0];
 			this->data[1] = data[1];
 		}
+		Vector<T, 2>(const Vector<T, 3>& v)
+		{
+			x = v[0];
+			y = v[1];
+		}
+
 		~Vector<T, 2>() {}
 
 		union
@@ -80,6 +86,13 @@ namespace softlit
 			z = T(0);
 		}
 
+		Vector<T, 3>(const Vector<T, 4>& other)
+		{
+			x = other[0];
+			y = other[1];
+			z = other[2];
+		}
+
 		union
 		{
 			struct { T x, y, z; };
@@ -115,12 +128,12 @@ namespace softlit
 		}
 		~Vector<T, 4>() {}
 
-		Vector<T, 4>(const Vector<T, 3>& other)
+		Vector<T, 4>(const Vector<T, 3>& other, typename std::common_type<T>::type _w = T(0))
 		{
 			x = other[0];
 			y = other[1];
 			z = other[2];
-			w = T(0);
+			w = _w;
 		}
 
 		union

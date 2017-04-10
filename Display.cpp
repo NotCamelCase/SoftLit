@@ -4,6 +4,7 @@
 
 #include <SDL_render.h>
 
+using namespace std;
 using namespace softlit;
 
 Display::Display(const uint32_t w, const uint32_t h)
@@ -11,22 +12,22 @@ Display::Display(const uint32_t w, const uint32_t h)
 {
 	SDL_Init(SDL_INIT_EVERYTHING);
 
-	SDL_Window* window = SDL_CreateWindow("SoftLit", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, m_width, m_height, SDL_WINDOW_SHOWN);
+	m_window = SDL_CreateWindow("SoftLit", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, m_width, m_height, SDL_WINDOW_SHOWN);
 
-	SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+	m_renderer = SDL_CreateRenderer(m_window, -1, SDL_RENDERER_ACCELERATED);
 
 	SDL_RendererInfo info;
-	SDL_GetRendererInfo(renderer, &info);
+	SDL_GetRendererInfo(m_renderer, &info);
 	printf("Renderer name: %s\n", info.name);
 	printf("Texture formats: \n");
-	for (Uint32 i = 0; i < info.num_texture_formats; i++)
+	for (uint32_t i = 0; i < info.num_texture_formats; i++)
 	{
 		printf("%s\n", SDL_GetPixelFormatName(info.texture_formats[i]));
 	}
 
-	m_renderTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, m_width, m_height);
+	m_renderTexture = SDL_CreateTexture(m_renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, m_width, m_height);
 
-	//TODO: Allocate frame buffer
+	m_frameBuffer.resize(m_width * m_height * 4);
 }
 
 Display::~Display()
@@ -51,4 +52,20 @@ void Display::Present()
 
 	SDL_RenderCopy(m_renderer, m_renderTexture, nullptr, nullptr);
 	SDL_RenderPresent(m_renderer);
+}
+
+void Display::UpdateFrameBuffer(const vector<vec4>& colorBuffer)
+{
+	for (uint32_t j = 0; j < m_height; j++)
+	{
+		for (uint32_t i = 0; i < m_width; i++)
+		{
+			//TODO: Proper color clamping
+			const vec4& color = colorBuffer[j * m_width + i];
+			m_frameBuffer[j * m_width + i] = color.x * 255;
+			m_frameBuffer[j * m_width + i + 1] = color.y * 255;
+			m_frameBuffer[j * m_width + i + 2] = color.z * 255;
+			m_frameBuffer[j * m_width + i + 3] = SDL_ALPHA_OPAQUE;
+		}
+	}
 }

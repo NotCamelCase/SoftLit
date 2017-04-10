@@ -1,5 +1,7 @@
 #pragma once
 
+#include "MathUtils.h"
+
 struct SDL_Renderer;
 struct SDL_Window;
 struct SDL_Texture;
@@ -20,6 +22,8 @@ namespace softlit
 		// Render a ready frame buffer
 		void Present();
 
+		void UpdateFrameBuffer(const std::vector<vec4>& colorBuffer);
+
 	private:
 		SDL_Renderer* m_renderer = nullptr;
 		SDL_Window* m_window = nullptr;
@@ -27,7 +31,7 @@ namespace softlit
 
 		// Frame buffer that SDL will use to copy color buffer to OS Window
 		std::vector<uchar> m_frameBuffer;
-		uint32_t m_width = 1024;
-		uint32_t m_height = 768;
+		uint32_t m_width = 1024u;
+		uint32_t m_height = 768u;
 	};
 }

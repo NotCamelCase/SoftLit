@@ -7,18 +7,30 @@
 namespace softlit
 {
 	// Constructs a view matrix where camera is originated at EYE pos and looking down AT while UP defines the 3D-cartesian up dir
-	static mat4 lookAt(const vec3& eye, const vec3& at, const vec3& up)
+	static mat4 lookAt(const vec3& eye, const vec3& at, const vec3& upDir)
 	{
-		const vec3 forward = normalize(at - eye);
-		const vec3 right = cross(forward, up);
+		// Form a 3D cartesian coordinate system
+		const vec3 forward = normalize(eye - at);
+		const vec3 right = cross(normalize(upDir), forward);
+		const vec3 up = cross(forward, right);
 
-		mat4 view =
-		{
-			right.x, right.y, right.z, 0,
-			up.x, up.y, up.z, 0,
-			forward.x, forward.y, forward.z, 0,
-			eye.x, eye.y, eye.z, 1
-		};
+		mat4 view;
+
+		view[0][0] = right.x;
+		view[0][1] = right.y;
+		view[0][2] = right.z;
+
+		view[1][0] = up.x;
+		view[1][1] = up.y;
+		view[1][2] = up.z;
+
+		view[2][0] = forward.x;
+		view[2][1] = forward.y;
+		view[2][2] = forward.z;
+
+		view[3][0] = eye.x;
+		view[3][1] = eye.y;
+		view[3][2] = eye.z;
 
 		return view;
 	}
@@ -28,7 +40,24 @@ namespace softlit
 	{
 		mat4 proj;
 
-		//TODO
+		// Calculate (l, r) & (b, t) frustum points
+		const float t = n * tanf(fov * 0.5f * M_PI / 180.f);
+		const float b = -t;
+
+		const float r = aspect * t;
+		const float l = -r;
+
+		proj[0][0] = (2 * n) / (r - l);
+		proj[0][2] = (r + l) / (r - l);
+
+		proj[1][1] = (2 * n) / (t - b);
+		proj[1][2] = (t + b) / (t - b);
+
+		proj[2][2] = -(f + n) / (f - n);
+		proj[2][3] = (-2 * n * f) / (f - n);
+
+		proj[3][2] = -1;
+		proj[3][3] = 0;
 
 		return proj;
 	}
