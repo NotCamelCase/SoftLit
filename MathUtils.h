@@ -10,23 +10,23 @@ namespace softlit
 	static mat4 lookAt(const vec3& eye, const vec3& at, const vec3& upDir)
 	{
 		// Form a 3D cartesian coordinate system
-		const vec3 forward = normalize(eye - at);
-		const vec3 right = cross(normalize(upDir), forward);
-		const vec3 up = cross(forward, right);
+		const vec3 zAxis = normalize(eye - at);
+		const vec3 xAxis = cross(normalize(upDir), zAxis);
+		const vec3 yAxis = cross(zAxis, xAxis);
 
 		mat4 view;
 
-		view[0][0] = right.x;
-		view[0][1] = right.y;
-		view[0][2] = right.z;
+		view[0][0] = xAxis.x;
+		view[0][1] = xAxis.y;
+		view[0][2] = xAxis.z;
 
-		view[1][0] = up.x;
-		view[1][1] = up.y;
-		view[1][2] = up.z;
+		view[1][0] = yAxis.x;
+		view[1][1] = yAxis.y;
+		view[1][2] = yAxis.z;
 
-		view[2][0] = forward.x;
-		view[2][1] = forward.y;
-		view[2][2] = forward.z;
+		view[2][0] = zAxis.x;
+		view[2][1] = zAxis.y;
+		view[2][2] = zAxis.z;
 
 		view[3][0] = eye.x;
 		view[3][1] = eye.y;

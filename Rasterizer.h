@@ -13,8 +13,8 @@ namespace softlit
 
 	enum class VertexWinding
 	{
-		CLOCKWISE, // Default
-		COUNTER_CLOCKWISE
+		CLOCKWISE,
+		COUNTER_CLOCKWISE // Default
 	};
 
 	struct Viewport
@@ -48,7 +48,7 @@ namespace softlit
 
 		const std::vector<float>& getZBuffer() const
 		{
-			return m_zBuffer;
+			return m_depthBuffer;
 		}
 
 		/*
@@ -58,7 +58,7 @@ namespace softlit
 
 	private:
 		std::vector<vec4> m_colorBuffer; // Used to hold rasterized primitives color buffer, colors in [0.f, 1.f]
-		std::vector<float> m_zBuffer; // Used as depth buffer
+		std::vector<float> m_depthBuffer; // Used as depth buffer
 
 		RasterizerSetup m_setup;
 

@@ -9,7 +9,7 @@ Rasterizer::Rasterizer(const RasterizerSetup& setup)
 	: m_setup(setup)
 {
 	m_colorBuffer.resize(m_setup.viewport.width * m_setup.viewport.height);
-	m_zBuffer.resize(m_setup.viewport.width * m_setup.viewport.height);
+	m_depthBuffer.resize(m_setup.viewport.width * m_setup.viewport.height);
 
 	const uint32_t viewportDim = m_setup.viewport.width * m_setup.viewport.height;
 
@@ -22,21 +22,20 @@ Rasterizer::Rasterizer(const RasterizerSetup& setup)
 	// Init z-buffer to FLT_MAX for intiial comparisons
 	for (uint32_t i = 0; i < viewportDim; i++)
 	{
-		m_zBuffer[i] = FLT_MAX;
+		m_depthBuffer[i] = FLT_MAX;
 	}
 }
 
 Rasterizer::~Rasterizer()
 {
 	m_colorBuffer.clear();
-	m_zBuffer.clear();
+	m_depthBuffer.clear();
 }
 
 /*
 		- v1
 	  -	 -	 -  -
 	vo	-	-	- v2
-
 */
 float Rasterizer::PixelCoverage(const vec3& a, const vec3& b, const vec2& c)
 {
@@ -62,7 +61,7 @@ void Rasterizer::Draw(const vector<vec3>& vertices, const mat4& view, const mat4
 		vec3 v1NDC = v1Clip / v1Clip.w;
 		vec3 v2NDC = v2Clip / v2Clip.w;
 
-		// Now to frame buffer-coordin
+		// Now to frame buffer-coordinates
 		vec3 v0Raster = { m_setup.viewport.width * (v0NDC.x + 1) / 2, m_setup.viewport.height * (1 - v0NDC.y) / 2, v0NDC.z };
 		vec3 v1Raster = { m_setup.viewport.width * (v1NDC.x + 1) / 2, m_setup.viewport.height * (1 - v1NDC.y) / 2, v1NDC.z };
 		vec3 v2Raster = { m_setup.viewport.width * (v2NDC.x + 1) / 2, m_setup.viewport.height * (1 - v2NDC.y) / 2, v2NDC.z };
@@ -78,21 +77,21 @@ void Rasterizer::Draw(const vector<vec3>& vertices, const mat4& view, const mat4
 			for (uint32_t i = 0; i < m_setup.viewport.width; i++)
 			{
 				vec2 sample = { i + 0.5f, j + 0.5f };
-				float delta0 = PixelCoverage(v1Raster, v2Raster, sample);
-				float delta1 = PixelCoverage(v2Raster, v0Raster, sample);
-				float delta2 = PixelCoverage(v0Raster, v2Raster, sample);
+				float w0 = PixelCoverage(v1Raster, v2Raster, sample);
+				float w1 = PixelCoverage(v2Raster, v0Raster, sample);
+				float w2 = PixelCoverage(v0Raster, v2Raster, sample);
 
-				if (delta0 >= 0.f && delta1 >= 0.f && delta2 >= 0.f)
+				if (w0 >= 0 && w1 >= 0 && w2 >= 0)
 				{
-					delta0 /= triArea;
-					delta1 /= triArea;
-					delta2 /= triArea;
+					w0 /= triArea;
+					w1 /= triArea;
+					w2 /= triArea;
 
-					float z = 1.f / ((delta0 * v0OverZ) + (delta1 * v1OverZ) + (delta2 * v2OverZ));
-					if (z < m_zBuffer[j * m_setup.viewport.width + i]) // Depth test, update color & z-buffer if passed
+					float z = 1.f / ((w0 * v0OverZ) + (w1 * v1OverZ) + (w2 * v2OverZ));
+					if (z < m_depthBuffer[j * m_setup.viewport.width + i]) // Depth test, update color & z-buffer if passed
 					{
 						m_colorBuffer[j * m_setup.viewport.width + i] = vec4(1.f);
-						m_zBuffer[j * m_setup.viewport.width + i] = z;
+						m_depthBuffer[j * m_setup.viewport.width + i] = z;
 					}
 				}
 			}

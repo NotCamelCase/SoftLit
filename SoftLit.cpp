@@ -5,8 +5,8 @@
 #include "Rasterizer.h"
 #include "Display.h"
 
-#define WIDTH 800
-#define HEIGHT 600
+#define WIDTH 1024
+#define HEIGHT 768
 
 using namespace std;
 using namespace softlit;
@@ -26,6 +26,7 @@ int main(int argc, char* argv[])
 	rs.width = WIDTH;
 	rs.height = HEIGHT;
 
+	// Init SDL
 	Display display(rs.width, rs.height);
 
 	vector<vec3> vertices =
@@ -70,12 +71,12 @@ int main(int argc, char* argv[])
 
 	RasterizerSetup rasterSetup;
 	rasterSetup.cullMode = CullMode::CULL_BACK;
-	rasterSetup.vertexWinding = VertexWinding::COUNTER_CLOCKWISE;
+	rasterSetup.vertexWinding = VertexWinding::CLOCKWISE;
 	rasterSetup.viewport = { 0.f, 0.f, rs.width, rs.height };
 
 	Rasterizer* rasterizer = new Rasterizer(rasterSetup);
 
-	const vec3 eye(6, 8, 10);
+	const vec3 eye(3, 4, 5);
 	const vec3 lookat(0, 0, -10);
 	const vec3 up(0, 1, 0);
 

@@ -24,11 +24,7 @@ namespace softlit
 	template<typename T>
 	struct Matrix<T, 2>
 	{
-		Matrix<T, 2>()
-			: Matrix<T, 2>(1, 0, 0, 1)
-		{
-		}
-
+		Matrix<T, 2>() {}
 		Matrix<T, 2>(T a1, T a2, T b1, T b2)
 		{
 			data[0][0] = a1;
@@ -74,17 +70,13 @@ namespace softlit
 			*this = C * (1 / det);
 		}
 
-		T data[2][2];
+		T data[2][2] = { { 1, 0 },  { 0, 1} };
 	};
 
 	template<typename T>
 	struct Matrix<T, 3>
 	{
-		Matrix<T, 3>()
-			: Matrix<T, 3>(1, 0, 0, 0, 1, 0, 0, 0, 1)
-		{
-		}
-
+		Matrix<T, 3>() {}
 		Matrix<T, 3>(T a1, T a2, T a3,
 			T b1, T b2, T b3,
 			T c1, T c2, T c3)
@@ -169,17 +161,13 @@ namespace softlit
 			*this = C * (1 / det);
 		}
 
-		T data[3][3];
+		T data[3][3] = { { 1, 0, 0 }, { 0, 1, 0 }, { 0, 0, 1 } };
 	};
 
 	template<typename T>
 	struct Matrix<T, 4>
 	{
-		Matrix<T, 4>()
-			: Matrix<T, 4>(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)
-		{
-		}
-
+		Matrix<T, 4>() {}
 		Matrix<T, 4>(T a1, T a2, T a3, T a4,
 			T b1, T b2, T b3, T b4,
 			T c1, T c2, T c3, T c4,
@@ -297,7 +285,7 @@ namespace softlit
 			*this = C * (1 / det);
 		}
 
-		T data[4][4];
+		T data[4][4] = { { 1, 0, 0, 0 }, { 0, 1, 0, 0 }, { 0, 0, 1, 0 }, { 0, 0, 0, 1} };
 	};
 
 	template<typename T, int N>
