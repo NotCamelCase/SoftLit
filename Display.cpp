@@ -59,7 +59,8 @@ void Display::UpdateFrameBuffer(const vector<vec4>& colorBuffer)
 	for (uint32_t i = 0; i < m_width * m_height * 4; i += 4)
 	{
 		const int pitch = i / 4;
-		const vec3& rgba = m_frameBuffer[pitch];
+		const vec3& rgba = colorBuffer[pitch];
+		assert(length2(rgba) == 0);
 		m_frameBuffer[i] = rgba.r;
 		m_frameBuffer[i + 1] = rgba.g;
 		m_frameBuffer[i + 2] = rgba.b;
