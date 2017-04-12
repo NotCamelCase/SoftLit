@@ -39,9 +39,10 @@ Rasterizer::~Rasterizer()
 */
 float Rasterizer::PixelCoverage(const vec3& a, const vec3& b, const vec2& c)
 {
-	auto x = (c.x - a.x) * (b.y - a.y) - (c.y - a.y) * (b.x - a.x);
+	const int winding = (m_setup.vertexWinding == VertexWinding::COUNTER_CLOCKWISE) ? 1 : -1;
+	const float x = (c.x - a.x) * (b.y - a.y) - (c.y - a.y) * (b.x - a.x);
 
-	return x;
+	return winding * x;
 }
 
 void Rasterizer::Draw(const vector<vec3>& vertices, const mat4& view, const mat4& proj)
@@ -64,9 +65,9 @@ void Rasterizer::Draw(const vector<vec3>& vertices, const mat4& view, const mat4
 		vec3 v2NDC = v2Clip / v2Clip.w;
 
 		// Now to frame buffer-coordinates
-		vec3 v0Raster = { m_setup.viewport.width * (v0NDC.x + 1) / 2, m_setup.viewport.height * (1 - v0NDC.y) / 2, v0NDC.z };
-		vec3 v1Raster = { m_setup.viewport.width * (v1NDC.x + 1) / 2, m_setup.viewport.height * (1 - v1NDC.y) / 2, v1NDC.z };
-		vec3 v2Raster = { m_setup.viewport.width * (v2NDC.x + 1) / 2, m_setup.viewport.height * (1 - v2NDC.y) / 2, v2NDC.z };
+		vec3 v0Raster = { m_setup.viewport.width * (v0NDC.x + 1) / 2, m_setup.viewport.height * (1 - v0NDC.y) / 2, v0.z };
+		vec3 v1Raster = { m_setup.viewport.width * (v1NDC.x + 1) / 2, m_setup.viewport.height * (1 - v1NDC.y) / 2, v1.z };
+		vec3 v2Raster = { m_setup.viewport.width * (v2NDC.x + 1) / 2, m_setup.viewport.height * (1 - v2NDC.y) / 2, v2.z };
 
 		// Per-triangle variables
 		const float triArea = PixelCoverage(v0Raster, v1Raster, v2Raster);
@@ -79,9 +80,16 @@ void Rasterizer::Draw(const vector<vec3>& vertices, const mat4& view, const mat4
 			for (uint32_t i = 0; i < m_setup.viewport.width; i++)
 			{
 				vec2 sample = { i + 0.5f, j + 0.5f };
+
 				float w0 = PixelCoverage(v1Raster, v2Raster, sample);
 				float w1 = PixelCoverage(v2Raster, v0Raster, sample);
 				float w2 = PixelCoverage(v0Raster, v1Raster, sample);
+
+				// Winding order changes edge orientation
+				const int winding = (m_setup.vertexWinding == VertexWinding::COUNTER_CLOCKWISE) ? 1 : -1;
+				w0 *= winding;
+				w1 *= winding;
+				w2 *= winding;
 
 				if (w0 >= 0 && w1 >= 0 && w2 >= 0)
 				{
@@ -92,7 +100,7 @@ void Rasterizer::Draw(const vector<vec3>& vertices, const mat4& view, const mat4
 					float z = 1.f / ((w0 * v0OverZ) + (w1 * v1OverZ) + (w2 * v2OverZ));
 					if (z < m_depthBuffer[j * m_setup.viewport.width + i]) // Depth test, update color & z-buffer if passed
 					{
-						m_colorBuffer[j * m_setup.viewport.width + i] = vec4(0.5f);
+						m_colorBuffer[j * m_setup.viewport.width + i] = vec4(1.f);
 						m_depthBuffer[j * m_setup.viewport.width + i] = z;
 					}
 				}
