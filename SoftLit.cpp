@@ -76,7 +76,7 @@ int main(int argc, char* argv[])
 
 	Rasterizer* rasterizer = new Rasterizer(rasterSetup);
 
-	const vec3 eye(3, 4, 10);
+	const vec3 eye(3, 4, 0);
 	const vec3 lookat(0, 0, -10);
 	const vec3 up(0, 1, 0);
 

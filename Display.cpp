@@ -42,9 +42,6 @@ Display::~Display()
 
 void Display::ClearSurface()
 {
-	// Clear frame buffer contents
-	fill(m_frameBuffer.begin(), m_frameBuffer.end(), 0x0);
-
 	// Clear SDL render target
 	SDL_SetRenderDrawColor(m_renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
 	SDL_RenderClear(m_renderer);
@@ -69,6 +66,5 @@ void Display::UpdateFrameBuffer(const vector<vec4>& colorBuffer)
 		m_frameBuffer[i + 1] = 255 * rgba.g;
 		m_frameBuffer[i + 2] = 255 * rgba.b;
 		m_frameBuffer[i + 3] = SDL_ALPHA_OPAQUE;
-
 	}
 }

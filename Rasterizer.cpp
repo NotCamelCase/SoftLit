@@ -14,16 +14,10 @@ Rasterizer::Rasterizer(const RasterizerSetup& setup)
 	const uint32_t viewportDim = m_setup.viewport.width * m_setup.viewport.height;
 
 	//TODO: Assign a clear_color
-	for (uint32_t i = 0; i < viewportDim; i++)
-	{
-		m_colorBuffer[i] = 0.f;
-	}
+	fill(m_colorBuffer.begin(), m_colorBuffer.end(), vec4(0, 0, 0, 0));
 
 	// Init z-buffer to FLT_MAX for intiial comparisons
-	for (uint32_t i = 0; i < viewportDim; i++)
-	{
-		m_depthBuffer[i] = FLT_MAX;
-	}
+	fill(m_depthBuffer.begin(), m_depthBuffer.end(), FLT_MAX);
 }
 
 Rasterizer::~Rasterizer()
@@ -50,9 +44,9 @@ void Rasterizer::Draw(const vector<vec3>& vertices, const mat4& view, const mat4
 	const size_t numTris = vertices.size() / 3;
 	for (size_t i = 0; i < numTris; i += 3)
 	{
-		const vec3 v0 = vertices[i];
-		const vec3 v1 = vertices[i + 1];
-		const vec3 v2 = vertices[i + 2];
+		const vec3& v0 = vertices[i];
+		const vec3& v1 = vertices[i + 1];
+		const vec3& v2 = vertices[i + 2];
 
 		// Convert to clip-coordinates
 		vec4 v0Clip = proj * (view * vec4(v0, 1));
@@ -65,12 +59,13 @@ void Rasterizer::Draw(const vector<vec3>& vertices, const mat4& view, const mat4
 		vec3 v2NDC = v2Clip / v2Clip.w;
 
 		// Now to frame buffer-coordinates
-		vec3 v0Raster = { m_setup.viewport.width * (v0NDC.x + 1) / 2, m_setup.viewport.height * (1 - v0NDC.y) / 2, v0.z };
-		vec3 v1Raster = { m_setup.viewport.width * (v1NDC.x + 1) / 2, m_setup.viewport.height * (1 - v1NDC.y) / 2, v1.z };
-		vec3 v2Raster = { m_setup.viewport.width * (v2NDC.x + 1) / 2, m_setup.viewport.height * (1 - v2NDC.y) / 2, v2.z };
+		vec3 v0Raster = { (v0NDC.x + 1) / 2 * m_setup.viewport.width, (1 - v0NDC.y) / 2 * m_setup.viewport.height, v0NDC.z };
+		vec3 v1Raster = { (v1NDC.x + 1) / 2 * m_setup.viewport.width, (1 - v1NDC.y) / 2 * m_setup.viewport.height, v1NDC.z };
+		vec3 v2Raster = { (v2NDC.x + 1) / 2 * m_setup.viewport.width, (1 - v2NDC.y) / 2 * m_setup.viewport.height, v2NDC.z };
 
 		// Per-triangle variables
-		const float triArea = PixelCoverage(v0Raster, v1Raster, v2Raster);
+		const float triCoverage = PixelCoverage(v0Raster, v1Raster, v2Raster);
+
 		const float v0OverZ = 1.f / v0Raster.z;
 		const float v1OverZ = 1.f / v1Raster.z;
 		const float v2OverZ = 1.f / v2Raster.z;
@@ -85,17 +80,11 @@ void Rasterizer::Draw(const vector<vec3>& vertices, const mat4& view, const mat4
 				float w1 = PixelCoverage(v2Raster, v0Raster, sample);
 				float w2 = PixelCoverage(v0Raster, v1Raster, sample);
 
-				// Winding order changes edge orientation
-				const int winding = (m_setup.vertexWinding == VertexWinding::COUNTER_CLOCKWISE) ? 1 : -1;
-				w0 *= winding;
-				w1 *= winding;
-				w2 *= winding;
-
 				if (w0 >= 0 && w1 >= 0 && w2 >= 0)
 				{
-					w0 /= triArea;
-					w1 /= triArea;
-					w2 /= triArea;
+					w0 /= triCoverage;
+					w1 /= triCoverage;
+					w2 /= triCoverage;
 
 					float z = 1.f / ((w0 * v0OverZ) + (w1 * v1OverZ) + (w2 * v2OverZ));
 					if (z < m_depthBuffer[j * m_setup.viewport.width + i]) // Depth test, update color & z-buffer if passed
