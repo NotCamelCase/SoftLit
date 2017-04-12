@@ -5,8 +5,8 @@
 #include "Rasterizer.h"
 #include "Display.h"
 
-#define WIDTH 1024
-#define HEIGHT 768
+#define WIDTH 800
+#define HEIGHT 600
 
 using namespace std;
 using namespace softlit;
@@ -76,8 +76,8 @@ int main(int argc, char* argv[])
 
 	Rasterizer* rasterizer = new Rasterizer(rasterSetup);
 
-	const vec3 eye(3, 4, 5);
-	const vec3 lookat(0, 0, -5);
+	const vec3 eye(0, 0, 10);
+	const vec3 lookat(0, 0, -10);
 	const vec3 up(0, 1, 0);
 
 	mat4 view = lookAt(eye, lookat, up);

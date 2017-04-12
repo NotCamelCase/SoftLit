@@ -39,7 +39,9 @@ Rasterizer::~Rasterizer()
 */
 float Rasterizer::PixelCoverage(const vec3& a, const vec3& b, const vec2& c)
 {
-	return (c.x - a.x) * (b.y - a.y) - (c.y - a.y) * (b.x - a.x);
+	auto x = (c.x - a.x) * (b.y - a.y) - (c.y - a.y) * (b.x - a.x);
+
+	return x;
 }
 
 void Rasterizer::Draw(const vector<vec3>& vertices, const mat4& view, const mat4& proj)
@@ -79,7 +81,7 @@ void Rasterizer::Draw(const vector<vec3>& vertices, const mat4& view, const mat4
 				vec2 sample = { i + 0.5f, j + 0.5f };
 				float w0 = PixelCoverage(v1Raster, v2Raster, sample);
 				float w1 = PixelCoverage(v2Raster, v0Raster, sample);
-				float w2 = PixelCoverage(v0Raster, v2Raster, sample);
+				float w2 = PixelCoverage(v0Raster, v1Raster, sample);
 
 				if (w0 >= 0 && w1 >= 0 && w2 >= 0)
 				{
@@ -90,7 +92,7 @@ void Rasterizer::Draw(const vector<vec3>& vertices, const mat4& view, const mat4
 					float z = 1.f / ((w0 * v0OverZ) + (w1 * v1OverZ) + (w2 * v2OverZ));
 					if (z < m_depthBuffer[j * m_setup.viewport.width + i]) // Depth test, update color & z-buffer if passed
 					{
-						m_colorBuffer[j * m_setup.viewport.width + i] = vec4(1.f);
+						m_colorBuffer[j * m_setup.viewport.width + i] = vec4(0.5f);
 						m_depthBuffer[j * m_setup.viewport.width + i] = z;
 					}
 				}
