@@ -28,9 +28,9 @@ namespace softlit
 		view[2][1] = zAxis.y;
 		view[2][2] = zAxis.z;
 
-		view[3][0] = eye.x;
-		view[3][1] = eye.y;
-		view[3][2] = eye.z;
+		view[3][0] = -dot(eye, xAxis);
+		view[3][1] = -dot(eye, yAxis);
+		view[3][2] = -dot(eye, zAxis);
 
 		return view;
 	}

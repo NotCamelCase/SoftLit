@@ -56,16 +56,13 @@ void Display::Present()
 
 void Display::UpdateFrameBuffer(const vector<vec4>& colorBuffer)
 {
-	for (uint32_t j = 0; j < m_height; j++)
+	for (uint32_t i = 0; i < m_width * m_height * 4; i += 4)
 	{
-		for (uint32_t i = 0; i < m_width; i++)
-		{
-			//TODO: Proper color clamping
-			const vec4& color = colorBuffer[j * m_width + i];
-			m_frameBuffer[j * m_width + i] = color.x * 255;
-			m_frameBuffer[j * m_width + i + 1] = color.y * 255;
-			m_frameBuffer[j * m_width + i + 2] = color.z * 255;
-			m_frameBuffer[j * m_width + i + 3] = SDL_ALPHA_OPAQUE;
-		}
+		const int pitch = i / 4;
+		const vec3& rgba = m_frameBuffer[pitch];
+		m_frameBuffer[i] = rgba.r;
+		m_frameBuffer[i + 1] = rgba.g;
+		m_frameBuffer[i + 2] = rgba.b;
+		m_frameBuffer[i + 3] = SDL_ALPHA_OPAQUE;
 	}
 }
