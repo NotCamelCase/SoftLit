@@ -54,7 +54,7 @@ namespace softlit
 		proj[1][2] = (t + b) / (t - b);
 
 		proj[2][2] = -(f + n) / (f - n);
-		proj[2][3] = (-2 * n * f) / (f - n);
+		proj[2][3] = -(2 * n * f) / (f - n);
 
 		proj[3][2] = -1;
 		proj[3][3] = 0;

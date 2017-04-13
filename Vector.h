@@ -79,11 +79,11 @@ namespace softlit
 			this->data[2] = data[2];
 		}
 
-		Vector<T, 3>(const Vector<T, 2>& other)
+		Vector<T, 3>(const Vector<T, 2>& other, typename std::common_type<T>::type _z = T(0))
 		{
 			x = other[0];
 			y = other[1];
-			z = T(0);
+			z = _z;
 		}
 
 		Vector<T, 3>(const Vector<T, 4>& other)
