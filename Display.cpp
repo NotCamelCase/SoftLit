@@ -61,7 +61,7 @@ void Display::UpdateFrameBuffer(const vector<vec4>& colorBuffer)
 	for (uint32_t i = 0; i < fbDim; i += 4)
 	{
 		const int pitch = i / 4;
-		const vec3& rgba = colorBuffer[pitch];
+		const vec4& rgba = colorBuffer[pitch];
 		m_frameBuffer[i] = 255 * rgba.r;
 		m_frameBuffer[i + 1] = 255 * rgba.g;
 		m_frameBuffer[i + 2] = 255 * rgba.b;
