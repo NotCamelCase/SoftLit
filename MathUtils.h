@@ -12,7 +12,7 @@ namespace softlit
 		// Form a 3D cartesian coordinate system
 		const vec3 zAxis = normalize(eye - at);
 		const vec3 xAxis = cross(normalize(upDir), zAxis);
-		const vec3 yAxis = cross(zAxis, xAxis);
+		const vec3 yAxis = cross(xAxis, zAxis);
 
 		mat4 view;
 
@@ -38,14 +38,14 @@ namespace softlit
 	// Constructs a perspective projection matrix based on FOV, viewport aspect ratio, near and far planes
 	static mat4 perspective(const float fov, const float aspect, const float n, const float f)
 	{
-		mat4 proj;
-
 		// Calculate (l, r) & (b, t) frustum points
 		const float t = n * tanf(fov * 0.5f * M_PI / 180.f);
 		const float b = -t;
 
-		const float r = aspect * t;
-		const float l = -r;
+		const float l = aspect * b;
+		const float r = -l;
+
+		mat4 proj;
 
 		proj[0][0] = (2 * n) / (r - l);
 		proj[0][2] = (r + l) / (r - l);

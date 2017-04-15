@@ -16,21 +16,22 @@ namespace softlit
 		Display(const uint32_t w, const uint32_t h);
 		~Display();
 
-		// Clear render surface to present frame buffer
-		void ClearSurface();
+		// Clear render surface before presenting back buffer content
+		void ClearRenderTarget(const vec3& clearColor);
 
-		// Render a ready frame buffer
+		// Render frame buffer to SDL render target
 		void Present();
 
-		void UpdateFrameBuffer(const std::vector<vec4>& colorBuffer);
+		// Update display color buffer with frame buffer content before presenting
+		void UpdateColorBuffer(const std::vector<vec4>& frameBuffer);
 
 	private:
 		SDL_Renderer* m_renderer = nullptr;
 		SDL_Window* m_window = nullptr;
 		SDL_Texture* m_renderTexture = nullptr;
 
-		// Frame buffer that SDL will use to copy color buffer to OS Window
-		std::vector<uchar> m_frameBuffer;
+		// Color buffer that SDL will use to present frame buffer content
+		std::vector<uchar> m_colorBuffer;
 		uint32_t m_width = 1024u;
 		uint32_t m_height = 768u;
 	};

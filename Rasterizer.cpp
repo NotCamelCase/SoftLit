@@ -8,11 +8,11 @@ using namespace softlit;
 Rasterizer::Rasterizer(const RasterizerSetup& setup)
 	: m_setup(setup)
 {
-	m_colorBuffer.resize(m_setup.viewport.width * m_setup.viewport.height);
+	m_frameBuffer.resize(m_setup.viewport.width * m_setup.viewport.height);
 	m_depthBuffer.resize(m_setup.viewport.width * m_setup.viewport.height);
 
 	//TODO: Assign a clear_color
-	fill(m_colorBuffer.begin(), m_colorBuffer.end(), vec4(0, 0, 0, 0));
+	fill(m_frameBuffer.begin(), m_frameBuffer.end(), vec4(0, 0, 0, 0));
 
 	// Init z-buffer to FLT_MAX for intiial comparisons
 	fill(m_depthBuffer.begin(), m_depthBuffer.end(), FLT_MAX);
@@ -20,7 +20,7 @@ Rasterizer::Rasterizer(const RasterizerSetup& setup)
 
 Rasterizer::~Rasterizer()
 {
-	m_colorBuffer.clear();
+	m_frameBuffer.clear();
 	m_depthBuffer.clear();
 }
 
@@ -31,7 +31,7 @@ Rasterizer::~Rasterizer()
 */
 float Rasterizer::PixelCoverage(const vec3& a, const vec3& b, const vec2& c)
 {
-	const int winding = (m_setup.vertexWinding == VertexWinding::COUNTER_CLOCKWISE) ? 1 : -1;
+	const int winding = (m_setup.vertexWinding == VertexWinding::COUNTER_CLOCKWISE) ? -1 : 1;
 	const float x = (c.x - a.x) * (b.y - a.y) - (c.y - a.y) * (b.x - a.x);
 
 	return winding * x;
@@ -51,15 +51,15 @@ void Rasterizer::Draw(const vector<vec3>& vertices, const mat4& view, const mat4
 		const vec4 v1Clip = proj * (view * vec4(v1, 1));
 		const vec4 v2Clip = proj * (view * vec4(v2, 1));
 
-		// Convert to NDC-space normalizing by w-divide
+		// Perspective-divide and convert to NDC
 		const vec3 v0NDC = v0Clip / v0Clip.w;
 		const vec3 v1NDC = v1Clip / v1Clip.w;
 		const vec3 v2NDC = v2Clip / v2Clip.w;
 
 		// Now to frame buffer-coordinates
-		vec3 v0Raster = { (v0NDC.x + 1) / 2 * m_setup.viewport.width, (1 - v0NDC.y) / 2 * m_setup.viewport.height, v0Clip.w };
-		vec3 v1Raster = { (v1NDC.x + 1) / 2 * m_setup.viewport.width, (1 - v1NDC.y) / 2 * m_setup.viewport.height, v1Clip.w };
-		vec3 v2Raster = { (v2NDC.x + 1) / 2 * m_setup.viewport.width, (1 - v2NDC.y) / 2 * m_setup.viewport.height, v2Clip.w };
+		vec3 v0Raster = { (v0NDC.x + 1) / 2 * m_setup.viewport.width, (1 - v0NDC.y) / 2 * m_setup.viewport.height, v0NDC.z };
+		vec3 v1Raster = { (v1NDC.x + 1) / 2 * m_setup.viewport.width, (1 - v1NDC.y) / 2 * m_setup.viewport.height, v1NDC.z };
+		vec3 v2Raster = { (v2NDC.x + 1) / 2 * m_setup.viewport.width, (1 - v2NDC.y) / 2 * m_setup.viewport.height, v2NDC.z };
 
 		// Per-triangle variables
 		const float triCoverage = PixelCoverage(v0Raster, v1Raster, v2Raster);
@@ -83,7 +83,7 @@ void Rasterizer::Draw(const vector<vec3>& vertices, const mat4& view, const mat4
 					float z = 1.f / ((w0 * v0Raster.z) + (w1 * v1Raster.z) + (w2 * v2Raster.z));
 					if (z < m_depthBuffer[j * m_setup.viewport.width + i]) // Depth test, update color & z-buffer if passed
 					{
-						m_colorBuffer[j * m_setup.viewport.width + i] = vec4(0.5, 0.5, 0.5, 1.0);
+						m_frameBuffer[j * m_setup.viewport.width + i] = vec4(0.5, 0.5, 0.5, 1.0);
 						m_depthBuffer[j * m_setup.viewport.width + i] = z;
 					}
 				}

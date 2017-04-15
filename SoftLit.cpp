@@ -29,7 +29,7 @@ int main(int argc, char* argv[])
 	// Init SDL
 	Display display(rs.width, rs.height);
 
-	vector<vec3> vertices =
+	/*vector<vec3> vertices =
 	{
 		vec3(-1, -1, 1),
 		vec3(-1, 1, 1),
@@ -67,6 +67,13 @@ int main(int argc, char* argv[])
 		vec3(-1, -1, 1),
 		vec3(1, -1, -1),
 		vec3(-1, -1, -1)
+	};*/
+
+	vector<vec3> vertices =
+	{
+		vec3(-1, -1, 1),
+		vec3(-1, 1, 1),
+		vec3(1, -1, 1),
 	};
 
 	RasterizerSetup rasterSetup;
@@ -76,8 +83,8 @@ int main(int argc, char* argv[])
 
 	Rasterizer* rasterizer = new Rasterizer(rasterSetup);
 
-	const vec3 eye(0, 0, 10);
-	const vec3 lookat(5, 5, -10);
+	const vec3 eye(0, 0, 0);
+	const vec3 lookat(0, 0, -10);
 	const vec3 up(0, 1, 0);
 
 	mat4 view = lookAt(eye, lookat, up);
@@ -97,13 +104,13 @@ int main(int argc, char* argv[])
 			}
 		}
 
-		display.ClearSurface();
+		display.ClearRenderTarget(vec3(0, 0, 0));
 
 		const auto drawBegin = chrono::high_resolution_clock::now();
 		rasterizer->Draw(vertices, view, proj);
 		const auto drawEnd = chrono::high_resolution_clock::now();
 
-		display.UpdateFrameBuffer(rasterizer->getColorBuffer());
+		display.UpdateColorBuffer(rasterizer->getFrameBuffer());
 
 		const auto presentBegin = chrono::high_resolution_clock::now();
 		display.Present();

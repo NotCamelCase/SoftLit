@@ -41,9 +41,9 @@ namespace softlit
 		Rasterizer(const RasterizerSetup& setup);
 		~Rasterizer();
 
-		const std::vector<vec4>& getColorBuffer() const
+		const std::vector<vec4>& getFrameBuffer() const
 		{
-			return m_colorBuffer;
+			return m_frameBuffer;
 		}
 
 		const std::vector<float>& getZBuffer() const
@@ -57,7 +57,7 @@ namespace softlit
 		void Draw(const std::vector<vec3>& vertices, const mat4& view, const mat4& proj);
 
 	private:
-		std::vector<vec4> m_colorBuffer; // Used to hold rasterized primitives color buffer, colors in [0.f, 1.f]
+		std::vector<vec4> m_frameBuffer; // Used to hold rasterized primitives color buffer, colors in [0.f, 1.f]
 		std::vector<float> m_depthBuffer; // Used as depth buffer
 
 		RasterizerSetup m_setup;

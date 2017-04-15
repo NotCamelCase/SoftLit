@@ -22,12 +22,12 @@ Display::Display(const uint32_t w, const uint32_t h)
 	printf("Texture formats: \n");
 	for (uint32_t i = 0; i < info.num_texture_formats; i++)
 	{
-		printf("%s\n", SDL_GetPixelFormatName(info.texture_formats[i]));
+		printf("\t%s\n", SDL_GetPixelFormatName(info.texture_formats[i]));
 	}
 
 	m_renderTexture = SDL_CreateTexture(m_renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, m_width, m_height);
 
-	m_frameBuffer.resize(m_width * m_height * 4);
+	m_colorBuffer.resize(m_width * m_height * 4);
 }
 
 Display::~Display()
@@ -37,34 +37,32 @@ Display::~Display()
 	SDL_DestroyWindow(m_window);
 	SDL_Quit();
 
-	m_frameBuffer.clear();
+	m_colorBuffer.clear();
 }
 
-void Display::ClearSurface()
+void Display::ClearRenderTarget(const vec3& clearColor)
 {
-	// Clear SDL render target
-	SDL_SetRenderDrawColor(m_renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+	SDL_SetRenderDrawColor(m_renderer, clearColor.r, clearColor.g, clearColor.b, SDL_ALPHA_OPAQUE);
 	SDL_RenderClear(m_renderer);
 }
 
 void Display::Present()
 {
-	SDL_UpdateTexture(m_renderTexture, nullptr, m_frameBuffer.data(), m_width * 4);
+	SDL_UpdateTexture(m_renderTexture, nullptr, m_colorBuffer.data(), m_width * 4);
 
 	SDL_RenderCopy(m_renderer, m_renderTexture, nullptr, nullptr);
 	SDL_RenderPresent(m_renderer);
 }
 
-void Display::UpdateFrameBuffer(const vector<vec4>& colorBuffer)
+void Display::UpdateColorBuffer(const vector<vec4>& frameBuffer)
 {
 	const uint32_t fbDim = m_width  * m_height * 4;
 	for (uint32_t i = 0; i < fbDim; i += 4)
 	{
-		const int pitch = i / 4;
-		const vec4& rgba = colorBuffer[pitch];
-		m_frameBuffer[i] = 255 * rgba.r;
-		m_frameBuffer[i + 1] = 255 * rgba.g;
-		m_frameBuffer[i + 2] = 255 * rgba.b;
-		m_frameBuffer[i + 3] = SDL_ALPHA_OPAQUE;
+		const vec4& rgba = frameBuffer[i / 4];
+		m_colorBuffer[i] = 255 * rgba.r;
+		m_colorBuffer[i + 1] = 255 * rgba.g;
+		m_colorBuffer[i + 2] = 255 * rgba.b;
+		m_colorBuffer[i + 3] = 255 * rgba.a;
 	}
 }
