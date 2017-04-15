@@ -320,7 +320,7 @@ namespace softlit
 	template<typename T>
 	Vector<T, 3> cross(const Vector<T, 3>& l, const Vector<T, 3>& r)
 	{
-		return Vector<T, 3>(l.y * r.z - r.y * l.z, l.x * r.z - r.x * l.z, l.x * r.y - r.x * l.y);
+		return Vector<T, 3>(l.y * r.z - r.y * l.z, l.z * r.x - l.x * r.z, l.x * r.y - r.x * l.y);
 	}
 
 	template<typename T, int N>
