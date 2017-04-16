@@ -11,7 +11,7 @@ namespace softlit
 	{
 		// Form a 3D cartesian coordinate system
 		const vec3 zAxis = normalize(eye - at);
-		const vec3 xAxis = cross(normalize(upDir), zAxis);
+		const vec3 xAxis = cross(zAxis, normalize(upDir));
 		const vec3 yAxis = cross(xAxis, zAxis);
 
 		mat4 view;

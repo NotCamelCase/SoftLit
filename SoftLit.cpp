@@ -29,7 +29,7 @@ int main(int argc, char* argv[])
 	// Init SDL
 	Display display(rs.width, rs.height);
 
-	/*vector<vec3> vertices =
+	vector<vec3> vertices =
 	{
 		vec3(-1, -1, 1),
 		vec3(-1, 1, 1),
@@ -67,13 +67,6 @@ int main(int argc, char* argv[])
 		vec3(-1, -1, 1),
 		vec3(1, -1, -1),
 		vec3(-1, -1, -1)
-	};*/
-
-	vector<vec3> vertices =
-	{
-		vec3(-1, -1, 1),
-		vec3(-1, 1, 1),
-		vec3(1, -1, 1),
 	};
 
 	RasterizerSetup rasterSetup;
