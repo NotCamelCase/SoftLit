@@ -29,6 +29,7 @@ int main(int argc, char* argv[])
 	// Init SDL
 	Display display(rs.width, rs.height);
 
+#if 0
 	vector<vec3> vertices =
 	{
 		vec3(-1, -1, 1),
@@ -69,15 +70,14 @@ int main(int argc, char* argv[])
 		vec3(-1, -1, -1)
 	};
 
-	/*vector<vec3> vertices =
+#else
+	vector<vec3> vertices =
 	{
 		vec3(-1, -1, 1),
 		vec3(-1, 1, 1),
-		vec3(1, -1, 1),
-		vec3(1, -1, 1),
-		vec3(-1, 1, 1),
-		vec3(1, 1, 1)
-	};*/
+		vec3(1, -1, 1)
+	};
+#endif
 
 	RasterizerSetup rasterSetup;
 	rasterSetup.cullMode = CullMode::CULL_BACK;
@@ -107,7 +107,7 @@ int main(int argc, char* argv[])
 			}
 		}
 
-		display.ClearRenderTarget(vec3(0, 0, 0));
+		display.ClearRenderTarget(vec3(1, 1, 1));
 
 		const auto drawBegin = chrono::high_resolution_clock::now();
 		rasterizer->Draw(vertices, view, proj);
