@@ -41,9 +41,9 @@ void Rasterizer::Draw(const vector<vec3>& vertices, const mat4& view, const mat4
 	const size_t numTris = vertices.size() / 3;
 	for (size_t i = 0; i < numTris; i++)
 	{
-		const vec3& v0 = vertices[i];
-		const vec3& v1 = vertices[i + 1];
-		const vec3& v2 = vertices[i + 2];
+		const vec3& v0 = vertices[i * 3];
+		const vec3& v1 = vertices[i * 3 + 1];
+		const vec3& v2 = vertices[i * 3 + 2];
 
 		// Convert to clip-coordinates
 		const vec4 v0Clip = proj * (view * vec4(v0, 1));
