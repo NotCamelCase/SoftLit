@@ -73,9 +73,12 @@ int main(int argc, char* argv[])
 #else
 	vector<vec3> vertices =
 	{
-		vec3(-1, -1, 1),
-		vec3(-1, 1, 1),
-		vec3(1, -1, 1)
+		vec3(-0.5, -0.5, 0.5),
+		vec3(-0.5, 0.5, 0.5),
+		vec3(0.5, -0.5, 0.5),
+		/*vec3(0.5, -0.5, 0.5),
+		vec3(-0.5, 0.5, 0.5),
+		vec3(0.5, 0.5, 0.5)*/
 	};
 #endif
 
@@ -86,12 +89,12 @@ int main(int argc, char* argv[])
 
 	Rasterizer* rasterizer = new Rasterizer(rasterSetup);
 
-	const vec3 eye(0, 0, 0);
-	const vec3 lookat(0, 0, -10);
-	const vec3 up(0, 1, 0);
+	vec3 eye(0, 0, 0);
+	vec3 lookat(0, 0, -10);
+	vec3 up(0, 1, 0);
 
 	mat4 view = lookAt(eye, lookat, up);
-	mat4 proj = perspective(rs.fov, (float)rs.width / (float)rs.height, 0.1f, 100.f);
+	mat4 proj = perspective(rs.fov, (float)rs.width / (float)rs.height, 0.5f, 100.f);
 
 	SDL_Event event;
 	bool running = true;
@@ -107,7 +110,7 @@ int main(int argc, char* argv[])
 			}
 		}
 
-		display.ClearRenderTarget(vec3(1, 1, 1));
+		display.ClearRenderTarget(vec3i(0, 0, 0));
 
 		const auto drawBegin = chrono::high_resolution_clock::now();
 		rasterizer->Draw(vertices, view, proj);

@@ -40,7 +40,7 @@ Display::~Display()
 	m_colorBuffer.clear();
 }
 
-void Display::ClearRenderTarget(const vec3& clearColor)
+void Display::ClearRenderTarget(const vec3i& clearColor)
 {
 	SDL_SetRenderDrawColor(m_renderer, clearColor.r, clearColor.g, clearColor.b, SDL_ALPHA_OPAQUE);
 	SDL_RenderClear(m_renderer);

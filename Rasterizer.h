@@ -63,5 +63,11 @@ namespace softlit
 		RasterizerSetup m_setup;
 
 		float PixelCoverage(const vec3& a, const vec3& b, const vec2& c);
+
+		void InvalidateBuffers()
+		{
+			fill(m_frameBuffer.begin(), m_frameBuffer.end(), vec4(1, 1, 1, 1));
+			fill(m_depthBuffer.begin(), m_depthBuffer.end(), FLT_MAX);
+		}
 	};
 }

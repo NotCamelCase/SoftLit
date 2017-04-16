@@ -17,7 +17,7 @@ namespace softlit
 		~Display();
 
 		// Clear render surface before presenting back buffer content
-		void ClearRenderTarget(const vec3& clearColor);
+		void ClearRenderTarget(const vec3i& clearColor);
 
 		// Render frame buffer to SDL render target
 		void Present();
