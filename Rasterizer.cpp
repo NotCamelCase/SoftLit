@@ -39,7 +39,7 @@ float Rasterizer::PixelCoverage(const vec3& a, const vec3& b, const vec2& c)
 void Rasterizer::Draw(const vector<vec3>& vertices, const mat4& view, const mat4& proj)
 {
 	const size_t numTris = vertices.size() / 3;
-	for (size_t i = 0; i < numTris; i += 3)
+	for (size_t i = 0; i < numTris; i++)
 	{
 		const vec3& v0 = vertices[i];
 		const vec3& v1 = vertices[i + 1];
