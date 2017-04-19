@@ -5,14 +5,15 @@
 #include <SDL_render.h>
 
 using namespace std;
+using namespace glm;
 using namespace softlit;
 
-Display::Display(const uint32_t w, const uint32_t h)
+Display::Display(const uint32_t w, const uint32_t h, bool fullscreen)
 	: m_width(w), m_height(h)
 {
 	SDL_Init(SDL_INIT_EVERYTHING);
 
-	m_window = SDL_CreateWindow("SoftLit", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, m_width, m_height, SDL_WINDOW_SHOWN);
+	m_window = SDL_CreateWindow("SoftLit", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, m_width, m_height, SDL_WINDOW_SHOWN | ((fullscreen) ? SDL_WINDOW_FULLSCREEN : 0));
 
 	m_renderer = SDL_CreateRenderer(m_window, -1, SDL_RENDERER_ACCELERATED);
 
@@ -40,8 +41,11 @@ Display::~Display()
 	m_colorBuffer.clear();
 }
 
-void Display::ClearRenderTarget(const vec3i& clearColor)
+void Display::ClearRenderTarget(const vec3& clearColor)
 {
+	//TODO: Refresh color buffer?!
+	//fill(m_colorBuffer.begin(), m_colorBuffer.end(), 0x0);
+
 	SDL_SetRenderDrawColor(m_renderer, clearColor.r, clearColor.g, clearColor.b, SDL_ALPHA_OPAQUE);
 	SDL_RenderClear(m_renderer);
 }

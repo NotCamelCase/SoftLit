@@ -1,7 +1,5 @@
 #include "stdafx.h"
 
-#include "MathUtils.h"
-
 #include "Rasterizer.h"
 #include "Display.h"
 
@@ -9,6 +7,7 @@
 #define HEIGHT 600
 
 using namespace std;
+using namespace glm;
 using namespace softlit;
 
 struct RenderSettings
@@ -19,17 +18,19 @@ struct RenderSettings
 	uint32_t height;
 };
 
+//#define SINGLE_FRAME_OUTPUT
+
 int main(int argc, char* argv[])
 {
 	RenderSettings rs;
-	rs.fov = 120.f;
+	rs.fov = 60.f;
 	rs.width = WIDTH;
 	rs.height = HEIGHT;
 
 	// Init SDL
-	Display display(rs.width, rs.height);
+	Display display(rs.width, rs.height, false);
 
-#if 0
+#if 1
 	vector<vec3> vertices =
 	{
 		vec3(-1, -1, 1),
@@ -89,13 +90,31 @@ int main(int argc, char* argv[])
 
 	Rasterizer* rasterizer = new Rasterizer(rasterSetup);
 
-	vec3 eye(0, 0, 0);
-	vec3 lookat(0, 0, -10);
+	vec3 eye(3, 4, -5);
+	vec3 lookat(0, 0, 0);
 	vec3 up(0, 1, 0);
 
-	mat4 view = lookAt(eye, lookat, up);
-	mat4 proj = perspective(rs.fov, (float)rs.width / (float)rs.height, 0.5f, 100.f);
+	mat4 cam = mat4();
+	mat4 view = lookAtRH(eye, lookat, up);
+	mat4 proj = perspectiveRH(glm::radians(rs.fov), (float)rs.width / (float)rs.height, 0.5f, 100.f);
 
+#ifdef SINGLE_FRAME_OUTPUT
+	rasterizer->Draw(vertices, view, proj);
+
+	const vector<vec4>& frameBuffer = rasterizer->getFrameBuffer();
+	FILE *f = NULL;
+	fopen_s(&f, "../render.ppm", "w");
+	fprintf(f, "P3\n%d %d\n%d\n ", WIDTH, HEIGHT, 255);
+	for (int32_t i = 0; i < WIDTH * HEIGHT; ++i)
+	{
+		uint r = (255 * frameBuffer[i].x);
+		uint g = (255 * frameBuffer[i].y);
+		uint b = (255 * frameBuffer[i].z);
+		fprintf(f, "%d %d %d ", r, g, b);
+	}
+	fclose(f);
+
+#else
 	SDL_Event event;
 	bool running = true;
 	while (running)
@@ -110,7 +129,11 @@ int main(int argc, char* argv[])
 			}
 		}
 
-		display.ClearRenderTarget(vec3i(0, 0, 0));
+		display.ClearRenderTarget(vec3(0, 0, 0));
+
+		cam = glm::rotate(cam, 0.05f, vec3(1, 1, 0));
+		view = lookAtRH(eye, lookat, up);
+		view = view * cam;
 
 		const auto drawBegin = chrono::high_resolution_clock::now();
 		rasterizer->Draw(vertices, view, proj);
@@ -124,6 +147,7 @@ int main(int argc, char* argv[])
 
 		printf("Frame time: %lld\n", chrono::duration_cast<chrono::milliseconds> (presentEnd - drawBegin).count());
 	}
+#endif
 
 	SAFE_DELETE(rasterizer);
 

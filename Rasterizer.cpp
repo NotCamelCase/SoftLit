@@ -3,6 +3,7 @@
 #include "Rasterizer.h"
 
 using namespace std;
+using namespace glm;
 using namespace softlit;
 
 Rasterizer::Rasterizer(const RasterizerSetup& setup)
@@ -54,9 +55,9 @@ void Rasterizer::Draw(const vector<vec3>& vertices, const mat4& view, const mat4
 		const vec3 v2NDC = v2Clip / v2Clip.w;
 
 		// Now to frame buffer-coordinates
-		vec3 v0Raster = { (v0NDC.x + 1) / 2 * m_setup.viewport.width, (1 + v0NDC.y) / 2 * m_setup.viewport.height, v0NDC.z };
-		vec3 v1Raster = { (v1NDC.x + 1) / 2 * m_setup.viewport.width, (1 + v1NDC.y) / 2 * m_setup.viewport.height, v1NDC.z };
-		vec3 v2Raster = { (v2NDC.x + 1) / 2 * m_setup.viewport.width, (1 + v2NDC.y) / 2 * m_setup.viewport.height, v2NDC.z };
+		vec3 v0Raster = { (v0NDC.x + 1) / 2 * m_setup.viewport.width, (1 - v0NDC.y) / 2 * m_setup.viewport.height, v0NDC.z };
+		vec3 v1Raster = { (v1NDC.x + 1) / 2 * m_setup.viewport.width, (1 - v1NDC.y) / 2 * m_setup.viewport.height, v1NDC.z };
+		vec3 v2Raster = { (v2NDC.x + 1) / 2 * m_setup.viewport.width, (1 - v2NDC.y) / 2 * m_setup.viewport.height, v2NDC.z };
 
 		// Per-triangle variables
 		const float triCoverage = PixelCoverage(v0Raster, v1Raster, v2Raster);

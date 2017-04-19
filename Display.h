@@ -1,7 +1,5 @@
 #pragma once
 
-#include "MathUtils.h"
-
 struct SDL_Renderer;
 struct SDL_Window;
 struct SDL_Texture;
@@ -13,17 +11,17 @@ namespace softlit
 	class Display
 	{
 	public:
-		Display(const uint32_t w, const uint32_t h);
+		Display(const uint32_t w, const uint32_t h, bool fullscreen);
 		~Display();
 
 		// Clear render surface before presenting back buffer content
-		void ClearRenderTarget(const vec3i& clearColor);
+		void ClearRenderTarget(const glm::vec3& clearColor);
 
 		// Render frame buffer to SDL render target
 		void Present();
 
 		// Update display color buffer with frame buffer content before presenting
-		void UpdateColorBuffer(const std::vector<vec4>& frameBuffer);
+		void UpdateColorBuffer(const std::vector<glm::vec4>& frameBuffer);
 
 	private:
 		SDL_Renderer* m_renderer = nullptr;
