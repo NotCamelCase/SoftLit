@@ -14,3 +14,4 @@
 #include <SDL.h>
 
 #include "Utils.h"
+#include "RasterizerConfig.h"

@@ -2,6 +2,8 @@
 
 #include "Rasterizer.h"
 
+#include "Primitive.h"
+
 using namespace std;
 using namespace glm;
 using namespace softlit;
@@ -32,17 +34,21 @@ float Rasterizer::PixelCoverage(const vec3& a, const vec3& b, const vec2& c)
 	return winding * x;
 }
 
-void Rasterizer::Draw(const vector<vec3>& vertices, const mat4& view, const mat4& proj)
+void Rasterizer::Draw(Primitive* prim, const mat4& view, const mat4& proj)
 {
 	// Pre-draw, invalidate frame and depth buffers
 	InvalidateBuffers();
 
-	const size_t numTris = vertices.size() / 3;
+	const VertexBuffer& vbo = prim->getVertexBuffer();
+	const IndexBuffer& ibo = prim->getIndexBuffer();
+
+	const size_t numTris = prim->getIndexBuffer().size() / 3;
+	DBG_ASSERT((numTris % 3) == 0);
 	for (size_t i = 0; i < numTris; i++)
 	{
-		const vec3& v0 = vertices[i * 3];
-		const vec3& v1 = vertices[i * 3 + 1];
-		const vec3& v2 = vertices[i * 3 + 2];
+		const vec3& v0 = vbo[ibo[i * 3]];
+		const vec3& v1 = vbo[ibo[i * 3 + 1]];
+		const vec3& v2 = vbo[ibo[i * 3 + 2]];
 
 		// Convert to clip-coordinates
 		const vec4 v0Clip = proj * (view * vec4(v0, 1));
@@ -76,10 +82,10 @@ void Rasterizer::Draw(const vector<vec3>& vertices, const mat4& view, const mat4
 				{
 					w0 /= triCoverage;
 					w1 /= triCoverage;
-					w2 /= triCoverage;
+					w2 = 1 - w0 - w1;
 
 					float z = 1.f / ((w0 * v0Raster.z) + (w1 * v1Raster.z) + (w2 * v2Raster.z));
-					if (z < m_depthBuffer[j * m_setup.viewport.width + i]) // Depth test, update color & z-buffer if passed
+					if (z < m_depthBuffer[j * m_setup.viewport.width + i]) // Depth test; update color & z-buffer if passed
 					{
 						m_frameBuffer[j * m_setup.viewport.width + i] = vec4(0.5, 0.5, 0.5, 1.0);
 						m_depthBuffer[j * m_setup.viewport.width + i] = z;

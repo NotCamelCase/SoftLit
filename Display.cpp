@@ -64,9 +64,9 @@ void Display::UpdateColorBuffer(const vector<vec4>& frameBuffer)
 	for (uint32_t i = 0; i < fbDim; i += 4)
 	{
 		const vec4& rgba = frameBuffer[i / 4];
-		m_colorBuffer[i] = 255 * rgba.r;
-		m_colorBuffer[i + 1] = 255 * rgba.g;
-		m_colorBuffer[i + 2] = 255 * rgba.b;
-		m_colorBuffer[i + 3] = 255 * rgba.a;
+		m_colorBuffer[i] = (uchar)(255 * rgba.r);
+		m_colorBuffer[i + 1] = (uchar)(255 * rgba.g);
+		m_colorBuffer[i + 2] = (uchar)(255 * rgba.b);
+		m_colorBuffer[i + 3] = (uchar)(255 * rgba.a);
 	}
 }

@@ -1,10 +1,11 @@
 #include "stdafx.h"
 
 #include "Rasterizer.h"
+#include "Primitive.h"
 #include "Display.h"
 
-#define WIDTH 800
-#define HEIGHT 600
+#define WIDTH 1280
+#define HEIGHT 720
 
 using namespace std;
 using namespace glm;
@@ -30,58 +31,33 @@ int main(int argc, char* argv[])
 	// Init SDL
 	Display display(rs.width, rs.height, false);
 
-#if 1
 	vector<vec3> vertices =
 	{
-		vec3(-1, -1, 1),
-		vec3(-1, 1, 1),
-		vec3(1, -1, 1),
-		vec3(1, -1, 1),
-		vec3(-1, 1, 1),
-		vec3(1, 1, 1),
-		vec3(-1, -1, -1),
-		vec3(1, -1, -1),
-		vec3(-1, 1, -1),
-		vec3(-1, 1, -1),
-		vec3(1, -1, -1),
-		vec3(1, 1, -1),
-		vec3(-1, 1, 1),
-		vec3(-1, -1, 1),
-		vec3(-1, 1, -1),
-		vec3(-1, 1, -1),
-		vec3(-1, -1, 1),
-		vec3(-1, -1, -1),
-		vec3(1, 1, 1),
-		vec3(1, 1, -1),
-		vec3(1, -1, 1),
-		vec3(1, -1, 1),
-		vec3(1, 1, -1),
-		vec3(1, -1, -1),
-		vec3(1, 1, 1),
-		vec3(-1, 1, 1),
-		vec3(1, 1, -1),
-		vec3(1, 1, -1),
-		vec3(-1, 1, 1),
-		vec3(-1, 1, -1),
-		vec3(1, -1, 1),
-		vec3(1, -1, -1),
-		vec3(-1, -1, 1),
-		vec3(-1, -1, 1),
-		vec3(1, -1, -1),
-		vec3(-1, -1, -1)
+		vec3{ 1.000000, -1.000000, -1.000000 },
+		vec3{ 1.000000, -1.000000, 1.000000 },
+		vec3{ -1.000000, -1.000000, 1.000000 },
+		vec3{ -1.000000, -1.000000, -1.000000 },
+		vec3{ 1.000000, 1.000000, -0.999999 },
+		vec3{ 0.999999, 1.000000, 1.000001 },
+		vec3{ -1.000000, 1.000000, 1.000000 },
+		vec3{ -1.000000, 1.000000, -1.000000 }
 	};
 
-#else
-	vector<vec3> vertices =
+	vector<uint64_t> indices =
 	{
-		vec3(-0.5, -0.5, 0.5),
-		vec3(-0.5, 0.5, 0.5),
-		vec3(0.5, -0.5, 0.5),
-		/*vec3(0.5, -0.5, 0.5),
-		vec3(-0.5, 0.5, 0.5),
-		vec3(0.5, 0.5, 0.5)*/
+		1,3,0,
+		7,5,4,
+		4,1,0,
+		5,2,1,
+		2,7,3,
+		0,7,4,
+		1,2,3,
+		7,6,5,
+		4,5,1,
+		5,6,2,
+		2,6,7,
+		0,3,7,
 	};
-#endif
 
 	RasterizerSetup rasterSetup;
 	rasterSetup.cullMode = CullMode::CULL_BACK;
@@ -94,12 +70,15 @@ int main(int argc, char* argv[])
 	vec3 lookat(0, 0, 0);
 	vec3 up(0, 1, 0);
 
-	mat4 cam = mat4();
 	mat4 view = lookAtRH(eye, lookat, up);
 	mat4 proj = perspectiveRH(glm::radians(rs.fov), (float)rs.width / (float)rs.height, 0.5f, 100.f);
 
+	Primitive obj;
+	obj.setVertexBuffer(vertices);
+	obj.setIndexBuffer(indices);
+
 #ifdef SINGLE_FRAME_OUTPUT
-	rasterizer->Draw(vertices, view, proj);
+	rasterizer->Draw(vertices, indices, view, proj);
 
 	const vector<vec4>& frameBuffer = rasterizer->getFrameBuffer();
 	FILE *f = NULL;
@@ -129,14 +108,13 @@ int main(int argc, char* argv[])
 			}
 		}
 
-		display.ClearRenderTarget(vec3(0, 0, 0));
-
-		cam = glm::rotate(cam, 0.05f, vec3(1, 1, 0));
-		view = lookAtRH(eye, lookat, up);
+		mat4 cam = rotate(mat4(), 0.025f, vec3(1, 1, 0));
 		view = view * cam;
 
+		display.ClearRenderTarget(vec3(0, 0, 0));
+
 		const auto drawBegin = chrono::high_resolution_clock::now();
-		rasterizer->Draw(vertices, view, proj);
+		rasterizer->Draw(&obj, view, proj);
 		const auto drawEnd = chrono::high_resolution_clock::now();
 
 		display.UpdateColorBuffer(rasterizer->getFrameBuffer());
