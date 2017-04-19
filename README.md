@@ -10,7 +10,12 @@
 - Face culling
 - Explicit VS + FS stages
 - MSAA
+- Cmake-ify project
 
-Stay Tuned!
+# Dependencies
+- SDL
+- GLM
 
 ![Cube](http://imgur.com/7ntHnTI.gif)
+
+Stay Tuned!
