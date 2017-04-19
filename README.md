@@ -2,8 +2,6 @@
 
 3D Software Rasterizer in progress!
 
-http://imgur.com/7ntHnTI
-
 # TODO
 - Separated triangle setup, primitive assembly
 - Vertex attributes
@@ -12,3 +10,7 @@ http://imgur.com/7ntHnTI
 - Face culling
 - Explicit VS + FS stages
 - MSAA
+
+Stay Tuned!
+
+![Cube](http://imgur.com/7ntHnTI.gif)
