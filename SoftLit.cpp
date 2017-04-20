@@ -24,7 +24,7 @@ struct RenderSettings
 int main(int argc, char* argv[])
 {
 	RenderSettings rs;
-	rs.fov = 60.f;
+	rs.fov = 60;
 	rs.width = WIDTH;
 	rs.height = HEIGHT;
 

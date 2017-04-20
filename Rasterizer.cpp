@@ -65,14 +65,26 @@ void Rasterizer::Draw(Primitive* prim, const mat4& view, const mat4& proj)
 		vec3 v1Raster = { (v1NDC.x + 1) / 2 * m_setup.viewport.width, (1 - v1NDC.y) / 2 * m_setup.viewport.height, v1NDC.z };
 		vec3 v2Raster = { (v2NDC.x + 1) / 2 * m_setup.viewport.width, (1 - v2NDC.y) / 2 * m_setup.viewport.height, v2NDC.z };
 
-		// Per-triangle variables
+		// 2D clipping
+		float xmin = fminf(v0Raster.x, fminf(v1Raster.x, v2Raster.x));
+		float xmax = fmaxf(v0Raster.x, fmaxf(v1Raster.x, v2Raster.x));
+		float ymin = fminf(v0Raster.y, fminf(v1Raster.y, v2Raster.y));
+		float ymax = fmaxf(v0Raster.y, fmaxf(v1Raster.y, v2Raster.y));
+
+		if (xmin + 1 > m_setup.viewport.width || xmax < 0 || ymin + 1 > m_setup.viewport.height || ymax < 0) continue;
+
+		uint32_t xb = max<int>(0, (int32_t)xmin);
+		uint32_t xe = min<int>(m_setup.viewport.width - 1, (int32_t)xmax);
+		uint32_t yb = max<int>(0, (int32_t)ymin);
+		uint32_t ye = min<int>(m_setup.viewport.height - 1, (int32_t)ymax);
+
 		const float triCoverage = PixelCoverage(v0Raster, v1Raster, v2Raster);
 
-		for (uint32_t j = 0; j < m_setup.viewport.height; j++)
+		for (uint32_t y = yb; y <= ye; y++)
 		{
-			for (uint32_t i = 0; i < m_setup.viewport.width; i++)
+			for (uint32_t x = xb; x <= xe; x++)
 			{
-				vec2 sample = { i + 0.5f, j + 0.5f };
+				vec2 sample = { x + 0.5f, y + 0.5f };
 
 				float w0 = PixelCoverage(v1Raster, v2Raster, sample);
 				float w1 = PixelCoverage(v2Raster, v0Raster, sample);
@@ -82,13 +94,13 @@ void Rasterizer::Draw(Primitive* prim, const mat4& view, const mat4& proj)
 				{
 					w0 /= triCoverage;
 					w1 /= triCoverage;
-					w2 = 1 - w0 - w1;
+					w2 = 1.f - w0 - w1;
 
 					float z = 1.f / ((w0 * v0Raster.z) + (w1 * v1Raster.z) + (w2 * v2Raster.z));
-					if (z < m_depthBuffer[j * m_setup.viewport.width + i]) // Depth test; update color & z-buffer if passed
+					if (z < m_depthBuffer[y * m_setup.viewport.width + x]) // Depth test; update color & z-buffer if passed
 					{
-						m_frameBuffer[j * m_setup.viewport.width + i] = vec4(0.5, 0.5, 0.5, 1.0);
-						m_depthBuffer[j * m_setup.viewport.width + i] = z;
+						m_frameBuffer[y * m_setup.viewport.width + x] = vec4(0.5, 0.5, 0.5, 1.0);
+						m_depthBuffer[y * m_setup.viewport.width + x] = z;
 					}
 				}
 			}
