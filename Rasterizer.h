@@ -29,7 +29,7 @@ namespace softlit
 
 		RasterizerSetup m_setup;
 
-		float PixelCoverage(const glm::vec3& a, const glm::vec3& b, const glm::vec2& c);
+		float PixelCoverage(const glm::vec2& a, const glm::vec2& b, const glm::vec2& c);
 
 		void InvalidateBuffers()
 		{

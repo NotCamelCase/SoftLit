@@ -26,7 +26,7 @@ Rasterizer::~Rasterizer()
 	  -	 -	 -  -
 	vo	-	-	- v2
 */
-inline float Rasterizer::PixelCoverage(const vec3& a, const vec3& b, const vec2& c)
+inline float Rasterizer::PixelCoverage(const vec2& a, const vec2& b, const vec2& c)
 {
 	const int winding = (m_setup.vertexWinding == VertexWinding::COUNTER_CLOCKWISE) ? 1 : -1;
 	const float x = (c.x - a.x) * (b.y - a.y) - (c.y - a.y) * (b.x - a.x);
