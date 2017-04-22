@@ -34,13 +34,22 @@ inline float Rasterizer::PixelCoverage(const vec2& a, const vec2& b, const vec2&
 	return winding * x;
 }
 
-Rasterizer::Triangle Rasterizer::setupTriangle(const std::vector<glm::vec3>& vbo, const std::vector<uint64_t>& ibo, const uint64_t idx) const
+Rasterizer::Triangle Rasterizer::setupTriangle(Primitive* prim, const uint64_t idx) const
 {
-	const vec3& v0 = vbo[ibo[idx * 3]];
-	const vec3& v1 = vbo[ibo[idx * 3 + 1]];
-	const vec3& v2 = vbo[ibo[idx * 3 + 2]];
+	const vector<vec3>& vbo = prim->getVertexBuffer();
+	const vector<uint64_t> ibo = prim->getIndexBuffer();
 
-	return Triangle(v0, v1, v2);
+	if (prim->getPrimitiveTopology() == PrimitiveTopology::TRIANGLE_LIST)
+	{
+		const vec3& v0 = vbo[ibo[idx * 3]];
+		const vec3& v1 = vbo[ibo[idx * 3 + 1]];
+		const vec3& v2 = vbo[ibo[idx * 3 + 2]];
+
+		return Triangle(v0, v1, v2);
+	}
+
+	DBG_ASSERT(0 && "Primitive topology not implemented");
+	return Triangle(vec3(), vec3(), vec3());
 }
 
 void Rasterizer::Draw(Primitive* prim, const mat4& view, const mat4& proj)
@@ -57,7 +66,7 @@ void Rasterizer::Draw(Primitive* prim, const mat4& view, const mat4& proj)
 
 	for (uint64_t i = 0; i < numTris; i++)
 	{
-		const Triangle& tri = setupTriangle(vbo, ibo, i);
+		const Triangle& tri = setupTriangle(prim, i);
 
 		// Convert to clip-coordinates
 		const vec4 v0Clip = proj * (view * vec4(tri.v0, 1));

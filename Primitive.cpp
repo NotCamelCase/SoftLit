@@ -6,7 +6,7 @@ using namespace std;
 using namespace glm;
 using namespace softlit;
 
-Primitive::Primitive(PrimitiveTopology top)
+Primitive::Primitive(const PrimitiveTopology top)
 	: m_topology(top)
 {
 }

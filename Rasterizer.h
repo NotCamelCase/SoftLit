@@ -49,6 +49,6 @@ namespace softlit
 		/*
 		* Set ups a triangle based on index into the index buffer of primitive and triangle topology e.g TRIANGLE_LIST, TRIANGLE_STRIP
 		*/
-		Triangle setupTriangle(const std::vector<glm::vec3>& vbo, const std::vector<uint64_t>&  ibo, const uint64_t idx) const;
+		Triangle setupTriangle(Primitive* primitive, const uint64_t idx) const;
 	};
 }

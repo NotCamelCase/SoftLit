@@ -111,7 +111,7 @@ int main(int argc, char* argv[])
 		mat4 cam = rotate(mat4(), 0.025f, vec3(1, 1, 0));
 		view = view * cam;
 
-		display.ClearRenderTarget(vec3(0, 0, 0));
+		display.ClearRenderTarget(ivec3(0, 0, 0));
 
 		const auto drawBegin = chrono::high_resolution_clock::now();
 		rasterizer->Draw(&obj, view, proj);
