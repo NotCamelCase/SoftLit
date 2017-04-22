@@ -24,7 +24,7 @@ struct RenderSettings
 int main(int argc, char* argv[])
 {
 	RenderSettings rs;
-	rs.fov = 60;
+	rs.fov = 60.f;
 	rs.width = WIDTH;
 	rs.height = HEIGHT;
 
@@ -60,7 +60,7 @@ int main(int argc, char* argv[])
 	};
 
 	RasterizerSetup rasterSetup;
-	rasterSetup.cullMode = CullMode::CULL_BACK;
+	rasterSetup.cullMode = CullMode::CULL_DISABLED;
 	rasterSetup.vertexWinding = VertexWinding::CLOCKWISE;
 	rasterSetup.viewport = { 0.f, 0.f, rs.width, rs.height };
 
@@ -73,7 +73,7 @@ int main(int argc, char* argv[])
 	mat4 view = lookAtRH(eye, lookat, up);
 	mat4 proj = perspectiveRH(glm::radians(rs.fov), (float)rs.width / (float)rs.height, 0.5f, 100.f);
 
-	Primitive obj;
+	Primitive obj(PrimitiveTopology::TRIANGLE_LIST);
 	obj.setVertexBuffer(vertices);
 	obj.setIndexBuffer(indices);
 

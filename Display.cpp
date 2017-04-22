@@ -41,7 +41,7 @@ Display::~Display()
 	m_colorBuffer.clear();
 }
 
-void Display::ClearRenderTarget(const vec3& clearColor)
+void Display::ClearRenderTarget(const ivec3& clearColor)
 {
 	//TODO: Refresh color buffer?!
 	//fill(m_colorBuffer.begin(), m_colorBuffer.end(), 0x0);

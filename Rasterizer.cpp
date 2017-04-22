@@ -26,7 +26,7 @@ Rasterizer::~Rasterizer()
 	  -	 -	 -  -
 	vo	-	-	- v2
 */
-float Rasterizer::PixelCoverage(const vec3& a, const vec3& b, const vec2& c)
+inline float Rasterizer::PixelCoverage(const vec3& a, const vec3& b, const vec2& c)
 {
 	const int winding = (m_setup.vertexWinding == VertexWinding::COUNTER_CLOCKWISE) ? 1 : -1;
 	const float x = (c.x - a.x) * (b.y - a.y) - (c.y - a.y) * (b.x - a.x);
@@ -34,26 +34,35 @@ float Rasterizer::PixelCoverage(const vec3& a, const vec3& b, const vec2& c)
 	return winding * x;
 }
 
+Rasterizer::Triangle Rasterizer::setupTriangle(const std::vector<glm::vec3>& vbo, const std::vector<uint64_t>& ibo, const uint64_t idx) const
+{
+	const vec3& v0 = vbo[ibo[idx * 3]];
+	const vec3& v1 = vbo[ibo[idx * 3 + 1]];
+	const vec3& v2 = vbo[ibo[idx * 3 + 2]];
+
+	return Triangle(v0, v1, v2);
+}
+
 void Rasterizer::Draw(Primitive* prim, const mat4& view, const mat4& proj)
 {
 	// Pre-draw, invalidate frame and depth buffers
 	InvalidateBuffers();
 
-	const VertexBuffer& vbo = prim->getVertexBuffer();
-	const IndexBuffer& ibo = prim->getIndexBuffer();
+	const vector<vec3>& vbo = prim->getVertexBuffer();
+	const vector<uint64_t>& ibo = prim->getIndexBuffer();
 
-	const size_t numTris = prim->getIndexBuffer().size() / 3;
-	DBG_ASSERT((numTris % 3) == 0);
-	for (size_t i = 0; i < numTris; i++)
+	// Only raster primitive is triangle
+	const uint64_t numTris = prim->getIndexBuffer().size() / 3;
+	DBG_ASSERT((prim->getIndexBuffer().size() % 3) == 0);
+
+	for (uint64_t i = 0; i < numTris; i++)
 	{
-		const vec3& v0 = vbo[ibo[i * 3]];
-		const vec3& v1 = vbo[ibo[i * 3 + 1]];
-		const vec3& v2 = vbo[ibo[i * 3 + 2]];
+		const Triangle& tri = setupTriangle(vbo, ibo, i);
 
 		// Convert to clip-coordinates
-		const vec4 v0Clip = proj * (view * vec4(v0, 1));
-		const vec4 v1Clip = proj * (view * vec4(v1, 1));
-		const vec4 v2Clip = proj * (view * vec4(v2, 1));
+		const vec4 v0Clip = proj * (view * vec4(tri.v0, 1));
+		const vec4 v1Clip = proj * (view * vec4(tri.v1, 1));
+		const vec4 v2Clip = proj * (view * vec4(tri.v2, 1));
 
 		// Perspective-divide and convert to NDC
 		const vec3 v0NDC = v0Clip / v0Clip.w;
@@ -96,7 +105,7 @@ void Rasterizer::Draw(Primitive* prim, const mat4& view, const mat4& proj)
 					w1 /= triCoverage;
 					w2 = 1.f - w0 - w1;
 
-					float z = 1.f / ((w0 * v0Raster.z) + (w1 * v1Raster.z) + (w2 * v2Raster.z));
+					float z = ((w0 * v0Raster.z) + (w1 * v1Raster.z) + (w2 * v2Raster.z));
 					if (z < m_depthBuffer[y * m_setup.viewport.width + x]) // Depth test; update color & z-buffer if passed
 					{
 						m_frameBuffer[y * m_setup.viewport.width + x] = vec4(0.5, 0.5, 0.5, 1.0);

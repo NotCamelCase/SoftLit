@@ -6,10 +6,13 @@ using namespace std;
 using namespace glm;
 using namespace softlit;
 
-Primitive::Primitive()
+Primitive::Primitive(PrimitiveTopology top)
+	: m_topology(top)
 {
 }
 
 Primitive::~Primitive()
 {
+	m_vertexBuffer.clear();
+	m_indexBuffer.clear();
 }

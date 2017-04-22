@@ -2,23 +2,24 @@
 
 namespace softlit
 {
-	typedef std::vector<glm::vec3> VertexBuffer;
-	typedef std::vector<uint64_t> IndexBuffer;
-
 	class Primitive
 	{
 	public:
-		Primitive();
+		Primitive(const PrimitiveTopology top);
 		~Primitive();
 
-		const VertexBuffer& getVertexBuffer() const { return m_vertexBuffer; }
-		const IndexBuffer& getIndexBuffer() const { return m_indexBuffer; }
+		const std::vector<glm::vec3>& getVertexBuffer() const { return m_vertexBuffer; }
+		const std::vector<uint64_t>& getIndexBuffer() const { return m_indexBuffer; }
 
-		void setVertexBuffer(const VertexBuffer& vb) { m_vertexBuffer = vb; }
-		void setIndexBuffer(const IndexBuffer& ib) { m_indexBuffer = ib; }
+		void setVertexBuffer(const std::vector<glm::vec3>& vb) { m_vertexBuffer = vb; }
+		void setIndexBuffer(const std::vector<uint64_t>& ib) { m_indexBuffer = ib; }
+
+		const PrimitiveTopology getPrimitiveTopology() const { return m_topology; }
 
 	private:
-		VertexBuffer m_vertexBuffer;
-		IndexBuffer m_indexBuffer;
+		std::vector<glm::vec3> m_vertexBuffer;
+		std::vector<uint64_t> m_indexBuffer;
+
+		PrimitiveTopology m_topology;
 	};
 }

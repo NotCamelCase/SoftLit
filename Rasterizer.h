@@ -6,6 +6,8 @@ namespace softlit
 	typedef std::vector<float> DepthBuffer;
 
 	class Primitive;
+	class VertexBuffer;
+	class IndexBuffer;
 
 	class Rasterizer
 	{
@@ -34,5 +36,19 @@ namespace softlit
 			fill(m_frameBuffer.begin(), m_frameBuffer.end(), glm::vec4(1, 1, 1, 1));
 			fill(m_depthBuffer.begin(), m_depthBuffer.end(), FLT_MAX);
 		}
+
+		struct Triangle
+		{
+			glm::vec3 v0;
+			glm::vec3 v1;
+			glm::vec3 v2;
+
+			Triangle(const glm::vec3& a, const glm::vec3& b, const glm::vec3& c) : v0(a), v1(b), v2(c) {}
+		};
+
+		/*
+		* Set ups a triangle based on index into the index buffer of primitive and triangle topology e.g TRIANGLE_LIST, TRIANGLE_STRIP
+		*/
+		Triangle setupTriangle(const std::vector<glm::vec3>& vbo, const std::vector<uint64_t>&  ibo, const uint64_t idx) const;
 	};
 }

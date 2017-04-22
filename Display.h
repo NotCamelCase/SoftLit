@@ -15,7 +15,8 @@ namespace softlit
 		~Display();
 
 		// Clear render surface before presenting back buffer content
-		void ClearRenderTarget(const glm::vec3& clearColor);
+		// clearColor [0, 255]
+		void ClearRenderTarget(const glm::ivec3& clearColor);
 
 		// Render frame buffer to SDL render target
 		void Present();
