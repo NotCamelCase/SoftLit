@@ -46,7 +46,9 @@ int main(int argc, char* argv[])
 
 	vector<Primitive*> objects;
 
-	ImportScene(objects, "../cube.obj");
+	ImportScene(objects, "../cylinder.obj");
+
+	DBG_ASSERT(!objects.empty() && "Failed to import models!");
 
 	/*vector<vec3> vertices =
 	{
@@ -139,7 +141,8 @@ int main(int argc, char* argv[])
 		const auto drawBegin = chrono::high_resolution_clock::now();
 		for (Primitive* prim : objects)
 		{
-			mat4 r = rotate(mat4(), 0.025f, vec3(1, 1, 0));
+			mat4 r = rotate(mat4(), 0.025f, vec3(0, 1, 0));
+			view = view * r;
 			mat4 mvp = proj * view * r;
 
 			mat_ubo* ubo = static_cast<mat_ubo*> (prim->UBO());
@@ -148,6 +151,7 @@ int main(int argc, char* argv[])
 			rasterizer->Draw(prim, view, proj);
 		}
 		const auto drawEnd = chrono::high_resolution_clock::now();
+		printf("Draw time: %lld\n", chrono::duration_cast<chrono::milliseconds> (drawEnd - drawBegin).count());
 
 		display.UpdateColorBuffer(rasterizer->getFrameBuffer());
 
@@ -172,6 +176,8 @@ void ImportScene(vector<Primitive*>& objs, const string& filename)
 	tinyobj::attrib_t attribs;
 	vector<tinyobj::shape_t> shapes;
 	vector<tinyobj::material_t> materials;
+
+	//TODO: Handle multiple objects in a single .obj
 
 	string err;
 	bool ret = tinyobj::LoadObj(&attribs, &shapes, &materials, &err, filename.c_str());
@@ -199,7 +205,6 @@ void ImportScene(vector<Primitive*>& objs, const string& filename)
 				ibo.push_back(vtxIndex);
 			}
 
-			//TODO: Handle multiple objects' vertices in a single .obj
 			const uchar numVert = *shape.mesh.num_face_vertices.data();
 			for (size_t f = 0; f < attribs.vertices.size(); f += numVert)
 			{

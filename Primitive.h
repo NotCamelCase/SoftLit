@@ -37,10 +37,10 @@ namespace softlit
 		std::vector<glm::vec3> m_vertexBuffer;
 		std::vector<uint64_t> m_indexBuffer;
 
-		PrimitiveTopology m_topology;
+		PrimitiveTopology m_topology = PrimitiveTopology::TRIANGLE_LIST;
 
-		UniformBuffer m_ubo;
-		vertex_shader m_VS;
-		fragment_shader m_FS;
+		UniformBuffer m_ubo = nullptr;
+		vertex_shader m_VS = nullptr;
+		fragment_shader m_FS = nullptr;
 	};
 }
