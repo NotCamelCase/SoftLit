@@ -69,9 +69,10 @@ void Rasterizer::Draw(Primitive* prim, const mat4& view, const mat4& proj)
 		const Triangle& tri = setupTriangle(prim, i);
 
 		// Convert to clip-coordinates
-		const vec4 v0Clip = proj * (view * vec4(tri.v0, 1));
-		const vec4 v1Clip = proj * (view * vec4(tri.v1, 1));
-		const vec4 v2Clip = proj * (view * vec4(tri.v2, 1));
+		const vertex_shader VS = prim->VS();
+		const vec4 v0Clip = VS(tri.v0, prim->UBO());
+		const vec4 v1Clip = VS(tri.v1, prim->UBO());
+		const vec4 v2Clip = VS(tri.v2, prim->UBO());
 
 		// Perspective-divide and convert to NDC
 		const vec3 v0NDC = v0Clip / v0Clip.w;
@@ -117,7 +118,9 @@ void Rasterizer::Draw(Primitive* prim, const mat4& view, const mat4& proj)
 					float z = ((w0 * v0Raster.z) + (w1 * v1Raster.z) + (w2 * v2Raster.z));
 					if (z < m_depthBuffer[y * m_setup.viewport.width + x]) // Depth test; update color & z-buffer if passed
 					{
-						m_frameBuffer[y * m_setup.viewport.width + x] = vec4(0.5, 0.5, 0.5, 1.0);
+						const vec4 final_fragment = prim->FS()();
+
+						m_frameBuffer[y * m_setup.viewport.width + x] = final_fragment;
 						m_depthBuffer[y * m_setup.viewport.width + x] = z;
 					}
 				}

@@ -21,6 +21,21 @@ struct RenderSettings
 
 //#define SINGLE_FRAME_OUTPUT
 
+struct mat_ubo
+{
+	mat4 MVP;
+};
+
+vec4 VS_Simple(const glm::vec3& pos, mat_ubo* ubo)
+{
+	return (ubo->MVP * vec4(pos, 1));
+}
+
+vec4 FS_Simple()
+{
+	return vec4(0.25, 0.5, 0.75, 1.);
+}
+
 int main(int argc, char* argv[])
 {
 	RenderSettings rs;
@@ -73,9 +88,17 @@ int main(int argc, char* argv[])
 	mat4 view = lookAtRH(eye, lookat, up);
 	mat4 proj = perspectiveRH(glm::radians(rs.fov), (float)rs.width / (float)rs.height, 0.5f, 100.f);
 
-	Primitive obj(PrimitiveTopology::TRIANGLE_LIST);
+	const auto VS = reinterpret_cast<vertex_shader> (&VS_Simple);
+	const auto FS = reinterpret_cast<fragment_shader> (&FS_Simple);
+
+	Primitive obj(VS, FS, PrimitiveTopology::TRIANGLE_LIST);
 	obj.setVertexBuffer(vertices);
 	obj.setIndexBuffer(indices);
+
+	mat_ubo mvp_ubo;
+	obj.UBO(static_cast<UniformBuffer> (&mvp_ubo));
+
+	mat_ubo* ubo = static_cast<mat_ubo*> (obj.UBO());
 
 #ifdef SINGLE_FRAME_OUTPUT
 	rasterizer->Draw(vertices, indices, view, proj);
@@ -90,7 +113,7 @@ int main(int argc, char* argv[])
 		uint g = (255 * frameBuffer[i].y);
 		uint b = (255 * frameBuffer[i].z);
 		fprintf(f, "%d %d %d ", r, g, b);
-	}
+}
 	fclose(f);
 
 #else
@@ -110,6 +133,8 @@ int main(int argc, char* argv[])
 
 		mat4 cam = rotate(mat4(), 0.025f, vec3(1, 1, 0));
 		view = view * cam;
+
+		ubo->MVP = proj * view;
 
 		display.ClearRenderTarget(ivec3(0, 0, 0));
 
