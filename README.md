@@ -8,8 +8,11 @@
 - Texturing
 - Polygon clipping
 - Face culling
+- Resolve vertex duplication 
 - Explicit VS + FS stages
 - MSAA
+- Render more detailed scenes
+- More complex VS + FS
 - Cmake-ify project
 
 # Dependencies
