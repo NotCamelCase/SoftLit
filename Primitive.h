@@ -13,7 +13,7 @@ namespace softlit
 	class Primitive
 	{
 	public:
-		Primitive(vertex_shader vs, fragment_shader fs, const PrimitiveTopology top);
+		Primitive(const PrimitiveTopology top);
 		~Primitive();
 
 		const std::vector<glm::vec3>& getVertexBuffer() const { return m_vertexBuffer; }
@@ -26,6 +26,9 @@ namespace softlit
 
 		vertex_shader VS() { return m_VS; }
 		fragment_shader FS() { return m_FS; }
+
+		void VS(const vertex_shader vs) { m_VS = vs; }
+		void FS(const fragment_shader fs) { m_FS = fs; }
 
 		UniformBuffer UBO() { return m_ubo; }
 		void UBO(UniformBuffer ubo) { m_ubo = ubo; }

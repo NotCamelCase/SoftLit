@@ -4,6 +4,9 @@
 #include "Primitive.h"
 #include "Display.h"
 
+#define TINYOBJLOADER_IMPLEMENTATION
+#include "tiny_obj_loader.h"
+
 #define WIDTH 1280
 #define HEIGHT 720
 
@@ -30,6 +33,8 @@ vec4 FS_Simple()
 	return vec4(0.25, 0.5, 0.75, 1.);
 }
 
+void ImportScene(vector<Primitive*>& objects, const string&);
+
 int main(int argc, char* argv[])
 {
 	float fov = 60.f;
@@ -39,7 +44,11 @@ int main(int argc, char* argv[])
 	// Init SDL
 	Display display(width, height, false);
 
-	vector<vec3> vertices =
+	vector<Primitive*> objects;
+
+	ImportScene(objects, "../cube.obj");
+
+	/*vector<vec3> vertices =
 	{
 		vec3{ 1.000000, -1.000000, -1.000000 },
 		vec3{ 1.000000, -1.000000, 1.000000 },
@@ -65,12 +74,12 @@ int main(int argc, char* argv[])
 		5,6,2,
 		2,6,7,
 		0,3,7,
-	};
+	};*/
 
 	RasterizerSetup rasterSetup;
 	rasterSetup.cullMode = CullMode::CULL_DISABLED;
 	rasterSetup.vertexWinding = VertexWinding::CLOCKWISE;
-	rasterSetup.viewport = { 0.f, 0.f, width, height };
+	rasterSetup.viewport = { 0u, 0u, width, height };
 
 	Rasterizer* rasterizer = new Rasterizer(rasterSetup);
 
@@ -81,17 +90,18 @@ int main(int argc, char* argv[])
 	mat4 view = lookAtRH(eye, lookat, up);
 	mat4 proj = perspectiveRH(glm::radians(fov), (float)width / (float)height, 0.5f, 100.f);
 
+	// Create primitive shading data
 	const auto VS = reinterpret_cast<vertex_shader> (&VS_Simple);
 	const auto FS = reinterpret_cast<fragment_shader> (&FS_Simple);
 
-	Primitive obj(VS, FS, PrimitiveTopology::TRIANGLE_LIST);
-	obj.setVertexBuffer(vertices);
-	obj.setIndexBuffer(indices);
+	mat_ubo ubo;
 
-	mat_ubo mvp_ubo;
-	obj.UBO(static_cast<UniformBuffer> (&mvp_ubo));
-
-	mat_ubo* ubo = static_cast<mat_ubo*> (obj.UBO());
+	for (Primitive* prim : objects)
+	{
+		prim->VS(VS);
+		prim->FS(FS);
+		prim->UBO(&ubo);
+	}
 
 #ifdef SINGLE_FRAME_OUTPUT
 	rasterizer->Draw(vertices, indices, view, proj);
@@ -124,15 +134,19 @@ int main(int argc, char* argv[])
 			}
 		}
 
-		mat4 cam = rotate(mat4(), 0.025f, vec3(1, 1, 0));
-		view = view * cam;
-
-		ubo->MVP = proj * view;
-
 		display.ClearRenderTarget(ivec3(0, 0, 0));
 
 		const auto drawBegin = chrono::high_resolution_clock::now();
-		rasterizer->Draw(&obj, view, proj);
+		for (Primitive* prim : objects)
+		{
+			mat4 r = rotate(mat4(), 0.025f, vec3(1, 1, 0));
+			mat4 mvp = proj * view * r;
+
+			mat_ubo* ubo = static_cast<mat_ubo*> (prim->UBO());
+			ubo->MVP = mvp;
+
+			rasterizer->Draw(prim, view, proj);
+		}
 		const auto drawEnd = chrono::high_resolution_clock::now();
 
 		display.UpdateColorBuffer(rasterizer->getFrameBuffer());
@@ -145,7 +159,59 @@ int main(int argc, char* argv[])
 	}
 #endif
 
+	for (Primitive* obj : objects)
+		SAFE_DELETE(obj);
+
 	SAFE_DELETE(rasterizer);
 
 	return 0;
+}
+
+void ImportScene(vector<Primitive*>& objs, const string& filename)
+{
+	tinyobj::attrib_t attribs;
+	vector<tinyobj::shape_t> shapes;
+	vector<tinyobj::material_t> materials;
+
+	string err;
+	bool ret = tinyobj::LoadObj(&attribs, &shapes, &materials, &err, filename.c_str());
+	if (ret)
+	{
+		for (size_t i = 0; i < shapes.size(); i++)
+		{
+			const tinyobj::shape_t& shape = shapes[i];
+
+			vector<vec3> vbo;
+			vector<uint64_t> ibo;
+
+			const vector<tinyobj::index_t> indexBuffer = shape.mesh.indices;
+
+			Primitive* obj = new Primitive(PrimitiveTopology::TRIANGLE_LIST);
+			objs.push_back(obj);
+
+			for (size_t idx = 0; idx < indexBuffer.size(); idx++)
+			{
+				DBG_ASSERT(indexBuffer[idx].vertex_index != -1);
+				const uint64_t vtxIndex = indexBuffer[idx].vertex_index;
+
+				//TODO: Handle other vertex attributes
+
+				ibo.push_back(vtxIndex);
+			}
+
+			//TODO: Handle multiple objects' vertices in a single .obj
+			const uchar numVert = *shape.mesh.num_face_vertices.data();
+			for (size_t f = 0; f < attribs.vertices.size(); f += numVert)
+			{
+				const float p0 = attribs.vertices[f];
+				const float p1 = attribs.vertices[f + 1];
+				const float p2 = attribs.vertices[f + 2];
+
+				vbo.push_back(vec3(p0, p1, p2));
+			}
+
+			obj->setVertexBuffer(vbo);
+			obj->setIndexBuffer(ibo);
+		}
+	}
 }

@@ -34,22 +34,37 @@ inline float Rasterizer::PixelCoverage(const vec2& a, const vec2& b, const vec2&
 	return winding * x;
 }
 
-Rasterizer::Triangle Rasterizer::setupTriangle(Primitive* prim, const uint64_t idx) const
+void Rasterizer::setupTriangle(Primitive* prim, const uint64_t idx, glm::vec3& v0, glm::vec3& v1, glm::vec3& v2) const
 {
 	const vector<vec3>& vbo = prim->getVertexBuffer();
 	const vector<uint64_t> ibo = prim->getIndexBuffer();
 
 	if (prim->getPrimitiveTopology() == PrimitiveTopology::TRIANGLE_LIST)
 	{
-		const vec3& v0 = vbo[ibo[idx * 3]];
-		const vec3& v1 = vbo[ibo[idx * 3 + 1]];
-		const vec3& v2 = vbo[ibo[idx * 3 + 2]];
-
-		return Triangle(v0, v1, v2);
+		v0 = vbo[ibo[idx * 3]];
+		v1 = vbo[ibo[idx * 3 + 1]];
+		v2 = vbo[ibo[idx * 3 + 2]];
 	}
 
 	DBG_ASSERT(0 && "Primitive topology not implemented");
-	return Triangle(vec3(), vec3(), vec3());
+}
+
+bool softlit::Rasterizer::clip2D(const glm::vec3 & v0, const glm::vec3 & v1, const glm::vec3 & v2, Viewport& vp) const
+{
+	float xmin = fminf(v0.x, fminf(v1.x, v2.x));
+	float xmax = fmaxf(v0.x, fmaxf(v1.x, v2.x));
+	float ymin = fminf(v0.y, fminf(v1.y, v2.y));
+	float ymax = fmaxf(v0.y, fmaxf(v1.y, v2.y));
+
+	// Early-out when viewport bounds exceeded
+	if (xmin + 1 > m_setup.viewport.width || xmax < 0 || ymin + 1 > m_setup.viewport.height || ymax < 0) return false;
+
+	vp.x = max<int>(0, (int32_t)xmin);
+	vp.width = min<int>(m_setup.viewport.width - 1, (int32_t)xmax);
+	vp.y = max<int>(0, (int32_t)ymin);
+	vp.height = min<int>(m_setup.viewport.height - 1, (int32_t)ymax);
+
+	return true;
 }
 
 void Rasterizer::Draw(Primitive* prim, const mat4& view, const mat4& proj)
@@ -66,7 +81,8 @@ void Rasterizer::Draw(Primitive* prim, const mat4& view, const mat4& proj)
 
 	for (uint64_t i = 0; i < numTris; i++)
 	{
-		const Triangle& tri = setupTriangle(prim, i);
+		vec3 v0, v1, v2;
+		setupTriangle(prim, i, v0, v1, v2);
 
 		const vertex_shader VS = prim->VS();
 		DBG_ASSERT(VS && "invalid vertex_shader!");
@@ -75,9 +91,9 @@ void Rasterizer::Draw(Primitive* prim, const mat4& view, const mat4& proj)
 		DBG_ASSERT(ubo && "Primitive UBO not supplied!");
 
 		// Execute VS for each vertex
-		const vec4 v0Clip = VS(tri.v0, ubo);
-		const vec4 v1Clip = VS(tri.v1, ubo);
-		const vec4 v2Clip = VS(tri.v2, ubo);
+		const vec4 v0Clip = VS(v0, ubo);
+		const vec4 v1Clip = VS(v1, ubo);
+		const vec4 v2Clip = VS(v2, ubo);
 
 		// Perspective-divide and convert to NDC
 		const vec3 v0NDC = v0Clip / v0Clip.w;
@@ -89,24 +105,14 @@ void Rasterizer::Draw(Primitive* prim, const mat4& view, const mat4& proj)
 		vec3 v1Raster = { (v1NDC.x + 1) / 2 * m_setup.viewport.width, (1 - v1NDC.y) / 2 * m_setup.viewport.height, v1NDC.z };
 		vec3 v2Raster = { (v2NDC.x + 1) / 2 * m_setup.viewport.width, (1 - v2NDC.y) / 2 * m_setup.viewport.height, v2NDC.z };
 
-		// 2D clipping
-		float xmin = fminf(v0Raster.x, fminf(v1Raster.x, v2Raster.x));
-		float xmax = fmaxf(v0Raster.x, fmaxf(v1Raster.x, v2Raster.x));
-		float ymin = fminf(v0Raster.y, fminf(v1Raster.y, v2Raster.y));
-		float ymax = fmaxf(v0Raster.y, fmaxf(v1Raster.y, v2Raster.y));
-
-		if (xmin + 1 > m_setup.viewport.width || xmax < 0 || ymin + 1 > m_setup.viewport.height || ymax < 0) continue;
-
-		uint32_t xb = max<int>(0, (int32_t)xmin);
-		uint32_t xe = min<int>(m_setup.viewport.width - 1, (int32_t)xmax);
-		uint32_t yb = max<int>(0, (int32_t)ymin);
-		uint32_t ye = min<int>(m_setup.viewport.height - 1, (int32_t)ymax);
+		Viewport vp;
+		if (!clip2D(v0Raster, v1Raster, v2Raster, vp)) continue;
 
 		const float triCoverage = PixelCoverage(v0Raster, v1Raster, v2Raster);
 
-		for (uint32_t y = yb; y <= ye; y++)
+		for (uint32_t y = vp.y; y <= vp.height; y++)
 		{
-			for (uint32_t x = xb; x <= xe; x++)
+			for (uint32_t x = vp.x; x <= vp.width; x++)
 			{
 				vec2 sample = { x + 0.5f, y + 0.5f };
 
