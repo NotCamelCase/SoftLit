@@ -68,11 +68,16 @@ void Rasterizer::Draw(Primitive* prim, const mat4& view, const mat4& proj)
 	{
 		const Triangle& tri = setupTriangle(prim, i);
 
-		// Convert to clip-coordinates
 		const vertex_shader VS = prim->VS();
-		const vec4 v0Clip = VS(tri.v0, prim->UBO());
-		const vec4 v1Clip = VS(tri.v1, prim->UBO());
-		const vec4 v2Clip = VS(tri.v2, prim->UBO());
+		DBG_ASSERT(VS && "invalid vertex_shader!");
+
+		UniformBuffer ubo = prim->UBO();
+		DBG_ASSERT(ubo && "Primitive UBO not supplied!");
+
+		// Execute VS for each vertex
+		const vec4 v0Clip = VS(tri.v0, ubo);
+		const vec4 v1Clip = VS(tri.v1, ubo);
+		const vec4 v2Clip = VS(tri.v2, ubo);
 
 		// Perspective-divide and convert to NDC
 		const vec3 v0NDC = v0Clip / v0Clip.w;

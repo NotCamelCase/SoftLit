@@ -4,7 +4,7 @@ namespace softlit
 {
 	typedef void* UniformBuffer;
 
-	// vertex_shader to be run per-vertex to transform vertices to clip-coordinates
+	// vertex_shader to be run per-vertex. returned vec4() is vertex converted to clip-coordinates
 	typedef glm::vec4(*vertex_shader)(const glm::vec3& pos, UniformBuffer ubo);
 
 	// fragment_shader to output final render target values

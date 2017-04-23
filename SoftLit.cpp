@@ -11,14 +11,6 @@ using namespace std;
 using namespace glm;
 using namespace softlit;
 
-struct RenderSettings
-{
-	float fov;
-
-	uint32_t width;
-	uint32_t height;
-};
-
 //#define SINGLE_FRAME_OUTPUT
 
 struct mat_ubo
@@ -26,11 +18,13 @@ struct mat_ubo
 	mat4 MVP;
 };
 
+// VS
 vec4 VS_Simple(const glm::vec3& pos, mat_ubo* ubo)
 {
 	return (ubo->MVP * vec4(pos, 1));
 }
 
+// FS
 vec4 FS_Simple()
 {
 	return vec4(0.25, 0.5, 0.75, 1.);
@@ -38,13 +32,12 @@ vec4 FS_Simple()
 
 int main(int argc, char* argv[])
 {
-	RenderSettings rs;
-	rs.fov = 60.f;
-	rs.width = WIDTH;
-	rs.height = HEIGHT;
+	float fov = 60.f;
+	uint32_t width = WIDTH;
+	uint32_t height = HEIGHT;
 
 	// Init SDL
-	Display display(rs.width, rs.height, false);
+	Display display(width, height, false);
 
 	vector<vec3> vertices =
 	{
@@ -77,7 +70,7 @@ int main(int argc, char* argv[])
 	RasterizerSetup rasterSetup;
 	rasterSetup.cullMode = CullMode::CULL_DISABLED;
 	rasterSetup.vertexWinding = VertexWinding::CLOCKWISE;
-	rasterSetup.viewport = { 0.f, 0.f, rs.width, rs.height };
+	rasterSetup.viewport = { 0.f, 0.f, width, height };
 
 	Rasterizer* rasterizer = new Rasterizer(rasterSetup);
 
@@ -86,7 +79,7 @@ int main(int argc, char* argv[])
 	vec3 up(0, 1, 0);
 
 	mat4 view = lookAtRH(eye, lookat, up);
-	mat4 proj = perspectiveRH(glm::radians(rs.fov), (float)rs.width / (float)rs.height, 0.5f, 100.f);
+	mat4 proj = perspectiveRH(glm::radians(fov), (float)width / (float)height, 0.5f, 100.f);
 
 	const auto VS = reinterpret_cast<vertex_shader> (&VS_Simple);
 	const auto FS = reinterpret_cast<fragment_shader> (&FS_Simple);
@@ -113,7 +106,7 @@ int main(int argc, char* argv[])
 		uint g = (255 * frameBuffer[i].y);
 		uint b = (255 * frameBuffer[i].z);
 		fprintf(f, "%d %d %d ", r, g, b);
-}
+	}
 	fclose(f);
 
 #else
