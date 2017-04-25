@@ -18,6 +18,7 @@
 # Dependencies
 - SDL
 - GLM
+- tinyobjloader
 
 ![Cube](http://imgur.com/7ntHnTI.gif)
 
