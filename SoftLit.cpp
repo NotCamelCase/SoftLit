@@ -46,37 +46,9 @@ int main(int argc, char* argv[])
 
 	vector<Primitive*> objects;
 
-	ImportScene(objects, "../cylinder.obj");
+	ImportScene(objects, "../cube.obj");
 
 	DBG_ASSERT(!objects.empty() && "Failed to import models!");
-
-	/*vector<vec3> vertices =
-	{
-		vec3{ 1.000000, -1.000000, -1.000000 },
-		vec3{ 1.000000, -1.000000, 1.000000 },
-		vec3{ -1.000000, -1.000000, 1.000000 },
-		vec3{ -1.000000, -1.000000, -1.000000 },
-		vec3{ 1.000000, 1.000000, -0.999999 },
-		vec3{ 0.999999, 1.000000, 1.000001 },
-		vec3{ -1.000000, 1.000000, 1.000000 },
-		vec3{ -1.000000, 1.000000, -1.000000 }
-	};
-
-	vector<uint64_t> indices =
-	{
-		1,3,0,
-		7,5,4,
-		4,1,0,
-		5,2,1,
-		2,7,3,
-		0,7,4,
-		1,2,3,
-		7,6,5,
-		4,5,1,
-		5,6,2,
-		2,6,7,
-		0,3,7,
-	};*/
 
 	RasterizerSetup rasterSetup;
 	rasterSetup.cullMode = CullMode::CULL_DISABLED;
@@ -91,6 +63,7 @@ int main(int argc, char* argv[])
 
 	mat4 view = lookAtRH(eye, lookat, up);
 	mat4 proj = perspectiveRH(glm::radians(fov), (float)width / (float)height, 0.5f, 100.f);
+	mat4 model;
 
 	// Create primitive shading data
 	const auto VS = reinterpret_cast<vertex_shader> (&VS_Simple);
@@ -141,9 +114,8 @@ int main(int argc, char* argv[])
 		const auto drawBegin = chrono::high_resolution_clock::now();
 		for (Primitive* prim : objects)
 		{
-			mat4 r = rotate(mat4(), 0.025f, vec3(0, 1, 0));
-			view = view * r;
-			mat4 mvp = proj * view * r;
+			model = rotate(model, 0.025f, vec3(0, 1, 0));
+			mat4 mvp = proj * view * model;
 
 			mat_ubo* ubo = static_cast<mat_ubo*> (prim->UBO());
 			ubo->MVP = mvp;
@@ -151,7 +123,7 @@ int main(int argc, char* argv[])
 			rasterizer->Draw(prim, view, proj);
 		}
 		const auto drawEnd = chrono::high_resolution_clock::now();
-		printf("Draw time: %lld\n", chrono::duration_cast<chrono::milliseconds> (drawEnd - drawBegin).count());
+		//printf("Draw time: %lld\n", chrono::duration_cast<chrono::milliseconds> (drawEnd - drawBegin).count());
 
 		display.UpdateColorBuffer(rasterizer->getFrameBuffer());
 
@@ -187,8 +159,8 @@ void ImportScene(vector<Primitive*>& objs, const string& filename)
 		{
 			const tinyobj::shape_t& shape = shapes[i];
 
-			vector<vec3> vbo;
-			vector<uint64_t> ibo;
+			VertexBuffer vbo;
+			IndexBuffer ibo;
 
 			const vector<tinyobj::index_t> indexBuffer = shape.mesh.indices;
 
@@ -205,8 +177,7 @@ void ImportScene(vector<Primitive*>& objs, const string& filename)
 				ibo.push_back(vtxIndex);
 			}
 
-			const uchar numVert = *shape.mesh.num_face_vertices.data();
-			for (size_t f = 0; f < attribs.vertices.size(); f += numVert)
+			for (size_t f = 0; f < attribs.vertices.size(); f += 3) // 3 -> # of vertices in a triangle face
 			{
 				const float p0 = attribs.vertices[f];
 				const float p1 = attribs.vertices[f + 1];

@@ -36,8 +36,8 @@ inline float Rasterizer::PixelCoverage(const vec2& a, const vec2& b, const vec2&
 
 void Rasterizer::setupTriangle(Primitive* prim, const uint64_t idx, glm::vec3& v0, glm::vec3& v1, glm::vec3& v2) const
 {
-	const vector<vec3>& vbo = prim->getVertexBuffer();
-	const vector<uint64_t> ibo = prim->getIndexBuffer();
+	const VertexBuffer& vbo = prim->getVertexBuffer();
+	const IndexBuffer ibo = prim->getIndexBuffer();
 
 	if (prim->getPrimitiveTopology() == PrimitiveTopology::TRIANGLE_LIST)
 	{
@@ -71,9 +71,6 @@ void Rasterizer::Draw(Primitive* prim, const mat4& view, const mat4& proj)
 {
 	// Pre-draw, invalidate frame and depth buffers
 	InvalidateBuffers();
-
-	const vector<vec3>& vbo = prim->getVertexBuffer();
-	const vector<uint64_t>& ibo = prim->getIndexBuffer();
 
 	// Only raster primitive is triangle
 	const uint64_t numTris = prim->getIndexBuffer().size() / 3;

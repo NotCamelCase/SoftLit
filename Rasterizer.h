@@ -6,8 +6,6 @@ namespace softlit
 	typedef std::vector<float> DepthBuffer;
 
 	class Primitive;
-	class VertexBuffer;
-	class IndexBuffer;
 
 	class Rasterizer
 	{

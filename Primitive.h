@@ -10,17 +10,20 @@ namespace softlit
 	// fragment_shader to output final render target values
 	typedef glm::vec4(*fragment_shader)();
 
+	typedef std::vector<glm::vec3> VertexBuffer;
+	typedef std::vector<uint64_t> IndexBuffer;
+
 	class Primitive
 	{
 	public:
 		Primitive(const PrimitiveTopology top);
 		~Primitive();
 
-		const std::vector<glm::vec3>& getVertexBuffer() const { return m_vertexBuffer; }
-		const std::vector<uint64_t>& getIndexBuffer() const { return m_indexBuffer; }
+		const VertexBuffer& getVertexBuffer() const { return m_vertexBuffer; }
+		const IndexBuffer& getIndexBuffer() const { return m_indexBuffer; }
 
-		void setVertexBuffer(const std::vector<glm::vec3>& vb) { m_vertexBuffer = vb; }
-		void setIndexBuffer(const std::vector<uint64_t>& ib) { m_indexBuffer = ib; }
+		void setVertexBuffer(const VertexBuffer& vb) { m_vertexBuffer = vb; }
+		void setIndexBuffer(const IndexBuffer& ib) { m_indexBuffer = ib; }
 
 		const PrimitiveTopology getPrimitiveTopology() const { return m_topology; }
 
@@ -34,8 +37,8 @@ namespace softlit
 		void UBO(UniformBuffer ubo) { m_ubo = ubo; }
 
 	private:
-		std::vector<glm::vec3> m_vertexBuffer;
-		std::vector<uint64_t> m_indexBuffer;
+		VertexBuffer m_vertexBuffer;
+		IndexBuffer m_indexBuffer;
 
 		PrimitiveTopology m_topology = PrimitiveTopology::TRIANGLE_LIST;
 
