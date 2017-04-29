@@ -20,6 +20,6 @@
 - GLM
 - tinyobjloader
 
-![Cube](http://imgur.com/a/0AbEB.gif)
+![Test](http://imgur.com/kK4d5qO.gif)
 
 Stay Tuned!
