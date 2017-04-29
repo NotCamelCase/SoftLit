@@ -1,11 +1,11 @@
 #pragma once
 
+#include "Primitive.h"
+
 namespace softlit
 {
 	typedef std::vector<glm::vec4> FrameBuffer;
 	typedef std::vector<float> DepthBuffer;
-
-	class Primitive;
 
 	class Rasterizer
 	{
@@ -42,5 +42,11 @@ namespace softlit
 
 		// Apply 2D viewport clipping
 		bool clip2D(const glm::vec3& v0, const glm::vec3& v1, const glm::vec3& v2, Viewport&) const;
+
+		/* Generates and fills in perspectively-correct interpolated barycentric fragment shader attributes to be passed */
+		void interpolateAttributes(const float z, const float w0, const float w1, const float w2, const Vertex_OUT& out0, const Vertex_OUT& out1, const Vertex_OUT& out2, Vertex_OUT& attribs);
+
+		/* Fetch vertex attributes from primitive's attribute buffer and fill in corresponding vertex attributes */
+		void fetchVertexAttributes(Primitive* prim, uint64_t idx, Vertex_IN& in0, Vertex_IN& in1, Vertex_IN& in2);
 	};
 }

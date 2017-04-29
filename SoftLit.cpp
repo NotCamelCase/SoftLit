@@ -18,19 +18,22 @@ using namespace softlit;
 
 struct mat_ubo
 {
+	mat3 NORMAL;
 	mat4 MVP;
 };
 
 // VS
-vec4 VS_Simple(const glm::vec3& pos, mat_ubo* ubo)
+vec4 VS_Simple(const glm::vec3& pos, mat_ubo* ubo, const Vertex_IN* const in, Vertex_OUT* out)
 {
+	out->pushVertexAttribute(ubo->NORMAL * in->attrib_vec3[0]);
+
 	return (ubo->MVP * vec4(pos, 1));
 }
 
 // FS
-vec4 FS_Simple()
+vec4 FS_Simple(mat_ubo* ubo, const Vertex_OUT* const in)
 {
-	return vec4(0.25, 0.5, 0.75, 1.);
+	return vec4(abs(in->attrib_vec3[0]), 1);
 }
 
 void ImportScene(vector<Primitive*>& objects, const string&);
@@ -41,12 +44,9 @@ int main(int argc, char* argv[])
 	uint32_t width = WIDTH;
 	uint32_t height = HEIGHT;
 
-	// Init SDL
-	Display display(width, height, false);
-
 	vector<Primitive*> objects;
 
-	ImportScene(objects, "../cube.obj");
+	ImportScene(objects, "../monkey.obj");
 
 	DBG_ASSERT(!objects.empty() && "Failed to import models!");
 
@@ -57,7 +57,7 @@ int main(int argc, char* argv[])
 
 	Rasterizer* rasterizer = new Rasterizer(rasterSetup);
 
-	vec3 eye(3, 4, -5);
+	vec3 eye(0, 0, -5);
 	vec3 lookat(0, 0, 0);
 	vec3 up(0, 1, 0);
 
@@ -79,7 +79,19 @@ int main(int argc, char* argv[])
 	}
 
 #ifdef SINGLE_FRAME_OUTPUT
-	rasterizer->Draw(vertices, indices, view, proj);
+	for (Primitive* prim : objects)
+	{
+		//model = rotate(model, 0.025f, vec3(0, 1, 0));
+		mat4 mv = view * model;
+		mat3 normal = { mv[0], mv[1], mv[2] };
+		mat4 mvp = proj * mv;
+
+		mat_ubo* ubo = static_cast<mat_ubo*> (prim->UBO());
+		ubo->MVP = mvp;
+		ubo->NORMAL = normal;
+
+		rasterizer->Draw(prim, view, proj);
+	}
 
 	const vector<vec4>& frameBuffer = rasterizer->getFrameBuffer();
 	FILE *f = NULL;
@@ -95,6 +107,9 @@ int main(int argc, char* argv[])
 	fclose(f);
 
 #else
+	// Init SDL
+	Display display(width, height, false);
+
 	SDL_Event event;
 	bool running = true;
 	while (running)
@@ -115,10 +130,13 @@ int main(int argc, char* argv[])
 		for (Primitive* prim : objects)
 		{
 			model = rotate(model, 0.025f, vec3(0, 1, 0));
-			mat4 mvp = proj * view * model;
+			mat4 mv = view * model;
+			mat3 normal = { mv[0], mv[1], mv[2] };
+			mat4 mvp = proj * mv;
 
 			mat_ubo* ubo = static_cast<mat_ubo*> (prim->UBO());
 			ubo->MVP = mvp;
+			ubo->NORMAL = normal;
 
 			rasterizer->Draw(prim, view, proj);
 		}
@@ -155,6 +173,9 @@ void ImportScene(vector<Primitive*>& objs, const string& filename)
 	bool ret = tinyobj::LoadObj(&attribs, &shapes, &materials, &err, filename.c_str());
 	if (ret)
 	{
+		const bool hasUV = !attribs.texcoords.empty();
+		const bool hasNormals = !attribs.normals.empty();
+
 		for (size_t i = 0; i < shapes.size(); i++)
 		{
 			const tinyobj::shape_t& shape = shapes[i];
@@ -162,7 +183,10 @@ void ImportScene(vector<Primitive*>& objs, const string& filename)
 			VertexBuffer vbo;
 			IndexBuffer ibo;
 
-			const vector<tinyobj::index_t> indexBuffer = shape.mesh.indices;
+			AttributeBuffer<3> normals;
+			AttributeBuffer<2> uvs;
+
+			const vector<tinyobj::index_t>& indexBuffer = shape.mesh.indices;
 
 			Primitive* obj = new Primitive(PrimitiveTopology::TRIANGLE_LIST);
 			objs.push_back(obj);
@@ -172,22 +196,54 @@ void ImportScene(vector<Primitive*>& objs, const string& filename)
 				DBG_ASSERT(indexBuffer[idx].vertex_index != -1);
 				const uint64_t vtxIndex = indexBuffer[idx].vertex_index;
 
-				//TODO: Handle other vertex attributes
+				if (hasNormals)
+				{
+					DBG_ASSERT(indexBuffer[idx].normal_index != -1);
+					normals.m_index.push_back(indexBuffer[idx].normal_index);
+				}
+
+				if (hasUV)
+				{
+					uvs.m_index.push_back(indexBuffer[idx].texcoord_index);
+				}
 
 				ibo.push_back(vtxIndex);
 			}
 
 			for (size_t f = 0; f < attribs.vertices.size(); f += 3) // 3 -> # of vertices in a triangle face
 			{
+				// has to have vertices
 				const float p0 = attribs.vertices[f];
 				const float p1 = attribs.vertices[f + 1];
 				const float p2 = attribs.vertices[f + 2];
-
 				vbo.push_back(vec3(p0, p1, p2));
+			}
+
+			if (hasNormals)
+			{
+				for (size_t i = 0; i < attribs.normals.size(); i += 3)
+				{
+					const float n0 = attribs.normals[i];
+					const float n1 = attribs.normals[i + 1];
+					const float n2 = attribs.normals[i + 2];
+					normals.m_data.push_back(vec3(n0, n1, n2));
+				}
+			}
+
+			if (hasUV)
+			{
+				for (size_t i = 0; i < attribs.texcoords.size(); i += 2)
+				{
+					const float uv0 = attribs.texcoords[i];
+					const float uv1 = attribs.texcoords[i + 1];
+					uvs.m_data.push_back(vec2(uv0, uv1));
+				}
 			}
 
 			obj->setVertexBuffer(vbo);
 			obj->setIndexBuffer(ibo);
+			if (hasUV) obj->appendAttributeBuffer(uvs);
+			if (hasNormals) obj->appendAttributeBuffer(normals);
 		}
 	}
 }
