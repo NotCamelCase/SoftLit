@@ -91,7 +91,7 @@ int main(int argc, char* argv[])
 		ubo->MVP = mvp;
 		ubo->NORMAL = normal;
 
-		rasterizer->Draw(prim, view, proj);
+		rasterizer->Draw(prim);
 	}
 
 	const vector<vec4>& frameBuffer = rasterizer->getFrameBuffer();
@@ -139,7 +139,7 @@ int main(int argc, char* argv[])
 			ubo->MVP = mvp;
 			ubo->NORMAL = normal;
 
-			rasterizer->Draw(prim, view, proj);
+			rasterizer->Draw(prim);
 		}
 		const auto drawEnd = chrono::high_resolution_clock::now();
 		//printf("Draw time: %lld\n", chrono::duration_cast<chrono::milliseconds> (drawEnd - drawBegin).count());

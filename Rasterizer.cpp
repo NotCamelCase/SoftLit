@@ -161,7 +161,7 @@ void Rasterizer::FetchVertexAttributes(Primitive* prim, uint64_t idx, Vertex_IN&
 	}
 }
 
-void Rasterizer::Draw(Primitive* prim, const mat4& view, const mat4& proj)
+void Rasterizer::Draw(Primitive* prim)
 {
 	// Pre-draw, invalidate frame and depth buffers
 	InvalidateBuffers();

@@ -19,7 +19,7 @@ namespace softlit
 		/*
 		* Rasterize given primitive set
 		*/
-		void Draw(Primitive* prim, const glm::mat4& view, const glm::mat4& proj);
+		void Draw(Primitive* prim);
 
 	private:
 		FrameBuffer m_frameBuffer; // Used to hold rasterized primitives color buffer, colors in [0.f, 1.f]
