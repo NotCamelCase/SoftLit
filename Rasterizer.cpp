@@ -81,12 +81,9 @@ void Rasterizer::InterpolateAttributes(const float z, const float w0, const floa
 			const vec4& attr1 = out1.attrib_vec4[i];
 			const vec4& attr2 = out2.attrib_vec4[i];
 
-			float xInt = w0 * attr0.x + w1 * attr1.x + w2 * attr2.x;
-			float yInt = w0 * attr0.y + w1 * attr1.y + w2 * attr2.y;
-			float zInt = w0 * attr0.z + w1 * attr1.z + w2 * attr2.z;
-			float wInt = w0 * attr0.w + w1 * attr1.w + w2 * attr2.w;
+			vec3 attrib = w0 * attr0 + w1 * attr1 + w2 * attr2;
 
-			attribs.PushVertexAttribute(vec4(xInt, yInt, zInt, wInt) * z);
+			attribs.PushVertexAttribute(attrib * z);
 		}
 	}
 
@@ -104,11 +101,9 @@ void Rasterizer::InterpolateAttributes(const float z, const float w0, const floa
 			const vec3& attr1 = out1.attrib_vec3[i];
 			const vec3& attr2 = out2.attrib_vec3[i];
 
-			float xInt = w0 * attr0.x + w1 * attr1.x + w2 * attr2.x;
-			float yInt = w0 * attr0.y + w1 * attr1.y + w2 * attr2.y;
-			float zInt = w0 * attr0.z + w1 * attr1.z + w2 * attr2.z;
+			vec3 attrib = w0 * attr0 + w1 * attr1 + w2 * attr2;
 
-			attribs.PushVertexAttribute(vec3(xInt, yInt, zInt) * z);
+			attribs.PushVertexAttribute(attrib * z);
 		}
 	}
 
@@ -126,10 +121,9 @@ void Rasterizer::InterpolateAttributes(const float z, const float w0, const floa
 			const vec2& attr1 = out1.attrib_vec2[i];
 			const vec2& attr2 = out2.attrib_vec2[i];
 
-			float xInt = w0 * attr0.x + w1 * attr1.x + w2 * attr2.x;
-			float yInt = w0 * attr0.y + w1 * attr1.y + w2 * attr2.y;
+			vec2 attrib = w0 * attr0 + w1 * attr1 + w2 * attr2;
 
-			attribs.PushVertexAttribute(vec2(xInt, yInt) * z);
+			attribs.PushVertexAttribute(attrib * z);
 		}
 	}
 }

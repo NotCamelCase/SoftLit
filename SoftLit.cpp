@@ -33,6 +33,7 @@ vec4 VS_Simple(const glm::vec3& pos, mat_ubo* ubo, const Vertex_IN* const in, Ve
 // FS
 vec4 FS_Simple(mat_ubo* ubo, const Vertex_OUT* const in)
 {
+	// Simply color normals
 	return vec4(abs(normalize(in->attrib_vec3[0])), 1);
 }
 
