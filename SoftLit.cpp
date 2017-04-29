@@ -189,7 +189,7 @@ void ImportScene(vector<Primitive*>& objs, const string& filename)
 
 			const vector<tinyobj::index_t>& indexBuffer = shape.mesh.indices;
 
-			Primitive* obj = new Primitive(PrimitiveTopology::TRIANGLE_LIST);
+			Primitive* obj = new Primitive();
 			objs.push_back(obj);
 
 			for (size_t idx = 0; idx < indexBuffer.size(); idx++)

@@ -89,7 +89,7 @@ namespace softlit
 	class Primitive
 	{
 	public:
-		Primitive(const PrimitiveTopology top);
+		Primitive();
 		~Primitive();
 
 		const VertexBuffer& getVertexBuffer() const { return m_vertexBuffer; }
@@ -97,8 +97,6 @@ namespace softlit
 
 		void setVertexBuffer(const VertexBuffer& vb) { m_vertexBuffer = vb; }
 		void setIndexBuffer(const IndexBuffer& ib) { m_indexBuffer = ib; }
-
-		const PrimitiveTopology getPrimitiveTopology() const { return m_topology; }
 
 		vertex_shader VS() { return m_VS; }
 		fragment_shader FS() { return m_FS; }
@@ -138,8 +136,6 @@ namespace softlit
 	private:
 		VertexBuffer m_vertexBuffer;
 		IndexBuffer m_indexBuffer;
-
-		PrimitiveTopology m_topology = PrimitiveTopology::TRIANGLE_LIST;
 
 		UniformBuffer m_ubo = nullptr;
 		vertex_shader m_VS = nullptr;

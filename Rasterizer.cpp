@@ -37,14 +37,9 @@ void Rasterizer::SetupTriangle(Primitive* prim, const uint64_t idx, glm::vec3& v
 	const VertexBuffer& vbo = prim->getVertexBuffer();
 	const IndexBuffer& ibo = prim->getIndexBuffer();
 
-	if (prim->getPrimitiveTopology() == PrimitiveTopology::TRIANGLE_LIST)
-	{
-		v0 = vbo[ibo[idx * 3]];
-		v1 = vbo[ibo[idx * 3 + 1]];
-		v2 = vbo[ibo[idx * 3 + 2]];
-	}
-	else
-		DBG_ASSERT(0 && "Primitive topology not implemented");
+	v0 = vbo[ibo[idx * 3]];
+	v1 = vbo[ibo[idx * 3 + 1]];
+	v2 = vbo[ibo[idx * 3 + 2]];
 }
 
 bool softlit::Rasterizer::clip2D(const glm::vec3 & v0, const glm::vec3 & v1, const glm::vec3 & v2, Viewport& vp) const

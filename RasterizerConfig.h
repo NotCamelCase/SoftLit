@@ -4,14 +4,6 @@
 
 namespace softlit
 {
-	// Triangle is the only supported primitive type 
-	enum class PrimitiveTopology
-	{
-		TRIANGLE_LIST,
-		TRIANGLE_STRIP,
-		TRIANGLE_FAN
-	};
-
 	enum class CullMode
 	{
 		CULL_DISABLED, // Culling disabled
