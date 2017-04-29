@@ -32,7 +32,7 @@ inline float Rasterizer::PixelCoverage(const vec2& a, const vec2& b, const vec2&
 	return winding * x;
 }
 
-void Rasterizer::setupTriangle(Primitive* prim, const uint64_t idx, glm::vec3& v0, glm::vec3& v1, glm::vec3& v2) const
+void Rasterizer::SetupTriangle(Primitive* prim, const uint64_t idx, glm::vec3& v0, glm::vec3& v1, glm::vec3& v2) const
 {
 	const VertexBuffer& vbo = prim->getVertexBuffer();
 	const IndexBuffer& ibo = prim->getIndexBuffer();
@@ -65,7 +65,7 @@ bool softlit::Rasterizer::clip2D(const glm::vec3 & v0, const glm::vec3 & v1, con
 	return true;
 }
 
-void Rasterizer::interpolateAttributes(const float z, const float w0, const float w1, const float w2, const Vertex_OUT& out0, const Vertex_OUT& out1, const Vertex_OUT& out2, Vertex_OUT& attribs)
+void Rasterizer::InterpolateAttributes(const float z, const float w0, const float w1, const float w2, const Vertex_OUT& out0, const Vertex_OUT& out1, const Vertex_OUT& out2, Vertex_OUT& attribs)
 {
 	if (!out0.attrib_vec4.empty())
 	{
@@ -86,7 +86,7 @@ void Rasterizer::interpolateAttributes(const float z, const float w0, const floa
 			float zInt = w0 * attr0.z + w1 * attr1.z + w2 * attr2.z;
 			float wInt = w0 * attr0.w + w1 * attr1.w + w2 * attr2.w;
 
-			attribs.pushVertexAttribute(vec4(xInt, yInt, zInt, wInt) * z);
+			attribs.PushVertexAttribute(vec4(xInt, yInt, zInt, wInt) * z);
 		}
 	}
 
@@ -108,7 +108,7 @@ void Rasterizer::interpolateAttributes(const float z, const float w0, const floa
 			float yInt = w0 * attr0.y + w1 * attr1.y + w2 * attr2.y;
 			float zInt = w0 * attr0.z + w1 * attr1.z + w2 * attr2.z;
 
-			attribs.pushVertexAttribute(vec3(xInt, yInt, zInt) * z);
+			attribs.PushVertexAttribute(vec3(xInt, yInt, zInt) * z);
 		}
 	}
 
@@ -129,12 +129,12 @@ void Rasterizer::interpolateAttributes(const float z, const float w0, const floa
 			float xInt = w0 * attr0.x + w1 * attr1.x + w2 * attr2.x;
 			float yInt = w0 * attr0.y + w1 * attr1.y + w2 * attr2.y;
 
-			attribs.pushVertexAttribute(vec2(xInt, yInt) * z);
+			attribs.PushVertexAttribute(vec2(xInt, yInt) * z);
 		}
 	}
 }
 
-void Rasterizer::fetchVertexAttributes(Primitive* prim, uint64_t idx, Vertex_IN& in0, Vertex_IN& in1, Vertex_IN& in2)
+void Rasterizer::FetchVertexAttributes(Primitive* prim, uint64_t idx, Vertex_IN& in0, Vertex_IN& in1, Vertex_IN& in2)
 {
 	const VertexAttributes& attribs = prim->getVertexAttributes();
 
@@ -143,9 +143,9 @@ void Rasterizer::fetchVertexAttributes(Primitive* prim, uint64_t idx, Vertex_IN&
 	{
 		for (int i = 0; i < attribs.attrib_vec4.size(); i++)
 		{
-			in0.pushVertexAttribute(attribs.attrib_vec4[i][idx]);
-			in1.pushVertexAttribute(attribs.attrib_vec4[i][idx + 1]);
-			in2.pushVertexAttribute(attribs.attrib_vec4[i][idx + 2]);
+			in0.PushVertexAttribute(attribs.attrib_vec4[i][idx]);
+			in1.PushVertexAttribute(attribs.attrib_vec4[i][idx + 1]);
+			in2.PushVertexAttribute(attribs.attrib_vec4[i][idx + 2]);
 		}
 	}
 
@@ -154,9 +154,9 @@ void Rasterizer::fetchVertexAttributes(Primitive* prim, uint64_t idx, Vertex_IN&
 	{
 		for (int i = 0; i < attribs.attrib_vec3.size(); i++)
 		{
-			in0.pushVertexAttribute(attribs.attrib_vec3[i][idx]);
-			in1.pushVertexAttribute(attribs.attrib_vec3[i][idx + 1]);
-			in2.pushVertexAttribute(attribs.attrib_vec3[i][idx + 2]);
+			in0.PushVertexAttribute(attribs.attrib_vec3[i][idx]);
+			in1.PushVertexAttribute(attribs.attrib_vec3[i][idx + 1]);
+			in2.PushVertexAttribute(attribs.attrib_vec3[i][idx + 2]);
 		}
 	}
 
@@ -165,9 +165,9 @@ void Rasterizer::fetchVertexAttributes(Primitive* prim, uint64_t idx, Vertex_IN&
 	{
 		for (int i = 0; i < attribs.attrib_vec2.size(); i++)
 		{
-			in0.pushVertexAttribute(attribs.attrib_vec2[i][idx]);
-			in1.pushVertexAttribute(attribs.attrib_vec2[i][idx + 1]);
-			in2.pushVertexAttribute(attribs.attrib_vec2[i][idx + 2]);
+			in0.PushVertexAttribute(attribs.attrib_vec2[i][idx]);
+			in1.PushVertexAttribute(attribs.attrib_vec2[i][idx + 1]);
+			in2.PushVertexAttribute(attribs.attrib_vec2[i][idx + 2]);
 		}
 	}
 }
@@ -184,7 +184,7 @@ void Rasterizer::Draw(Primitive* prim, const mat4& view, const mat4& proj)
 	for (uint64_t i = 0; i < numTris; i++)
 	{
 		vec3 v0, v1, v2;
-		setupTriangle(prim, i, v0, v1, v2);
+		SetupTriangle(prim, i, v0, v1, v2);
 
 		const vertex_shader VS = prim->VS();
 		DBG_ASSERT(VS && "invalid vertex_shader!");
@@ -194,7 +194,7 @@ void Rasterizer::Draw(Primitive* prim, const mat4& view, const mat4& proj)
 		Vertex_IN in0, in1, in2;
 		Vertex_OUT out0, out1, out2;
 
-		fetchVertexAttributes(prim, i, in0, in1, in2);
+		FetchVertexAttributes(prim, i, in0, in1, in2);
 
 		// Execute VS for each vertex
 		const vec4 v0Clip = VS(v0, ubo, &in0, &out0);
@@ -236,7 +236,7 @@ void Rasterizer::Draw(Primitive* prim, const mat4& view, const mat4& proj)
 					if (z < m_depthBuffer[y * m_setup.viewport.width + x]) // Depth test; execute FS if passed & update z-buffer
 					{
 						Vertex_OUT FS_attribs;
-						interpolateAttributes(z, w0, w1, w2, out0, out1, out2, FS_attribs);
+						InterpolateAttributes(z, w0, w1, w2, out0, out1, out2, FS_attribs);
 						const vec4 final_fragment = prim->FS()(ubo, &FS_attribs);
 
 						m_frameBuffer[y * m_setup.viewport.width + x] = final_fragment;

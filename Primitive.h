@@ -53,25 +53,25 @@ namespace softlit
 		}
 
 		template<int N>
-		void pushVertexAttribute(const glm::vec<N, float>& v)
+		void PushVertexAttribute(const glm::vec<N, float>& v)
 		{
 			static_assert(N > 4);
 		}
 
 		template<>
-		void pushVertexAttribute(const glm::vec4& v)
+		void PushVertexAttribute(const glm::vec4& v)
 		{
 			attrib_vec4.push_back(v);
 		}
 
 		template<>
-		void pushVertexAttribute(const glm::vec3& v)
+		void PushVertexAttribute(const glm::vec3& v)
 		{
 			attrib_vec3.push_back(v);
 		}
 
 		template<>
-		void pushVertexAttribute(const glm::vec2& v)
+		void PushVertexAttribute(const glm::vec2& v)
 		{
 			attrib_vec2.push_back(v);
 		}
@@ -84,7 +84,7 @@ namespace softlit
 	typedef glm::vec4(*vertex_shader)(const glm::vec3& pos, UniformBuffer ubo, const Vertex_IN* const in, Vertex_OUT* out);
 
 	// fragment_shader to output final render target values
-	typedef glm::vec4(*fragment_shader)(UniformBuffer ubo, const Vertex_OUT* const out);
+	typedef glm::vec4(*fragment_shader)(UniformBuffer ubo, const Vertex_OUT* const in);
 
 	class Primitive
 	{

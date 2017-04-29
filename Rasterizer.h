@@ -38,15 +38,15 @@ namespace softlit
 		/*
 		* Set ups a triangle based on index into the index buffer of primitive and triangle topology e.g TRIANGLE_LIST, TRIANGLE_STRIP
 		*/
-		void setupTriangle(Primitive* primitive, const uint64_t idx, glm::vec3& v0, glm::vec3& v1, glm::vec3& v2) const;
+		void SetupTriangle(Primitive* primitive, const uint64_t idx, glm::vec3& v0, glm::vec3& v1, glm::vec3& v2) const;
 
 		// Apply 2D viewport clipping
 		bool clip2D(const glm::vec3& v0, const glm::vec3& v1, const glm::vec3& v2, Viewport&) const;
 
 		/* Generates and fills in perspectively-correct interpolated barycentric fragment shader attributes to be passed */
-		void interpolateAttributes(const float z, const float w0, const float w1, const float w2, const Vertex_OUT& out0, const Vertex_OUT& out1, const Vertex_OUT& out2, Vertex_OUT& attribs);
+		void InterpolateAttributes(const float z, const float w0, const float w1, const float w2, const Vertex_OUT& out0, const Vertex_OUT& out1, const Vertex_OUT& out2, Vertex_OUT& attribs);
 
 		/* Fetch vertex attributes from primitive's attribute buffer and fill in corresponding vertex attributes */
-		void fetchVertexAttributes(Primitive* prim, uint64_t idx, Vertex_IN& in0, Vertex_IN& in1, Vertex_IN& in2);
+		void FetchVertexAttributes(Primitive* prim, uint64_t idx, Vertex_IN& in0, Vertex_IN& in1, Vertex_IN& in2);
 	};
 }

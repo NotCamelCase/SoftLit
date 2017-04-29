@@ -25,7 +25,7 @@ struct mat_ubo
 // VS
 vec4 VS_Simple(const glm::vec3& pos, mat_ubo* ubo, const Vertex_IN* const in, Vertex_OUT* out)
 {
-	out->pushVertexAttribute(ubo->NORMAL * in->attrib_vec3[0]);
+	out->PushVertexAttribute(in->attrib_vec3[0]);
 
 	return (ubo->MVP * vec4(pos, 1));
 }
@@ -33,7 +33,7 @@ vec4 VS_Simple(const glm::vec3& pos, mat_ubo* ubo, const Vertex_IN* const in, Ve
 // FS
 vec4 FS_Simple(mat_ubo* ubo, const Vertex_OUT* const in)
 {
-	return vec4(abs(in->attrib_vec3[0]), 1);
+	return vec4(abs(normalize(in->attrib_vec3[0])), 1);
 }
 
 void ImportScene(vector<Primitive*>& objects, const string&);
