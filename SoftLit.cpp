@@ -47,7 +47,7 @@ int main(int argc, char* argv[])
 
 	vector<Primitive*> objects;
 
-	ImportScene(objects, "../monkey.obj");
+	ImportScene(objects, "../cube.obj");
 
 	DBG_ASSERT(!objects.empty() && "Failed to import models!");
 

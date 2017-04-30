@@ -226,7 +226,8 @@ void Rasterizer::Draw(Primitive* prim)
 					{
 						Vertex_OUT FS_attribs;
 						InterpolateAttributes(z, w0, w1, w2, out0, out1, out2, FS_attribs);
-						const vec4 final_fragment = prim->FS()(ubo, &FS_attribs);
+						const fragment_shader FS = prim->FS();
+						const vec4 final_fragment = FS(ubo, &FS_attribs);
 
 						m_frameBuffer[y * m_setup.viewport.width + x] = final_fragment;
 						m_depthBuffer[y * m_setup.viewport.width + x] = z;
