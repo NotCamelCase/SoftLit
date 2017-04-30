@@ -54,7 +54,7 @@ int main(int argc, char* argv[])
 
 	RasterizerSetup rasterSetup;
 	rasterSetup.cullMode = CullMode::CULL_DISABLED;
-	rasterSetup.vertexWinding = VertexWinding::CLOCKWISE;
+	rasterSetup.vertexWinding = VertexWinding::COUNTER_CLOCKWISE;
 	rasterSetup.viewport = { 0u, 0u, width, height };
 
 	Rasterizer* rasterizer = new Rasterizer(rasterSetup);
