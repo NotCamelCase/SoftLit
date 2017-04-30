@@ -55,7 +55,7 @@ namespace softlit
 		template<int N>
 		void PushVertexAttribute(const glm::vec<N, float>& v)
 		{
-			static_assert(N > 4);
+			static_assert(N < 4);
 		}
 
 		template<>
@@ -112,7 +112,7 @@ namespace softlit
 		template<int N>
 		void appendAttributeBuffer(const AttributeBuffer<N>& attributes)
 		{
-			static_assert(N > 4);
+			static_assert(N < 4);
 		}
 
 		template<>
