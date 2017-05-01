@@ -4,11 +4,11 @@
 
 # TODO
 - Resolve vertex duplication
-- Texturing
+- Texturing, MIPMAP, filtering
 - Polygon clipping
 - Render more detailed scenes
 - More complex VS + FS
-- MSAA
+- SSAA/MSAA
 - Cmake-ify project
 
 # Dependencies
@@ -16,6 +16,6 @@
 - GLM
 - tinyobjloader
 
-![Test](http://imgur.com/kK4d5qO.gif)
+![Test](http://imgur.com/GAKdkVa.gif)
 
 Stay Tuned!
