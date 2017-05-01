@@ -52,6 +52,13 @@ namespace softlit
 			attrib_vec2.reserve(MAX_ATTRIBUTES_VEC2);
 		}
 
+		void ResetData()
+		{
+			attrib_vec4.clear();
+			attrib_vec3.clear();
+			attrib_vec2.clear();
+		}
+
 		template<int N>
 		void PushVertexAttribute(const glm::vec<N, float>& v)
 		{

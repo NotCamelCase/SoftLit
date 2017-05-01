@@ -206,6 +206,9 @@ void Rasterizer::Draw(Primitive* prim)
 		Viewport vp;
 		if (!clip2D(v0Raster, v1Raster, v2Raster, vp)) continue;
 
+		// Re-use FS attributes
+		Vertex_OUT FS_attribs;
+
 		for (uint32_t y = vp.y; y <= vp.height; y++)
 		{
 			for (uint32_t x = vp.x; x <= vp.width; x++)
@@ -227,7 +230,8 @@ void Rasterizer::Draw(Primitive* prim)
 					{
 						m_depthBuffer[y * m_setup.viewport.width + x] = z;
 
-						Vertex_OUT FS_attribs;
+						FS_attribs.ResetData(); // Reset attribs pre-FS for each fragment
+
 						InterpolateAttributes(z, w0, w1, w2, out0, out1, out2, FS_attribs);
 						const fragment_shader FS = prim->FS();
 						const vec4 final_fragment = FS(ubo, &FS_attribs);
