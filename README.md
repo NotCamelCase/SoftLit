@@ -4,7 +4,6 @@
 
 # TODO
 - Resolve vertex duplication
-- Face culling
 - Texturing
 - Polygon clipping
 - Render more detailed scenes

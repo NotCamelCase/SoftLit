@@ -113,41 +113,71 @@ int main(int argc, char* argv[])
 	// Init SDL
 	Display display(width, height, false);
 
+	bool paused = false;
+
 	SDL_Event event;
 	bool running = true;
 	while (running)
 	{
 		while (SDL_PollEvent(&event))
 		{
-			if ((SDL_QUIT == event.type) ||
-				(SDL_KEYDOWN == event.type && SDL_SCANCODE_ESCAPE == event.key.keysym.scancode))
+			switch (event.type)
 			{
+			case SDL_KEYDOWN:
+				switch (event.key.keysym.scancode)
+				{
+				case SDL_SCANCODE_SPACE:
+					paused = (event.key.keysym.scancode == SDL_SCANCODE_SPACE);
+					break;
+				case SDL_SCANCODE_ESCAPE:
+					running = false;
+					break;
+				default:
+					break;
+				}
+				break;
+			case SDL_KEYUP:
+				switch (event.key.keysym.scancode)
+				{
+				case SDL_SCANCODE_SPACE:
+					paused = false;
+					break;
+				default:
+					break;
+				}
+				break;
+			case SDL_QUIT:
 				running = false;
+				break;
+			default:
 				break;
 			}
 		}
 
-		display.ClearRenderTarget(ivec3(0, 0, 0));
-
 		const auto drawBegin = chrono::high_resolution_clock::now();
-		for (Primitive* prim : objects)
+		if (!paused) // When unpaused, re-draw every frame
 		{
-			model = rotate(model, 0.025f, vec3(0, 1, 0));
-			mat4 mv = view * model;
-			mat3 normal = { mv[0], mv[1], mv[2] };
-			mat4 mvp = proj * mv;
+			display.ClearRenderTarget(ivec3(0, 0, 0));
 
-			mat_ubo* ubo = static_cast<mat_ubo*> (prim->UBO());
-			ubo->MVP = mvp;
-			ubo->MV = mv;
-			ubo->NORMAL = normal;
+			for (Primitive* prim : objects)
+			{
+				model = rotate(model, 0.025f, vec3(0, 1, 0));
+				mat4 mv = view * model;
+				mat3 normal = { mv[0], mv[1], mv[2] };
+				mat4 mvp = proj * mv;
 
-			rasterizer->Draw(prim);
+				mat_ubo* ubo = static_cast<mat_ubo*> (prim->UBO());
+				ubo->MVP = mvp;
+				ubo->MV = mv;
+				ubo->NORMAL = normal;
+
+				rasterizer->Draw(prim);
+			}
+			const auto drawEnd = chrono::high_resolution_clock::now();
+			//printf("Draw time: %lld\n", chrono::duration_cast<chrono::milliseconds> (drawEnd - drawBegin).count());
+
+			display.UpdateColorBuffer(rasterizer->getFrameBuffer());
 		}
-		const auto drawEnd = chrono::high_resolution_clock::now();
-		//printf("Draw time: %lld\n", chrono::duration_cast<chrono::milliseconds> (drawEnd - drawBegin).count());
-
-		display.UpdateColorBuffer(rasterizer->getFrameBuffer());
 
 		const auto presentBegin = chrono::high_resolution_clock::now();
 		display.Present();
@@ -163,7 +193,7 @@ int main(int argc, char* argv[])
 	SAFE_DELETE(rasterizer);
 
 	return 0;
-	}
+}
 
 void ImportOBJ(vector<Primitive*>& objs, const string& filename)
 {
