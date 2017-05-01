@@ -6,7 +6,8 @@ using namespace std;
 using namespace glm;
 using namespace softlit;
 
-Primitive::Primitive()
+Primitive::Primitive(const PrimitiveSetup& setup)
+	: m_setup(setup)
 {
 }
 

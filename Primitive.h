@@ -89,7 +89,7 @@ namespace softlit
 	class Primitive
 	{
 	public:
-		Primitive();
+		Primitive(const PrimitiveSetup& setup);
 		~Primitive();
 
 		const VertexBuffer& getVertexBuffer() const { return m_vertexBuffer; }
@@ -133,6 +133,8 @@ namespace softlit
 			m_attribs.attrib_vec2.push_back(attributes);
 		}
 
+		const PrimitiveSetup& getPrimitiveSetup() const { return m_setup; }
+
 	private:
 		VertexBuffer m_vertexBuffer;
 		IndexBuffer m_indexBuffer;
@@ -142,5 +144,7 @@ namespace softlit
 		fragment_shader m_FS = nullptr;
 
 		VertexAttributes m_attribs;
+
+		PrimitiveSetup m_setup;
 	};
 }

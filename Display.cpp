@@ -66,9 +66,9 @@ void Display::UpdateColorBuffer(const vector<vec4>& frameBuffer)
 		vec4 rgba = frameBuffer[i / 4];
 		rgba = glm::clamp(rgba, 0.f, 1.f); // Clamp color value
 
-		m_colorBuffer[i] = (uchar)(255 * rgba.r);
-		m_colorBuffer[i + 1] = (uchar)(255 * rgba.g);
-		m_colorBuffer[i + 2] = (uchar)(255 * rgba.b);
-		m_colorBuffer[i + 3] = (uchar)(255 * rgba.a);
+		m_colorBuffer[i] = (uchar)(255 * rgba.a);
+		m_colorBuffer[i + 1] = (uchar)(255 * rgba.r);
+		m_colorBuffer[i + 2] = (uchar)(255 * rgba.g);
+		m_colorBuffer[i + 3] = (uchar)(255 * rgba.b);
 	}
 }

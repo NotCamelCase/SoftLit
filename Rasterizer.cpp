@@ -42,7 +42,7 @@ void Rasterizer::SetupTriangle(Primitive* prim, const uint64_t idx, glm::vec3& v
 	v2 = vbo[ibo[idx * 3 + 2]];
 }
 
-bool softlit::Rasterizer::clip2D(const glm::vec3 & v0, const glm::vec3 & v1, const glm::vec3 & v2, Viewport& vp) const
+bool softlit::Rasterizer::clip2D(const glm::vec2 & v0, const glm::vec2 & v1, const glm::vec2 & v2, Viewport& vp) const
 {
 	float xmin = fminf(v0.x, fminf(v1.x, v2.x));
 	float xmax = fmaxf(v0.x, fmaxf(v1.x, v2.x));
@@ -196,14 +196,15 @@ void Rasterizer::Draw(Primitive* prim)
 		const vec3 v2NDC = v2Clip / v2Clip.w;
 
 		// Now to frame buffer-coordinates
-		vec3 v0Raster = { (v0NDC.x + 1) / 2 * m_setup.viewport.width, (1 - v0NDC.y) / 2 * m_setup.viewport.height, v0NDC.z };
-		vec3 v1Raster = { (v1NDC.x + 1) / 2 * m_setup.viewport.width, (1 - v1NDC.y) / 2 * m_setup.viewport.height, v1NDC.z };
-		vec3 v2Raster = { (v2NDC.x + 1) / 2 * m_setup.viewport.width, (1 - v2NDC.y) / 2 * m_setup.viewport.height, v2NDC.z };
+		vec2 v0Raster = { (v0NDC.x + 1) / 2 * m_setup.viewport.width, (1 - v0NDC.y) / 2 * m_setup.viewport.height };
+		vec2 v1Raster = { (v1NDC.x + 1) / 2 * m_setup.viewport.width, (1 - v1NDC.y) / 2 * m_setup.viewport.height };
+		vec2 v2Raster = { (v2NDC.x + 1) / 2 * m_setup.viewport.width, (1 - v2NDC.y) / 2 * m_setup.viewport.height };
+
+		const float triCoverage = PixelCoverage(v0Raster, v1Raster, v2Raster);
+		if (signbit(triCoverage) && prim->getPrimitiveSetup().cullMode == CullMode::CULL_BACK) continue;
 
 		Viewport vp;
 		if (!clip2D(v0Raster, v1Raster, v2Raster, vp)) continue;
-
-		const float triCoverage = PixelCoverage(v0Raster, v1Raster, v2Raster);
 
 		for (uint32_t y = vp.y; y <= vp.height; y++)
 		{
@@ -221,16 +222,17 @@ void Rasterizer::Draw(Primitive* prim)
 					w1 /= triCoverage;
 					w2 = 1.f - w0 - w1;
 
-					float z = 1.f / ((w0 * v0Raster.z) + (w1 * v1Raster.z) + (w2 * v2Raster.z));
+					float z = ((w0 * v0NDC.z) + (w1 * v1NDC.z) + (w2 * v2NDC.z));
 					if (z < m_depthBuffer[y * m_setup.viewport.width + x]) // Depth test; execute FS if passed & update z-buffer
 					{
+						m_depthBuffer[y * m_setup.viewport.width + x] = z;
+
 						Vertex_OUT FS_attribs;
 						InterpolateAttributes(z, w0, w1, w2, out0, out1, out2, FS_attribs);
 						const fragment_shader FS = prim->FS();
 						const vec4 final_fragment = FS(ubo, &FS_attribs);
 
 						m_frameBuffer[y * m_setup.viewport.width + x] = final_fragment;
-						m_depthBuffer[y * m_setup.viewport.width + x] = z;
 					}
 				}
 			}

@@ -19,6 +19,7 @@ using namespace softlit;
 struct mat_ubo
 {
 	mat3 NORMAL;
+	mat4 MV;
 	mat4 MVP;
 };
 
@@ -38,7 +39,7 @@ vec4 FS_Simple(mat_ubo* ubo, const Vertex_OUT* const in)
 	return vec4(abs(in->attrib_vec3[0]), 1);
 }
 
-void ImportScene(vector<Primitive*>& objects, const string&);
+void ImportOBJ(vector<Primitive*>& objects, const string&);
 
 int main(int argc, char* argv[])
 {
@@ -48,12 +49,12 @@ int main(int argc, char* argv[])
 
 	vector<Primitive*> objects;
 
-	ImportScene(objects, "../cube.obj");
+	//TODO: Handle multiple objects in a single .obj
+	ImportOBJ(objects, "../bunny.obj");
 
 	DBG_ASSERT(!objects.empty() && "Failed to import models!");
 
 	RasterizerSetup rasterSetup;
-	rasterSetup.cullMode = CullMode::CULL_DISABLED;
 	rasterSetup.vertexWinding = VertexWinding::COUNTER_CLOCKWISE;
 	rasterSetup.viewport = { 0u, 0u, width, height };
 
@@ -138,6 +139,7 @@ int main(int argc, char* argv[])
 
 			mat_ubo* ubo = static_cast<mat_ubo*> (prim->UBO());
 			ubo->MVP = mvp;
+			ubo->MV = mv;
 			ubo->NORMAL = normal;
 
 			rasterizer->Draw(prim);
@@ -161,15 +163,13 @@ int main(int argc, char* argv[])
 	SAFE_DELETE(rasterizer);
 
 	return 0;
-}
+	}
 
-void ImportScene(vector<Primitive*>& objs, const string& filename)
+void ImportOBJ(vector<Primitive*>& objs, const string& filename)
 {
 	tinyobj::attrib_t attribs;
 	vector<tinyobj::shape_t> shapes;
 	vector<tinyobj::material_t> materials;
-
-	//TODO: Handle multiple objects in a single .obj
 
 	string err;
 	bool ret = tinyobj::LoadObj(&attribs, &shapes, &materials, &err, filename.c_str());
@@ -190,7 +190,10 @@ void ImportScene(vector<Primitive*>& objs, const string& filename)
 
 			const vector<tinyobj::index_t>& indexBuffer = shape.mesh.indices;
 
-			Primitive* obj = new Primitive();
+			PrimitiveSetup ps;
+			ps.cullMode = CullMode::CULL_BACK;
+
+			Primitive* obj = new Primitive(ps);
 			objs.push_back(obj);
 
 			for (size_t idx = 0; idx < indexBuffer.size(); idx++)

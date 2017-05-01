@@ -41,7 +41,7 @@ namespace softlit
 		void SetupTriangle(Primitive* primitive, const uint64_t idx, glm::vec3& v0, glm::vec3& v1, glm::vec3& v2) const;
 
 		// Apply 2D viewport clipping
-		bool clip2D(const glm::vec3& v0, const glm::vec3& v1, const glm::vec3& v2, Viewport&) const;
+		bool clip2D(const glm::vec2& v0, const glm::vec2& v1, const glm::vec2& v2, Viewport&) const;
 
 		/* Generates and fills in perspectively-correct interpolated barycentric fragment shader attributes to be passed */
 		void InterpolateAttributes(const float z, const float w0, const float w1, const float w2, const Vertex_OUT& out0, const Vertex_OUT& out1, const Vertex_OUT& out2, Vertex_OUT& attribs);

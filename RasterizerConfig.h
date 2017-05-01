@@ -8,7 +8,6 @@ namespace softlit
 	{
 		CULL_DISABLED, // Culling disabled
 		CULL_BACK, // Cull back-facing prims
-		CULL_FACE // Cull front-facing prims
 	};
 
 	enum class VertexWinding
@@ -28,9 +27,12 @@ namespace softlit
 
 	struct RasterizerSetup
 	{
-		CullMode cullMode = CullMode::CULL_DISABLED;
 		VertexWinding vertexWinding = VertexWinding::CLOCKWISE;
-
 		Viewport viewport = { 0u, 0u, 1024u, 768u };
+	};
+
+	struct PrimitiveSetup
+	{
+		CullMode cullMode = CullMode::CULL_BACK;
 	};
 }
