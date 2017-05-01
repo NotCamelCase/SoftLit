@@ -170,6 +170,10 @@ void Rasterizer::Draw(Primitive* prim)
 	const uint64_t numTris = prim->getIndexBuffer().size() / 3;
 	DBG_ASSERT((prim->getIndexBuffer().size() % 3) == 0);
 
+	// Re-use VS attributes
+	Vertex_IN in0, in1, in2;
+	Vertex_OUT out0, out1, out2;
+
 	for (uint64_t i = 0; i < numTris; i++)
 	{
 		vec3 v0, v1, v2;
@@ -180,9 +184,8 @@ void Rasterizer::Draw(Primitive* prim)
 
 		UniformBuffer ubo = prim->UBO();
 
-		Vertex_IN in0, in1, in2;
-		Vertex_OUT out0, out1, out2;
-
+		in0.ResetData(); in1.ResetData(); in2.ResetData();
+		out0.ResetData(); out1.ResetData(); out2.ResetData();
 		FetchVertexAttributes(prim, i, in0, in1, in2);
 
 		// Execute VS for each vertex

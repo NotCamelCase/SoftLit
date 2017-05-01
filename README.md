@@ -9,6 +9,7 @@
 - Render more detailed scenes
 - More complex VS + FS
 - SSAA/MSAA
+- Pre/post xform cache
 - Cmake-ify project
 
 # Dependencies
