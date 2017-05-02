@@ -50,7 +50,7 @@ int main(int argc, char* argv[])
 	vector<Primitive*> objects;
 
 	//TODO: Handle multiple objects in a single .obj
-	ImportOBJ(objects, "../bunny.obj");
+	ImportOBJ(objects, "../monkey.obj");
 
 	DBG_ASSERT(!objects.empty() && "Failed to import models!");
 
@@ -113,10 +113,9 @@ int main(int argc, char* argv[])
 	// Init SDL
 	Display display(width, height, false);
 
-	bool paused = false;
-
 	SDL_Event event;
 	bool running = true;
+	bool paused = false;
 	while (running)
 	{
 		while (SDL_PollEvent(&event))
@@ -127,7 +126,7 @@ int main(int argc, char* argv[])
 				switch (event.key.keysym.scancode)
 				{
 				case SDL_SCANCODE_SPACE:
-					paused = (event.key.keysym.scancode == SDL_SCANCODE_SPACE);
+					paused = !paused;
 					break;
 				case SDL_SCANCODE_ESCAPE:
 					running = false;
@@ -139,9 +138,6 @@ int main(int argc, char* argv[])
 			case SDL_KEYUP:
 				switch (event.key.keysym.scancode)
 				{
-				case SDL_SCANCODE_SPACE:
-					paused = false;
-					break;
 				default:
 					break;
 				}
