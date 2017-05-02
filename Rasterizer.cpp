@@ -204,7 +204,9 @@ void Rasterizer::Draw(Primitive* prim)
 		vec2 v2Raster = { (v2NDC.x + 1) / 2 * m_setup.viewport.width, (1 - v2NDC.y) / 2 * m_setup.viewport.height };
 
 		const float triCoverage = PixelCoverage(v0Raster, v1Raster, v2Raster);
-		if (signbit(triCoverage) && prim->getPrimitiveSetup().cullMode == CullMode::CULL_BACK) continue;
+		if (prim->getPrimitiveSetup().cullMode == CullMode::CULL_BACK &&
+			(!signbit(triCoverage) && m_setup.vertexWinding == VertexWinding::CLOCKWISE) ||
+			(signbit(triCoverage) && m_setup.vertexWinding == VertexWinding::COUNTER_CLOCKWISE)) continue;
 
 		Viewport vp;
 		if (!clip2D(v0Raster, v1Raster, v2Raster, vp)) continue;

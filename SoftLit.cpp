@@ -50,7 +50,7 @@ int main(int argc, char* argv[])
 	vector<Primitive*> objects;
 
 	//TODO: Handle multiple objects in a single .obj
-	ImportOBJ(objects, "../monkey.obj");
+	ImportOBJ(objects, "../cube.obj");
 
 	DBG_ASSERT(!objects.empty() && "Failed to import models!");
 
