@@ -9,6 +9,7 @@
 
 #define WIDTH 1280
 #define HEIGHT 720
+#define DISPLAY_FULLSCREEN false
 
 using namespace std;
 using namespace glm;
@@ -35,8 +36,13 @@ vec4 VS_Simple(const glm::vec3& pos, mat_ubo* ubo, const Vertex_IN* const in, Ve
 // FS
 vec4 FS_Simple(mat_ubo* ubo, const Vertex_OUT* const in)
 {
-	// Simply color normals
-	return vec4(abs(in->attrib_vec3[0]), 1);
+	// Output normals
+	const vec3& normal = in->attrib_vec3[0];
+	vec3 outColor = normal * 0.5f + 0.5f;
+
+	return vec4(outColor, 1);
+
+	//return vec4(1, 0, 0, 1);
 }
 
 void ImportOBJ(vector<Primitive*>& objects, const string&);
@@ -111,7 +117,7 @@ int main(int argc, char* argv[])
 
 #else
 	// Init SDL
-	Display display(width, height, false);
+	Display display(width, height, DISPLAY_FULLSCREEN);
 
 	SDL_Event event;
 	bool running = true;
@@ -136,11 +142,6 @@ int main(int argc, char* argv[])
 				}
 				break;
 			case SDL_KEYUP:
-				switch (event.key.keysym.scancode)
-				{
-				default:
-					break;
-				}
 				break;
 			case SDL_QUIT:
 				running = false;
