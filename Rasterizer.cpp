@@ -132,9 +132,9 @@ void Rasterizer::FetchVertexAttributes(Primitive* prim, uint64_t idx, Vertex_IN&
 	{
 		for (int i = 0; i < attribs.attrib_vec4.size(); i++)
 		{
-			in0.PushVertexAttribute(attribs.attrib_vec4[i][idx]);
-			in1.PushVertexAttribute(attribs.attrib_vec4[i][idx + 1]);
-			in2.PushVertexAttribute(attribs.attrib_vec4[i][idx + 2]);
+			in0.PushVertexAttribute(attribs.attrib_vec4[i][idx * 3]);
+			in1.PushVertexAttribute(attribs.attrib_vec4[i][idx * 3 + 1]);
+			in2.PushVertexAttribute(attribs.attrib_vec4[i][idx * 3 + 2]);
 		}
 	}
 
@@ -143,9 +143,9 @@ void Rasterizer::FetchVertexAttributes(Primitive* prim, uint64_t idx, Vertex_IN&
 	{
 		for (int i = 0; i < attribs.attrib_vec3.size(); i++)
 		{
-			in0.PushVertexAttribute(attribs.attrib_vec3[i][idx]);
-			in1.PushVertexAttribute(attribs.attrib_vec3[i][idx + 1]);
-			in2.PushVertexAttribute(attribs.attrib_vec3[i][idx + 2]);
+			in0.PushVertexAttribute(attribs.attrib_vec3[i][idx * 3]);
+			in1.PushVertexAttribute(attribs.attrib_vec3[i][idx * 3 + 1]);
+			in2.PushVertexAttribute(attribs.attrib_vec3[i][idx * 3+ 2]);
 		}
 	}
 
@@ -154,9 +154,9 @@ void Rasterizer::FetchVertexAttributes(Primitive* prim, uint64_t idx, Vertex_IN&
 	{
 		for (int i = 0; i < attribs.attrib_vec2.size(); i++)
 		{
-			in0.PushVertexAttribute(attribs.attrib_vec2[i][idx]);
-			in1.PushVertexAttribute(attribs.attrib_vec2[i][idx + 1]);
-			in2.PushVertexAttribute(attribs.attrib_vec2[i][idx + 2]);
+			in0.PushVertexAttribute(attribs.attrib_vec2[i][idx * 3]);
+			in1.PushVertexAttribute(attribs.attrib_vec2[i][idx * 3 + 1]);
+			in2.PushVertexAttribute(attribs.attrib_vec2[i][idx * 3 + 2]);
 		}
 	}
 }

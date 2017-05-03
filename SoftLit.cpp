@@ -41,8 +41,6 @@ vec4 FS_Simple(mat_ubo* ubo, const Vertex_OUT* const in)
 	vec3 outColor = normal * 0.5f + 0.5f;
 
 	return vec4(outColor, 1);
-
-	//return vec4(1, 0, 0, 1);
 }
 
 void ImportOBJ(vector<Primitive*>& objects, const string&);
@@ -56,7 +54,7 @@ int main(int argc, char* argv[])
 	vector<Primitive*> objects;
 
 	//TODO: Handle multiple objects in a single .obj
-	ImportOBJ(objects, "../cube.obj");
+	ImportOBJ(objects, "../bunny.obj");
 
 	DBG_ASSERT(!objects.empty() && "Failed to import models!");
 
@@ -70,7 +68,7 @@ int main(int argc, char* argv[])
 	vec3 lookat(0, 0, 0);
 	vec3 up(0, 1, 0);
 
-	mat4 view = lookAtRH(eye, lookat, up);
+	mat4 view = lookAt(eye, lookat, up);
 	mat4 proj = perspectiveRH(glm::radians(fov), (float)width / (float)height, 0.5f, 100.f);
 	mat4 model;
 
@@ -227,6 +225,7 @@ void ImportOBJ(vector<Primitive*>& objs, const string& filename)
 			{
 				DBG_ASSERT(indexBuffer[idx].vertex_index != -1);
 				const uint64_t vtxIndex = indexBuffer[idx].vertex_index;
+				ibo.push_back(vtxIndex);
 
 				if (hasNormals)
 				{
@@ -236,15 +235,14 @@ void ImportOBJ(vector<Primitive*>& objs, const string& filename)
 
 				if (hasUV)
 				{
+					DBG_ASSERT(indexBuffer[idx].texcoord_index != -1);
 					uvs.m_index.push_back(indexBuffer[idx].texcoord_index);
 				}
-
-				ibo.push_back(vtxIndex);
 			}
 
 			for (size_t f = 0; f < attribs.vertices.size(); f += 3) // 3 -> # of vertices in a triangle face
 			{
-				// has to have vertices
+				// object has to have vertices
 				const float p0 = attribs.vertices[f];
 				const float p1 = attribs.vertices[f + 1];
 				const float p2 = attribs.vertices[f + 2];
@@ -253,21 +251,21 @@ void ImportOBJ(vector<Primitive*>& objs, const string& filename)
 
 			if (hasNormals)
 			{
-				for (size_t i = 0; i < attribs.normals.size(); i += 3)
+				for (size_t f = 0; f < attribs.normals.size(); f += 3)
 				{
-					const float n0 = attribs.normals[i];
-					const float n1 = attribs.normals[i + 1];
-					const float n2 = attribs.normals[i + 2];
+					const float n0 = attribs.normals[f];
+					const float n1 = attribs.normals[f + 1];
+					const float n2 = attribs.normals[f + 2];
 					normals.m_data.push_back(vec3(n0, n1, n2));
 				}
 			}
 
 			if (hasUV)
 			{
-				for (size_t i = 0; i < attribs.texcoords.size(); i += 2)
+				for (size_t f = 0; f < attribs.texcoords.size(); f += 2)
 				{
-					const float uv0 = attribs.texcoords[i];
-					const float uv1 = attribs.texcoords[i + 1];
+					const float uv0 = attribs.texcoords[f];
+					const float uv1 = attribs.texcoords[f + 1];
 					uvs.m_data.push_back(vec2(uv0, uv1));
 				}
 			}
