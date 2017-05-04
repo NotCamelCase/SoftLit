@@ -170,9 +170,12 @@ void Rasterizer::Draw(Primitive* prim)
 	const uint64_t numTris = prim->getIndexBuffer().size() / 3;
 	DBG_ASSERT((prim->getIndexBuffer().size() % 3) == 0);
 
-	// Re-use VS attributes
+	// Re-use VS attributes per primitive
 	Vertex_IN in0, in1, in2;
 	Vertex_OUT out0, out1, out2;
+
+	// Re-use FS attributes per primitive
+	Vertex_OUT FS_attribs;
 
 	for (uint64_t i = 0; i < numTris; i++)
 	{
@@ -210,9 +213,6 @@ void Rasterizer::Draw(Primitive* prim)
 
 		Viewport vp;
 		if (!clip2D(v0Raster, v1Raster, v2Raster, vp)) continue;
-
-		// Re-use FS attributes
-		Vertex_OUT FS_attribs;
 
 		for (uint32_t y = vp.y; y <= vp.height; y++)
 		{

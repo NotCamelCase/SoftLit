@@ -54,7 +54,7 @@ int main(int argc, char* argv[])
 	vector<Primitive*> objects;
 
 	//TODO: Handle multiple objects in a single .obj
-	ImportOBJ(objects, "../bunny.obj");
+	ImportOBJ(objects, "../dragon.obj");
 
 	DBG_ASSERT(!objects.empty() && "Failed to import models!");
 
@@ -64,7 +64,7 @@ int main(int argc, char* argv[])
 
 	Rasterizer* rasterizer = new Rasterizer(rasterSetup);
 
-	vec3 eye(0, 0, -5);
+	vec3 eye(0, 0, -6);
 	vec3 lookat(0, 0, 0);
 	vec3 up(0, 1, 0);
 
