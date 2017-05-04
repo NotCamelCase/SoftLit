@@ -24,7 +24,7 @@ Rasterizer::~Rasterizer()
 	  -	 -	 -  -
 	vo	-	-	- v2
 */
-inline float Rasterizer::PixelCoverage(const vec2& a, const vec2& b, const vec2& c)
+inline float Rasterizer::PixelCoverage(const vec2& a, const vec2& b, const vec2& c) const
 {
 	const int winding = (m_setup.vertexWinding == VertexWinding::COUNTER_CLOCKWISE) ? 1 : -1;
 	const float x = (c.x - a.x) * (b.y - a.y) - (c.y - a.y) * (b.x - a.x);
@@ -60,7 +60,7 @@ bool softlit::Rasterizer::clip2D(const glm::vec2 & v0, const glm::vec2 & v1, con
 	return true;
 }
 
-void Rasterizer::InterpolateAttributes(const float z, const float w0, const float w1, const float w2, const Vertex_OUT& out0, const Vertex_OUT& out1, const Vertex_OUT& out2, Vertex_OUT& attribs)
+void Rasterizer::InterpolateAttributes(const float z, const float w0, const float w1, const float w2, const Vertex_OUT& out0, const Vertex_OUT& out1, const Vertex_OUT& out2, Vertex_OUT& attribs) const
 {
 	if (!out0.attrib_vec4.empty())
 	{
@@ -123,7 +123,7 @@ void Rasterizer::InterpolateAttributes(const float z, const float w0, const floa
 	}
 }
 
-void Rasterizer::FetchVertexAttributes(Primitive* prim, uint64_t idx, Vertex_IN& in0, Vertex_IN& in1, Vertex_IN& in2)
+void Rasterizer::FetchVertexAttributes(Primitive* prim, uint64_t idx, Vertex_IN& in0, Vertex_IN& in1, Vertex_IN& in2) const
 {
 	const VertexAttributes& attribs = prim->getVertexAttributes();
 

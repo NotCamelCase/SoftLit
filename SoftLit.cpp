@@ -187,7 +187,7 @@ int main(int argc, char* argv[])
 
 	SAFE_DELETE(rasterizer);
 
-	return 0;
+	return EXIT_SUCCESS;
 }
 
 void ImportOBJ(vector<Primitive*>& objs, const string& filename)

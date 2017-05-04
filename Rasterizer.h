@@ -27,7 +27,7 @@ namespace softlit
 
 		RasterizerSetup m_setup;
 
-		float PixelCoverage(const glm::vec2& a, const glm::vec2& b, const glm::vec2& c);
+		float PixelCoverage(const glm::vec2& a, const glm::vec2& b, const glm::vec2& c) const;
 
 		void InvalidateBuffers()
 		{
@@ -44,9 +44,9 @@ namespace softlit
 		bool clip2D(const glm::vec2& v0, const glm::vec2& v1, const glm::vec2& v2, Viewport&) const;
 
 		/* Generates and fills in perspectively-correct interpolated barycentric fragment shader attributes to be passed */
-		void InterpolateAttributes(const float z, const float w0, const float w1, const float w2, const Vertex_OUT& out0, const Vertex_OUT& out1, const Vertex_OUT& out2, Vertex_OUT& attribs);
+		void InterpolateAttributes(const float z, const float w0, const float w1, const float w2, const Vertex_OUT& out0, const Vertex_OUT& out1, const Vertex_OUT& out2, Vertex_OUT& attribs) const;
 
 		/* Fetch vertex attributes from primitive's attribute buffer and fill in corresponding vertex attributes */
-		void FetchVertexAttributes(Primitive* prim, uint64_t idx, Vertex_IN& in0, Vertex_IN& in1, Vertex_IN& in2);
+		void FetchVertexAttributes(Primitive* prim, uint64_t idx, Vertex_IN& in0, Vertex_IN& in1, Vertex_IN& in2) const;
 	};
 }
