@@ -17,6 +17,6 @@
 - GLM
 - tinyobjloader
 
-![Test](http://imgur.com/Z0xZwuD)
+![Test](http://imgur.com/Z0xZwuD.png)
 
 Stay Tuned!
