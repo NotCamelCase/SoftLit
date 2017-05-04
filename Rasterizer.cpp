@@ -76,7 +76,7 @@ void Rasterizer::InterpolateAttributes(const float z, const float w0, const floa
 			const vec4& attr1 = out1.attrib_vec4[i];
 			const vec4& attr2 = out2.attrib_vec4[i];
 
-			vec3 attrib = w0 * attr0 + w1 * attr1 + w2 * attr2;
+			vec4 attrib = w0 * attr0 + w1 * attr1 + w2 * attr2;
 
 			attribs.PushVertexAttribute(attrib * z);
 		}
@@ -145,7 +145,7 @@ void Rasterizer::FetchVertexAttributes(Primitive* prim, uint64_t idx, Vertex_IN&
 		{
 			in0.PushVertexAttribute(attribs.attrib_vec3[i][idx * 3]);
 			in1.PushVertexAttribute(attribs.attrib_vec3[i][idx * 3 + 1]);
-			in2.PushVertexAttribute(attribs.attrib_vec3[i][idx * 3+ 2]);
+			in2.PushVertexAttribute(attribs.attrib_vec3[i][idx * 3 + 2]);
 		}
 	}
 
