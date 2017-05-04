@@ -13,9 +13,9 @@
 - Cmake-ify project
 
 # Dependencies
-- SDL
-- GLM
-- tinyobjloader
+- [SDL](https://www.libsdl.org/)
+- [GLM](http://glm.g-truc.net/0.9.8/index.html)
+- [tinyobjloader](http://syoyo.github.io/tinyobjloader/)
 
 ![Test](http://imgur.com/Z0xZwuD.png)
 
