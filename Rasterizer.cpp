@@ -42,7 +42,7 @@ void Rasterizer::SetupTriangle(Primitive* prim, const uint64_t idx, glm::vec3& v
 	v2 = vbo[ibo[idx * 3 + 2]];
 }
 
-bool softlit::Rasterizer::clip2D(const glm::vec2 & v0, const glm::vec2 & v1, const glm::vec2 & v2, Viewport& vp) const
+bool softlit::Rasterizer::Clip2D(const glm::vec2 & v0, const glm::vec2 & v1, const glm::vec2 & v2, Viewport& vp) const
 {
 	float xmin = fminf(v0.x, fminf(v1.x, v2.x));
 	float xmax = fmaxf(v0.x, fmaxf(v1.x, v2.x));
@@ -123,10 +123,8 @@ void Rasterizer::InterpolateAttributes(const float z, const float w0, const floa
 	}
 }
 
-void Rasterizer::FetchVertexAttributes(Primitive* prim, uint64_t idx, Vertex_IN& in0, Vertex_IN& in1, Vertex_IN& in2) const
+void Rasterizer::FetchVertexAttributes(const VertexAttributes& attribs, const uint64_t idx, Vertex_IN& in0, Vertex_IN& in1, Vertex_IN& in2) const
 {
-	const VertexAttributes& attribs = prim->getVertexAttributes();
-
 	// Fetch attributes of type vec4
 	if (!attribs.attrib_vec4.empty()) // At least one vec4 attribute buffer created
 	{
@@ -163,9 +161,6 @@ void Rasterizer::FetchVertexAttributes(Primitive* prim, uint64_t idx, Vertex_IN&
 
 void Rasterizer::Draw(Primitive* prim)
 {
-	// Pre-draw, invalidate frame and depth buffers
-	InvalidateBuffers();
-
 	// Only raster primitive is triangle
 	const uint64_t numTris = prim->getIndexBuffer().size() / 3;
 	DBG_ASSERT((prim->getIndexBuffer().size() % 3) == 0);
@@ -189,7 +184,7 @@ void Rasterizer::Draw(Primitive* prim)
 
 		in0.ResetData(); in1.ResetData(); in2.ResetData();
 		out0.ResetData(); out1.ResetData(); out2.ResetData();
-		FetchVertexAttributes(prim, i, in0, in1, in2);
+		FetchVertexAttributes(prim->getVertexAttributes(), i, in0, in1, in2);
 
 		// Execute VS for each vertex
 		const vec4 v0Clip = VS(v0, ubo, &in0, &out0);
@@ -212,7 +207,7 @@ void Rasterizer::Draw(Primitive* prim)
 			(signbit(triCoverage) && m_setup.vertexWinding == VertexWinding::COUNTER_CLOCKWISE)) continue;
 
 		Viewport vp;
-		if (!clip2D(v0Raster, v1Raster, v2Raster, vp)) continue;
+		if (!Clip2D(v0Raster, v1Raster, v2Raster, vp)) continue;
 
 		for (uint32_t y = vp.y; y <= vp.height; y++)
 		{

@@ -154,6 +154,9 @@ int main(int argc, char* argv[])
 		{
 			display.ClearRenderTarget(ivec3(0, 0, 0));
 
+			// Pre-draw, invalidate frame and depth buffers
+			rasterizer->ClearBuffers();
+
 			for (Primitive* prim : objects)
 			{
 				model = rotate(model, 0.025f, vec3(0, 1, 0));
