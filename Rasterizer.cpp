@@ -177,7 +177,7 @@ void Rasterizer::Draw(Primitive* prim)
 		vec3 v0, v1, v2;
 		SetupTriangle(prim, i, v0, v1, v2);
 
-		const vertex_shader VS = prim->VS();
+		const vertex_shader VS = prim->getVS();
 		DBG_ASSERT(VS && "invalid vertex_shader!");
 
 		UniformBuffer ubo = prim->UBO();
@@ -249,7 +249,7 @@ void Rasterizer::Draw(Primitive* prim)
 						const float w = 1.f - u - v;
 
 						InterpolateAttributes(u, v, w, out0, out1, out2, FS_attribs);
-						const fragment_shader FS = prim->FS();
+						const fragment_shader FS = prim->getFS();
 						const vec4 final_fragment = FS(ubo, &FS_attribs);
 
 						m_frameBuffer[y * m_setup.viewport.width + x] = final_fragment;

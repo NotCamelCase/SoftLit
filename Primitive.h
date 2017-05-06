@@ -88,10 +88,10 @@ namespace softlit
 	typedef void* UniformBuffer;
 
 	// vertex_shader to be run per-vertex. returned vec4() is vertex converted to clip-coordinates
-	typedef glm::vec4(*vertex_shader)(const glm::vec3& pos, UniformBuffer ubo, const Vertex_IN* const in, Vertex_OUT* out);
+	typedef glm::vec4(*vertex_shader)(const glm::vec3& pos, const UniformBuffer ubo, const Vertex_IN* const in, Vertex_OUT* out);
 
 	// fragment_shader to output final render target values
-	typedef glm::vec4(*fragment_shader)(UniformBuffer ubo, const Vertex_OUT* const in);
+	typedef glm::vec4(*fragment_shader)(const UniformBuffer ubo, const Vertex_OUT* const in);
 
 	class Primitive
 	{
@@ -105,11 +105,11 @@ namespace softlit
 		void setVertexBuffer(const VertexBuffer& vb) { m_vertexBuffer = vb; }
 		void setIndexBuffer(const IndexBuffer& ib) { m_indexBuffer = ib; }
 
-		vertex_shader VS() { return m_VS; }
-		fragment_shader FS() { return m_FS; }
+		vertex_shader getVS() { return m_VS; }
+		fragment_shader getFS() { return m_FS; }
 
-		void VS(const vertex_shader vs) { m_VS = vs; }
-		void FS(const fragment_shader fs) { m_FS = fs; }
+		void setVS(const vertex_shader vs) { m_VS = vs; }
+		void setFS(const fragment_shader fs) { m_FS = fs; }
 
 		UniformBuffer UBO() { return m_ubo; }
 		void UBO(UniformBuffer ubo) { m_ubo = ubo; }
