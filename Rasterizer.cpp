@@ -60,7 +60,7 @@ bool softlit::Rasterizer::Clip2D(const glm::vec2 & v0, const glm::vec2 & v1, con
 	return true;
 }
 
-void Rasterizer::InterpolateAttributes(const float z, const float w0, const float w1, const float w2, const Vertex_OUT& out0, const Vertex_OUT& out1, const Vertex_OUT& out2, Vertex_OUT& attribs) const
+void Rasterizer::InterpolateAttributes(const float u, const float v, const float w, const Vertex_OUT& out0, const Vertex_OUT& out1, const Vertex_OUT& out2, Vertex_OUT& attribs) const
 {
 	if (!out0.attrib_vec4.empty())
 	{
@@ -76,9 +76,9 @@ void Rasterizer::InterpolateAttributes(const float z, const float w0, const floa
 			const vec4& attr1 = out1.attrib_vec4[i];
 			const vec4& attr2 = out2.attrib_vec4[i];
 
-			vec4 attrib = w0 * attr0 + w1 * attr1 + w2 * attr2;
+			vec4 attrib = u * attr0 + v * attr1 + w * attr2;
 
-			attribs.PushVertexAttribute(attrib * z);
+			attribs.PushVertexAttribute(attrib);
 		}
 	}
 
@@ -96,9 +96,9 @@ void Rasterizer::InterpolateAttributes(const float z, const float w0, const floa
 			const vec3& attr1 = out1.attrib_vec3[i];
 			const vec3& attr2 = out2.attrib_vec3[i];
 
-			vec3 attrib = w0 * attr0 + w1 * attr1 + w2 * attr2;
+			vec3 attrib = u * attr0 + v * attr1 + w * attr2;
 
-			attribs.PushVertexAttribute(attrib * z);
+			attribs.PushVertexAttribute(attrib);
 		}
 	}
 
@@ -116,9 +116,9 @@ void Rasterizer::InterpolateAttributes(const float z, const float w0, const floa
 			const vec2& attr1 = out1.attrib_vec2[i];
 			const vec2& attr2 = out2.attrib_vec2[i];
 
-			vec2 attrib = w0 * attr0 + w1 * attr1 + w2 * attr2;
+			vec2 attrib = u * attr0 + v * attr1 + w * attr2;
 
-			attribs.PushVertexAttribute(attrib * z);
+			attribs.PushVertexAttribute(attrib);
 		}
 	}
 }
@@ -191,10 +191,14 @@ void Rasterizer::Draw(Primitive* prim)
 		const vec4 v1Clip = VS(v1, ubo, &in1, &out1);
 		const vec4 v2Clip = VS(v2, ubo, &in2, &out2);
 
+		const float oneOverW0 = 1.f / v0Clip.w;
+		const float oneOverW1 = 1.f / v1Clip.w;
+		const float oneOverW2 = 1.f / v2Clip.w;
+
 		// Perspective-divide and convert to NDC
-		const vec3 v0NDC = v0Clip / v0Clip.w;
-		const vec3 v1NDC = v1Clip / v1Clip.w;
-		const vec3 v2NDC = v2Clip / v2Clip.w;
+		const vec3 v0NDC = v0Clip * oneOverW0;
+		const vec3 v1NDC = v1Clip * oneOverW1;
+		const vec3 v2NDC = v2Clip * oneOverW2;
 
 		// Now to frame buffer-coordinates
 		vec2 v0Raster = { (v0NDC.x + 1) / 2 * m_setup.viewport.width, (1 - v0NDC.y) / 2 * m_setup.viewport.height };
@@ -226,14 +230,25 @@ void Rasterizer::Draw(Primitive* prim)
 					w1 /= triCoverage;
 					w2 = 1.f - w0 - w1;
 
+					// Interpolate depth
 					float z = ((w0 * v0NDC.z) + (w1 * v1NDC.z) + (w2 * v2NDC.z));
+
 					if (z < m_depthBuffer[y * m_setup.viewport.width + x]) // Depth test; execute FS if passed & update z-buffer
 					{
 						m_depthBuffer[y * m_setup.viewport.width + x] = z;
 
 						FS_attribs.ResetData(); // Reset attribs pre-FS for each fragment
 
-						InterpolateAttributes(z, w0, w1, w2, out0, out1, out2, FS_attribs);
+						const float f0 = w0 * oneOverW0;
+						const float f1 = w1 * oneOverW1;
+						const float f2 = w2 * oneOverW2;
+
+						// Calc barycentric coordinates for perspectively-correct interpolation
+						const float u = f0 / (f0 + f1 + f2);
+						const float v = f1 / (f0 + f1 + f2);
+						const float w = 1.f - u - v;
+
+						InterpolateAttributes(u, v, w, out0, out1, out2, FS_attribs);
 						const fragment_shader FS = prim->FS();
 						const vec4 final_fragment = FS(ubo, &FS_attribs);
 

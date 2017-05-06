@@ -27,8 +27,8 @@ struct mat_ubo
 // VS
 vec4 VS_Simple(const glm::vec3& pos, mat_ubo* ubo, const Vertex_IN* const in, Vertex_OUT* out)
 {
-	const vec3& normal = in->attrib_vec3[0];
-	out->PushVertexAttribute(normal);
+	out->PushVertexAttribute(in->attrib_vec3[0]); // Push normal
+	//out->PushVertexAttribute(in->attrib_vec2[0]); // Push UV
 
 	return (ubo->MVP * vec4(pos, 1));
 }
@@ -36,11 +36,10 @@ vec4 VS_Simple(const glm::vec3& pos, mat_ubo* ubo, const Vertex_IN* const in, Ve
 // FS
 vec4 FS_Simple(mat_ubo* ubo, const Vertex_OUT* const in)
 {
-	// Output normals
-	const vec3 normal = normalize(in->attrib_vec3[0]);
-	vec3 outColor = normal * 0.5f + 0.5f;
+	const vec3& normal = in->attrib_vec3[0];
+	const vec3 out = normal * 0.5f + 0.5f;
 
-	return vec4(outColor, 1);
+	return vec4(out, 1);
 }
 
 void ImportOBJ(vector<Primitive*>& objects, const string&);
@@ -54,7 +53,7 @@ int main(int argc, char* argv[])
 	vector<Primitive*> objects;
 
 	//TODO: Handle multiple objects in a single .obj
-	ImportOBJ(objects, "../dragon.obj");
+	ImportOBJ(objects, "../cube.obj");
 
 	DBG_ASSERT(!objects.empty() && "Failed to import models!");
 
