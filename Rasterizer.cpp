@@ -203,12 +203,13 @@ void Rasterizer::Draw(Primitive* prim)
 
 		const float triCoverage = PixelCoverage(v0Raster, v1Raster, v2Raster);
 		if (prim->getPrimitiveSetup().cullMode == CullMode::CULL_BACK &&
-			(!signbit(triCoverage) && m_setup.vertexWinding == VertexWinding::CLOCKWISE) ||
-			(signbit(triCoverage) && m_setup.vertexWinding == VertexWinding::COUNTER_CLOCKWISE)) continue;
+			(triCoverage > FLT_EPSILON && m_setup.vertexWinding == VertexWinding::CLOCKWISE) ||
+			(triCoverage <= FLT_EPSILON && m_setup.vertexWinding == VertexWinding::COUNTER_CLOCKWISE)) continue;
 
 		Viewport vp;
 		if (!Clip2D(v0Raster, v1Raster, v2Raster, vp)) continue;
 
+		// Triangle traversal
 		for (uint32_t y = vp.y; y <= vp.height; y++)
 		{
 			for (uint32_t x = vp.x; x <= vp.width; x++)

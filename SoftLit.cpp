@@ -27,7 +27,7 @@ struct mat_ubo
 // VS
 vec4 VS_Simple(const glm::vec3& pos, mat_ubo* ubo, const Vertex_IN* const in, Vertex_OUT* out)
 {
-	vec3 normal = normalize(in->attrib_vec3[0]);
+	const vec3 normal = normalize(in->attrib_vec3[0]);
 	out->PushVertexAttribute(normal);
 
 	return (ubo->MVP * vec4(pos, 1));
@@ -69,7 +69,7 @@ int main(int argc, char* argv[])
 	vec3 up(0, 1, 0);
 
 	mat4 view = lookAt(eye, lookat, up);
-	mat4 proj = perspectiveRH(glm::radians(fov), (float)width / (float)height, 0.5f, 100.f);
+	mat4 proj = perspective(glm::radians(fov), (float)width / (float)height, 0.5f, 100.f);
 	mat4 model;
 
 	// Create primitive shading data
