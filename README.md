@@ -3,7 +3,8 @@
 Software Rasterizer in progress!
 
 # TODO
-- Parallelize rasterization & texturing
+- Parallelize rasterization
+- Texture mapping
 - Polygon clipping
 - Render more detailed scenes
 - More complex VS + FS
