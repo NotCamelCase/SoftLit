@@ -15,6 +15,7 @@ Software Rasterizer in progress!
 - [SDL](https://www.libsdl.org/)
 - [GLM](http://glm.g-truc.net/0.9.8/index.html)
 - [tinyobjloader](http://syoyo.github.io/tinyobjloader/)
+- [stb_image](https://github.com/nothings/stb)
 
 ![Test](http://imgur.com/Z0xZwuD.png)
 
