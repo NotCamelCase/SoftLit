@@ -14,11 +14,8 @@ namespace softlit
 		~Rasterizer();
 
 		const FrameBuffer& getFrameBuffer() const { return m_frameBuffer; }
-		const DepthBuffer& getZBuffer() const { return m_depthBuffer; }
 
-		/*
-		* Rasterize given primitive set
-		*/
+		/* Rasterize a given 3-D primitive object by transforming its vertices to clip-space via VS, depth testing and calculating fragment output color via FS */
 		void Draw(Primitive* prim);
 
 		/* Clear depth and frame buffers pre-draw */
@@ -34,11 +31,10 @@ namespace softlit
 
 		RasterizerSetup m_setup;
 
+		/* Edge function to check whether pixel is covered by triangle or not */
 		float PixelCoverage(const glm::vec2& a, const glm::vec2& b, const glm::vec2& c) const;
 
-		/*
-		* Set ups a triangle based on index into the index buffer of primitive and triangle topology e.g TRIANGLE_LIST, TRIANGLE_STRIP
-		*/
+		/* Set ups a triangle based on index into the index buffer of primitive and triangle topology e.g TRIANGLE_LIST, TRIANGLE_STRIP */
 		void SetupTriangle(Primitive* primitive, const uint64_t idx, glm::vec3& v0, glm::vec3& v1, glm::vec3& v2) const;
 
 		// Apply 2D viewport clipping

@@ -85,6 +85,8 @@ int main(int argc, char* argv[])
 	}
 
 #ifdef SINGLE_FRAME_OUTPUT
+	rasterizer->ClearBuffers();
+
 	for (Primitive* prim : objects)
 	{
 		//model = rotate(model, 0.025f, vec3(0, 1, 0));
@@ -105,12 +107,14 @@ int main(int argc, char* argv[])
 	fprintf(f, "P3\n%d %d\n%d\n ", WIDTH, HEIGHT, 255);
 	for (int32_t i = 0; i < WIDTH * HEIGHT; ++i)
 	{
-		uint r = (255 * frameBuffer[i].x);
-		uint g = (255 * frameBuffer[i].y);
-		uint b = (255 * frameBuffer[i].z);
+		uint r = (uint)(255 * frameBuffer[i].x);
+		uint g = (uint)(255 * frameBuffer[i].y);
+		uint b = (uint)(255 * frameBuffer[i].z);
 		fprintf(f, "%d %d %d ", r, g, b);
 	}
 	fclose(f);
+
+	printf("DONE\n");
 
 #else
 	// Init SDL
