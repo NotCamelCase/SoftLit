@@ -3,6 +3,7 @@
 3D Software Rasterizer in progress!
 
 # TODO
+- Parallelize rasterization
 - Texturing, MIPMAP, filtering
 - Polygon clipping
 - Render more detailed scenes

@@ -53,7 +53,7 @@ int main(int argc, char* argv[])
 	vector<Primitive*> objects;
 
 	//TODO: Handle multiple objects in a single .obj
-	ImportOBJ(objects, "../dragon.obj");
+	ImportOBJ(objects, "../assets/dragon.obj");
 
 	DBG_ASSERT(!objects.empty() && "Failed to import models!");
 
