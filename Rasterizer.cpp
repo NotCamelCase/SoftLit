@@ -213,6 +213,16 @@ void Rasterizer::Draw(Primitive* prim)
 		Viewport vp;
 		if (!Clip2D(v0Raster, v1Raster, v2Raster, vp)) continue;
 
+		// Store edges
+		const vec2 edge0 = v2 - v1;
+		const vec2 edge1 = v0 - v2;
+		const vec2 edge2 = v1 - v0;
+
+		// Pre-compute a flag for each edge to check for shared vertices and only include bottom/left edges
+		const bool t0 = (edge0.x != 0) ? (edge0.x > 0) : (edge0.y > 0);
+		const bool t1 = (edge1.x != 0) ? (edge1.x > 0) : (edge1.y > 0);
+		const bool t2 = (edge2.x != 0) ? (edge2.x > 0) : (edge2.y > 0);
+
 		// Triangle traversal
 		for (uint32_t y = vp.y; y <= vp.height; y++)
 		{
@@ -220,18 +230,24 @@ void Rasterizer::Draw(Primitive* prim)
 			{
 				vec2 sample = { x + 0.5f, y + 0.5f };
 
-				float w0 = PixelCoverage(v1Raster, v2Raster, sample);
-				float w1 = PixelCoverage(v2Raster, v0Raster, sample);
-				float w2 = PixelCoverage(v0Raster, v1Raster, sample);
+				// Evaluate edge functions on sample
+				float e0 = PixelCoverage(v1Raster, v2Raster, sample);
+				float e1 = PixelCoverage(v2Raster, v0Raster, sample);
+				float e2 = PixelCoverage(v0Raster, v1Raster, sample);
 
-				if (w0 >= 0 && w1 >= 0 && w2 >= 0)
+				bool included = true;
+				included &= (e0 == 0) ? t0 : (e0 > 0);
+				included &= (e1 == 0) ? t1 : (e1 > 0);
+				included &= (e2 == 0) ? t2 : (e2 > 0);
+
+				if (included)
 				{
-					w0 /= triCoverage;
-					w1 /= triCoverage;
-					w2 = 1.f - w0 - w1;
+					e0 /= triCoverage;
+					e1 /= triCoverage;
+					e2 = 1.f - e0 - e1;
 
 					// Interpolate depth
-					float z = ((w0 * v0NDC.z) + (w1 * v1NDC.z) + (w2 * v2NDC.z));
+					float z = (e0 * v0NDC.z) + (e1 * v1NDC.z) + (e2 * v2NDC.z);
 
 					if (z < m_depthBuffer[y * m_setup.viewport.width + x]) // Depth test; execute FS if passed & update z-buffer
 					{
@@ -239,9 +255,9 @@ void Rasterizer::Draw(Primitive* prim)
 
 						FS_attribs.ResetData(); // Reset attribs pre-FS for each fragment
 
-						const float f0 = w0 * oneOverW0;
-						const float f1 = w1 * oneOverW1;
-						const float f2 = w2 * oneOverW2;
+						const float f0 = e0 * oneOverW0;
+						const float f1 = e1 * oneOverW1;
+						const float f2 = e2 * oneOverW2;
 
 						// Calc barycentric coordinates for perspectively-correct interpolation
 						const float u = f0 / (f0 + f1 + f2);
