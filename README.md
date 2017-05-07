@@ -3,7 +3,6 @@
 3D Software Rasterizer in progress!
 
 # TODO
-- Resolve vertex duplication
 - Texturing, MIPMAP, filtering
 - Polygon clipping
 - Render more detailed scenes
