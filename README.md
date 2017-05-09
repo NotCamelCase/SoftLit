@@ -17,6 +17,6 @@ Software Rasterizer in progress!
 - [tinyobjloader](http://syoyo.github.io/tinyobjloader/)
 - [stb_image](https://github.com/nothings/stb)
 
-![Test](http://imgur.com/Z0xZwuD.png)
+![Test](http://imgur.com/DpGmi3F.gif)
 
 Stay Tuned!
