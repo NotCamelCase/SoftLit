@@ -60,8 +60,10 @@ void Display::Present()
 
 void Display::UpdateColorBuffer(const vector<vec4>& frameBuffer)
 {
-	const uint32_t fbDim = m_width  * m_height * 4;
-	for (uint32_t i = 0; i < fbDim; i += 4)
+	const int32_t fbDim = m_width  * m_height * 4;
+
+#pragma omp parallel for
+	for (int32_t i = 0; i < fbDim; i += 4)
 	{
 		vec4 rgba = frameBuffer[i / 4];
 		rgba = glm::clamp(rgba, 0.f, 1.f); // Clamp color value

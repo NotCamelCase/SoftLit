@@ -36,8 +36,7 @@ vec4 VS_Simple(const glm::vec3& pos, const mat_ubo* const ubo, const Vertex_IN* 
 // FS
 vec4 FS_Simple(const mat_ubo* const ubo, const Vertex_OUT* const in)
 {
-	const vec3& normal = in->attrib_vec3[0];
-	const vec3 out = normal * 0.5f + 0.5f;
+	const vec3 out = in->attrib_vec3[0]  * 0.5f + 0.5f;
 
 	return vec4(out, 1);
 }
@@ -183,6 +182,7 @@ int main(int argc, char* argv[])
 		const auto presentBegin = chrono::high_resolution_clock::now();
 		display.Present();
 		const auto presentEnd = chrono::high_resolution_clock::now();
+		//printf("Display time: %lld\n", chrono::duration_cast<chrono::milliseconds> (presentEnd - presentBegin).count());
 
 		printf("Frame time: %lld\n", chrono::duration_cast<chrono::milliseconds> (presentEnd - drawBegin).count());
 	}

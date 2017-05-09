@@ -162,7 +162,7 @@ void Rasterizer::FetchVertexAttributes(const VertexAttributes& attribs, const ui
 void Rasterizer::Draw(Primitive* prim)
 {
 	// Only raster primitive is triangle
-	const uint64_t numTris = prim->getIndexBuffer().size() / 3;
+	const int64_t numTris = prim->getIndexBuffer().size() / 3;
 	DBG_ASSERT((prim->getIndexBuffer().size() % 3) == 0);
 
 	// Re-use VS attributes per primitive
@@ -172,7 +172,8 @@ void Rasterizer::Draw(Primitive* prim)
 	// Re-use FS attributes per primitive
 	Vertex_OUT FS_attribs;
 
-	for (uint64_t i = 0; i < numTris; i++)
+#pragma omp parallel for private(in0, in1, in2, out0, out1, out2, FS_attribs)
+	for (int64_t i = 0; i < numTris; i++)
 	{
 		vec3 v0, v1, v2;
 		SetupTriangle(prim, i, v0, v1, v2);
