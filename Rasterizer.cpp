@@ -44,18 +44,18 @@ void Rasterizer::SetupTriangle(Primitive* prim, const uint64_t idx, glm::vec3& v
 
 bool softlit::Rasterizer::Clip2D(const glm::vec2 & v0, const glm::vec2 & v1, const glm::vec2 & v2, Viewport& vp) const
 {
-	float xmin = fminf(v0.x, fminf(v1.x, v2.x));
-	float xmax = fmaxf(v0.x, fmaxf(v1.x, v2.x));
-	float ymin = fminf(v0.y, fminf(v1.y, v2.y));
-	float ymax = fmaxf(v0.y, fmaxf(v1.y, v2.y));
+	float xmin = min(v0.x, min(v1.x, v2.x));
+	float xmax = max(v0.x, max(v1.x, v2.x));
+	float ymin = min(v0.y, min(v1.y, v2.y));
+	float ymax = max(v0.y, max(v1.y, v2.y));
 
 	// Early-out when viewport bounds exceeded
 	if (xmin + 1 > m_setup.viewport.width || xmax < 0 || ymin + 1 > m_setup.viewport.height || ymax < 0) return false;
 
-	vp.x = max<int>(0, (int32_t)xmin);
-	vp.width = min<int>(m_setup.viewport.width - 1, (int32_t)xmax);
-	vp.y = max<int>(0, (int32_t)ymin);
-	vp.height = min<int>(m_setup.viewport.height - 1, (int32_t)ymax);
+	vp.x = max<int32_t>(0, (int32_t)xmin);
+	vp.width = min<int32_t>(m_setup.viewport.width - 1, (int32_t)xmax);
+	vp.y = max<int32_t>(0, (int32_t)ymin);
+	vp.height = min<int32_t>(m_setup.viewport.height - 1, (int32_t)ymax);
 
 	return true;
 }
@@ -130,9 +130,9 @@ void Rasterizer::FetchVertexAttributes(const VertexAttributes& attribs, const ui
 	{
 		for (int i = 0; i < attribs.attrib_vec4.size(); i++)
 		{
-			in0.PushVertexAttribute(attribs.attrib_vec4[i][idx * 3]);
-			in1.PushVertexAttribute(attribs.attrib_vec4[i][idx * 3 + 1]);
-			in2.PushVertexAttribute(attribs.attrib_vec4[i][idx * 3 + 2]);
+			in0.attrib_vec4[i] = attribs.attrib_vec4[i][idx * 3];
+			in1.attrib_vec4[i] = attribs.attrib_vec4[i][idx * 3 + 1];
+			in2.attrib_vec4[i] = attribs.attrib_vec4[i][idx * 3 + 2];
 		}
 	}
 
@@ -141,9 +141,9 @@ void Rasterizer::FetchVertexAttributes(const VertexAttributes& attribs, const ui
 	{
 		for (int i = 0; i < attribs.attrib_vec3.size(); i++)
 		{
-			in0.PushVertexAttribute(attribs.attrib_vec3[i][idx * 3]);
-			in1.PushVertexAttribute(attribs.attrib_vec3[i][idx * 3 + 1]);
-			in2.PushVertexAttribute(attribs.attrib_vec3[i][idx * 3 + 2]);
+			in0.attrib_vec3[i] = attribs.attrib_vec3[i][idx * 3];
+			in1.attrib_vec3[i] = attribs.attrib_vec3[i][idx * 3 + 1];
+			in2.attrib_vec3[i] = attribs.attrib_vec3[i][idx * 3 + 2];
 		}
 	}
 
@@ -152,9 +152,9 @@ void Rasterizer::FetchVertexAttributes(const VertexAttributes& attribs, const ui
 	{
 		for (int i = 0; i < attribs.attrib_vec2.size(); i++)
 		{
-			in0.PushVertexAttribute(attribs.attrib_vec2[i][idx * 3]);
-			in1.PushVertexAttribute(attribs.attrib_vec2[i][idx * 3 + 1]);
-			in2.PushVertexAttribute(attribs.attrib_vec2[i][idx * 3 + 2]);
+			in0.attrib_vec2[i] = attribs.attrib_vec2[i][idx * 3];
+			in1.attrib_vec2[i] = attribs.attrib_vec2[i][idx * 3 + 1];
+			in2.attrib_vec2[i] = attribs.attrib_vec2[i][idx * 3 + 2];
 		}
 	}
 }
