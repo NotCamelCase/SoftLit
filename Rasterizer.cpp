@@ -130,9 +130,9 @@ void Rasterizer::FetchVertexAttributes(const VertexAttributes& attribs, const ui
 	{
 		for (int i = 0; i < attribs.attrib_vec4.size(); i++)
 		{
-			in0.attrib_vec4[i] = attribs.attrib_vec4[i][idx * 3];
-			in1.attrib_vec4[i] = attribs.attrib_vec4[i][idx * 3 + 1];
-			in2.attrib_vec4[i] = attribs.attrib_vec4[i][idx * 3 + 2];
+			in0.PushVertexAttribute(attribs.attrib_vec4[i][idx * 3]);
+			in1.PushVertexAttribute(attribs.attrib_vec4[i][idx * 3 + 1]);
+			in2.PushVertexAttribute(attribs.attrib_vec4[i][idx * 3 + 2]);
 		}
 	}
 
@@ -141,9 +141,9 @@ void Rasterizer::FetchVertexAttributes(const VertexAttributes& attribs, const ui
 	{
 		for (int i = 0; i < attribs.attrib_vec3.size(); i++)
 		{
-			in0.attrib_vec3[i] = attribs.attrib_vec3[i][idx * 3];
-			in1.attrib_vec3[i] = attribs.attrib_vec3[i][idx * 3 + 1];
-			in2.attrib_vec3[i] = attribs.attrib_vec3[i][idx * 3 + 2];
+			in0.PushVertexAttribute(attribs.attrib_vec3[i][idx * 3]);
+			in1.PushVertexAttribute(attribs.attrib_vec3[i][idx * 3 + 1]);
+			in2.PushVertexAttribute(attribs.attrib_vec3[i][idx * 3 + 2]);
 		}
 	}
 
@@ -152,9 +152,9 @@ void Rasterizer::FetchVertexAttributes(const VertexAttributes& attribs, const ui
 	{
 		for (int i = 0; i < attribs.attrib_vec2.size(); i++)
 		{
-			in0.attrib_vec2[i] = attribs.attrib_vec2[i][idx * 3];
-			in1.attrib_vec2[i] = attribs.attrib_vec2[i][idx * 3 + 1];
-			in2.attrib_vec2[i] = attribs.attrib_vec2[i][idx * 3 + 2];
+			in0.PushVertexAttribute(attribs.attrib_vec2[i][idx * 3]);
+			in1.PushVertexAttribute(attribs.attrib_vec2[i][idx * 3 + 1]);
+			in2.PushVertexAttribute(attribs.attrib_vec2[i][idx * 3 + 2]);
 		}
 	}
 }
