@@ -2,6 +2,8 @@
 
 Software Rasterizer in progress!
 
+![Test](http://imgur.com/DpGmi3F.gif)
+
 # TODO
 - Parallelize rasterization
 - Texture mapping
@@ -16,7 +18,5 @@ Software Rasterizer in progress!
 - [GLM](http://glm.g-truc.net/0.9.8/index.html)
 - [tinyobjloader](http://syoyo.github.io/tinyobjloader/)
 - [stb_image](https://github.com/nothings/stb)
-
-![Test](http://imgur.com/DpGmi3F.gif)
 
 Stay Tuned!
