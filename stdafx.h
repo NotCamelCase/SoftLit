@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 // Force right-handed coordinate system
+#define GLM_FORCE_INLINE 
 #if GLM_COORDINATE_SYSTEM != GLM_RIGHT_HANDED
 #undef GLM_COORDINATE_SYSTEM
 #define GLM_COORDINATE_SYSTEM GLM_RIGHT_HANDED
