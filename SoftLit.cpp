@@ -28,7 +28,6 @@ struct mat_ubo
 vec4 VS_Simple(const glm::vec3& pos, const mat_ubo* const ubo, const Vertex_IN* const in, Vertex_OUT* out)
 {
 	out->PushVertexAttribute(in->attrib_vec3[0]); // Push normal
-	//out->PushVertexAttribute(in->attrib_vec2[0]); // Push UV
 
 	return (ubo->MVP * vec4(pos, 1));
 }
@@ -36,9 +35,9 @@ vec4 VS_Simple(const glm::vec3& pos, const mat_ubo* const ubo, const Vertex_IN* 
 // FS
 vec4 FS_Simple(const mat_ubo* const ubo, const Vertex_OUT* const in)
 {
-	const vec3 out = in->attrib_vec3[0] * 0.5f + 0.5f;
+	const vec3 outcol = in->attrib_vec3[0] * 0.5f + 0.5f;
 
-	return vec4(out, 1);
+	return vec4(outcol, 1);
 }
 
 void ImportOBJ(vector<Primitive*>& objects, const string&);
@@ -52,7 +51,7 @@ int main(int argc, char* argv[])
 	vector<Primitive*> objects;
 
 	//TODO: Handle multiple objects in a single .obj
-	ImportOBJ(objects, "../assets/dragon.obj");
+	ImportOBJ(objects, "../assets/buddha.obj");
 
 	DBG_ASSERT(!objects.empty() && "Failed to import models!");
 
@@ -62,7 +61,7 @@ int main(int argc, char* argv[])
 
 	Rasterizer* rasterizer = new Rasterizer(rasterSetup);
 
-	vec3 eye(0, 0, -6);
+	vec3 eye(0, 0, -5);
 	vec3 lookat(0, 0, 0);
 	vec3 up(0, 1, 0);
 
@@ -159,8 +158,9 @@ int main(int argc, char* argv[])
 			// Pre-draw, invalidate frame and depth buffers
 			rasterizer->ClearBuffers();
 
-			for (Primitive* prim : objects)
+			for (size_t i = 0; i < objects.size(); i++)
 			{
+				Primitive* prim = objects[i];
 				model = rotate(model, 0.025f, vec3(0, 1, 0));
 				mat4 mv = view * model;
 				mat3 normal = { mv[0], mv[1], mv[2] };
