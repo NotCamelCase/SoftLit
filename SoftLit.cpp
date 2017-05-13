@@ -17,15 +17,15 @@ using namespace softlit;
 
 //#define SINGLE_FRAME_OUTPUT
 
-struct mat_ubo
+struct UBO
 {
-	mat3 NORMAL;
 	mat4 MV;
 	mat4 MVP;
+	mat3 NORMAL;
 };
 
 // VS
-vec4 VS_Simple(const glm::vec3& pos, const mat_ubo* const ubo, const Vertex_IN* const in, Vertex_OUT* out)
+vec4 VS_Simple(const glm::vec3& pos, const UBO* const ubo, const Vertex_IN* const in, Vertex_OUT* out)
 {
 	out->PushVertexAttribute(in->attrib_vec3[0]); // Push normal
 
@@ -33,7 +33,7 @@ vec4 VS_Simple(const glm::vec3& pos, const mat_ubo* const ubo, const Vertex_IN* 
 }
 
 // FS
-vec4 FS_Simple(const mat_ubo* const ubo, const Vertex_OUT* const in)
+vec4 FS_Simple(const UBO* const ubo, const Vertex_OUT* const in)
 {
 	const vec3 outcol = in->attrib_vec3[0] * 0.5f + 0.5f;
 
@@ -51,7 +51,12 @@ int main(int argc, char* argv[])
 	vector<Primitive*> objects;
 
 	//TODO: Handle multiple objects in a single .obj
+	//ImportOBJ(objects, "../assets/bunny.obj");
+	ImportOBJ(objects, "../assets/monkey.obj");
+	ImportOBJ(objects, "../assets/dragon.obj");
 	ImportOBJ(objects, "../assets/buddha.obj");
+	ImportOBJ(objects, "../assets/bunny.obj");
+	ImportOBJ(objects, "../assets/cube.obj");
 
 	DBG_ASSERT(!objects.empty() && "Failed to import models!");
 
@@ -61,19 +66,25 @@ int main(int argc, char* argv[])
 
 	Rasterizer* rasterizer = new Rasterizer(rasterSetup);
 
-	vec3 eye(0, 0, -5);
+	vec3 eye(10, 5, -5);
 	vec3 lookat(0, 0, 0);
 	vec3 up(0, 1, 0);
 
 	mat4 view = lookAt(eye, lookat, up);
 	mat4 proj = perspective(glm::radians(fov), (float)width / (float)height, 0.5f, 100.f);
-	mat4 model;
+	mat4 model[5];
+
+	model[0] = translate(mat4(), vec3(-5, 5, 0));
+	model[1] = translate(mat4(), vec3(5, 0, 0));
+	model[2] = translate(mat4(), vec3(-5, 0, 0));
+	model[3] = translate(mat4(), vec3(-5, -5, 0));
+	model[4] = translate(mat4(), vec3(5, 4, 0));
 
 	// Create primitive shading data
 	const auto VS = reinterpret_cast<vertex_shader> (&VS_Simple);
 	const auto FS = reinterpret_cast<fragment_shader> (&FS_Simple);
 
-	mat_ubo ubo;
+	UBO ubo;
 
 	for (Primitive* prim : objects)
 	{
@@ -158,15 +169,15 @@ int main(int argc, char* argv[])
 			// Pre-draw, invalidate frame and depth buffers
 			rasterizer->ClearBuffers();
 
-			for (size_t i = 0; i < objects.size(); i++)
+			for (int64_t i = 0; i < objects.size(); i++)
 			{
 				Primitive* prim = objects[i];
-				model = rotate(model, 0.025f, vec3(0, 1, 0));
-				mat4 mv = view * model;
+				model[i] = rotate(model[i], 0.025f, vec3(0, 1, 0));
+				mat4 mv = view * model[i];
 				mat3 normal = { mv[0], mv[1], mv[2] };
 				mat4 mvp = proj * mv;
 
-				mat_ubo* ubo = static_cast<mat_ubo*> (prim->UBO());
+				UBO* ubo = static_cast<UBO*> (prim->UBO());
 				ubo->MVP = mvp;
 				ubo->MV = mv;
 				ubo->NORMAL = normal;
