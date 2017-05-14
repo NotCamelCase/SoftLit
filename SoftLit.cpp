@@ -68,7 +68,8 @@ int main(int argc, char* argv[])
 
 	mat4 view = lookAt(eye, lookat, up);
 	mat4 proj = perspective(glm::radians(fov), (float)width / (float)height, 0.5f, 100.f);
-	mat4 model;
+	
+	vector<mat4> models(objects.size());
 
 	// Create primitive shading data
 	const auto VS = reinterpret_cast<vertex_shader> (&VS_Simple);
@@ -162,8 +163,8 @@ int main(int argc, char* argv[])
 			for (size_t i = 0; i < objects.size(); i++)
 			{
 				Primitive* prim = objects[i];
-				model = rotate(model, 0.025f, vec3(0, 1, 0));
-				mat4 mv = view * model;
+				models[i] = rotate(models[i], 0.025f, vec3(0, 1, 0));
+				mat4 mv = view * models[i];
 				mat3 normal = { mv[0], mv[1], mv[2] };
 				mat4 mvp = proj * mv;
 
