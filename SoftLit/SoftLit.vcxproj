@@ -173,6 +173,7 @@
     <ClInclude Include="..\Primitive.h" />
     <ClInclude Include="..\Rasterizer.h" />
     <ClInclude Include="..\RasterizerConfig.h" />
+    <ClInclude Include="..\Shaders.h" />
     <ClInclude Include="..\stdafx.h" />
     <ClInclude Include="..\Utils.h" />
   </ItemGroup>

@@ -2,6 +2,7 @@
 
 #include "Rasterizer.h"
 #include "Primitive.h"
+#include "Shaders.h"
 #include "Display.h"
 
 #define TINYOBJLOADER_IMPLEMENTATION
@@ -16,29 +17,6 @@ using namespace glm;
 using namespace softlit;
 
 //#define SINGLE_FRAME_OUTPUT
-
-struct UBO
-{
-	mat4 MV;
-	mat4 MVP;
-	mat3 NORMAL;
-};
-
-// VS
-vec4 VS_Simple(const glm::vec3& pos, const UBO* const ubo, const Vertex_IN* const in, Vertex_OUT* out)
-{
-	out->PushVertexAttribute(in->attrib_vec3[0]); // Push normal
-
-	return (ubo->MVP * vec4(pos, 1));
-}
-
-// FS
-vec4 FS_Simple(const UBO* const ubo, const Vertex_OUT* const in)
-{
-	const vec3 outcol = in->attrib_vec3[0] * 0.5f + 0.5f;
-
-	return vec4(outcol, 1);
-}
 
 void ImportOBJ(vector<Primitive*>& objects, const string&);
 
@@ -68,7 +46,6 @@ int main(int argc, char* argv[])
 
 	mat4 view = lookAt(eye, lookat, up);
 	mat4 proj = perspective(glm::radians(fov), (float)width / (float)height, 0.5f, 100.f);
-	
 	vector<mat4> models(objects.size());
 
 	// Create primitive shading data
@@ -165,13 +142,11 @@ int main(int argc, char* argv[])
 				Primitive* prim = objects[i];
 				models[i] = rotate(models[i], 0.025f, vec3(0, 1, 0));
 				mat4 mv = view * models[i];
-				mat3 normal = { mv[0], mv[1], mv[2] };
 				mat4 mvp = proj * mv;
 
 				UBO* ubo = static_cast<UBO*> (prim->UBO());
 				ubo->MVP = mvp;
 				ubo->MV = mv;
-				ubo->NORMAL = normal;
 
 				rasterizer->Draw(prim);
 			}
