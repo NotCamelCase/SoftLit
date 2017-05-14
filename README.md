@@ -2,7 +2,7 @@
 
 Software Rasterizer in progress!
 
-![Test](http://imgur.com/DpGmi3F.gif)
+![Test](http://imgur.com/n6JUwTt.gif)
 
 # TODO
 - Parallelize rasterization
