@@ -15,4 +15,8 @@ Primitive::~Primitive()
 {
 	m_vertexBuffer.clear();
 	m_indexBuffer.clear();
+
+	for (Texture* t : m_tbo)
+		SAFE_DELETE(t);
+	m_tbo.clear();
 }

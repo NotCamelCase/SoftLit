@@ -4,6 +4,7 @@
 #include "Primitive.h"
 #include "Shaders.h"
 #include "Display.h"
+#include "Texture.h"
 
 #define TINYOBJLOADER_IMPLEMENTATION
 #include "tiny_obj_loader.h"
@@ -19,6 +20,8 @@ using std::vector;
 
 //#define SINGLE_FRAME_OUTPUT
 
+#define NUM_BOXES 5
+
 void ImportOBJ(vector<Primitive*>& objects, const string&);
 
 int main(int argc, char* argv[])
@@ -28,12 +31,22 @@ int main(int argc, char* argv[])
 	uint32_t height = HEIGHT;
 
 	vector<Primitive*> objects;
+	vector<Image*> images;
 
 	//TODO: Handle multiple objects in a single .obj
 	//ImportOBJ(objects, "../assets/bunny.obj");
-	ImportOBJ(objects, "../assets/cube.obj");
+
+	for (int i = 0; i < NUM_BOXES; i++)
+		ImportOBJ(objects, "../assets/cube.obj");
 
 	DBG_ASSERT(!objects.empty() && "Failed to import models!");
+
+	Image* img1 = new Image("../assets/container.png");
+	Image* img2 = new Image("../assets/default.png");
+	DBG_ASSERT(img1 && "Failed to load image!");
+
+	images.push_back(img1);
+	images.push_back(img2);
 
 	RasterizerSetup rasterSetup;
 	rasterSetup.vertexWinding = VertexWinding::COUNTER_CLOCKWISE;
@@ -41,7 +54,7 @@ int main(int argc, char* argv[])
 
 	Rasterizer* rasterizer = new Rasterizer(rasterSetup);
 
-	vec3 eye(3, 2, -5);
+	vec3 eye(-2, 0, -12);
 	vec3 lookat(0, 0, 0);
 	vec3 up(0, 1, 0);
 
@@ -49,17 +62,28 @@ int main(int argc, char* argv[])
 	mat4 proj = perspective(glm::radians(fov), (float)width / (float)height, 0.5f, 100.f);
 	vector<mat4> models(objects.size());
 
-	// Create primitive shading data
+	for (int i = 0; i < NUM_BOXES; i++)
+	{
+		mat4& m = models[i];
+		m = translate(mat4(), vec3(i * 3.5f - 7.5f, 0, 0));
+	}
+
+	// Handles to shaders
 	const auto VS = reinterpret_cast<vertex_shader> (&VS_Simple);
 	const auto FS = reinterpret_cast<fragment_shader> (&FS_Simple);
 
+	const auto VS_textured = reinterpret_cast<vertex_shader> (&VS_Textured);
+	const auto FS_textured = reinterpret_cast<fragment_shader> (&FS_Textured);
+
 	UBO ubo;
 
-	for (Primitive* prim : objects)
+	for (int i = 0; i < NUM_BOXES; i++)
 	{
-		prim->setVS(VS);
-		prim->setFS(FS);
-		prim->UBO(&ubo);
+		Primitive* prim = objects[i];
+		prim->setVS(VS_textured);
+		prim->setFS(FS_textured);
+		prim->setUBO(&ubo);
+		prim->addTexture((i % 2 == 0) ? new Texture(img1) : new Texture(img2));
 	}
 
 #ifdef SINGLE_FRAME_OUTPUT
@@ -145,7 +169,7 @@ int main(int argc, char* argv[])
 				mat4 mv = view * models[i];
 				mat4 mvp = proj * mv;
 
-				UBO* ubo = static_cast<UBO*> (prim->UBO());
+				UBO* ubo = static_cast<UBO*> (prim->getUBO());
 				ubo->MVP = mvp;
 				ubo->MV = mv;
 
@@ -169,10 +193,13 @@ int main(int argc, char* argv[])
 	for (Primitive* obj : objects)
 		SAFE_DELETE(obj);
 
+	for (Image* img : images)
+		SAFE_DELETE(img);
+
 	SAFE_DELETE(rasterizer);
 
 	return EXIT_SUCCESS;
-}
+	}
 
 void ImportOBJ(vector<Primitive*>& objs, const string& filename)
 {

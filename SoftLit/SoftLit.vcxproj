@@ -167,6 +167,7 @@
     <ClCompile Include="..\Rasterizer.cpp" />
     <ClCompile Include="..\SoftLit.cpp" />
     <ClCompile Include="..\stdafx.cpp" />
+    <ClCompile Include="..\Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Display.h" />
@@ -175,6 +176,7 @@
     <ClInclude Include="..\RasterizerConfig.h" />
     <ClInclude Include="..\Shaders.h" />
     <ClInclude Include="..\stdafx.h" />
+    <ClInclude Include="..\Texture.h" />
     <ClInclude Include="..\Utils.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
