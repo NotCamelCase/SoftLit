@@ -5,12 +5,10 @@ Software Rasterizer in progress!
 ![Test2](http://imgur.com/n5g5je0.gif)
 
 # TODO
-- Parallelize rasterization
-- Texture mapping
-- Polygon clipping
+- SSAA/MSAA
 - Render more detailed scenes
 - More complex VS + FS
-- SSAA/MSAA
+- Polygon clipping
 - Cmake-ify project
 
 # Dependencies
