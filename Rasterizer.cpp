@@ -2,9 +2,10 @@
 
 #include "Rasterizer.h"
 
-using namespace std;
 using namespace glm;
 using namespace softlit;
+
+using std::vector;
 
 Rasterizer::Rasterizer(const RasterizerSetup& setup)
 	: m_setup(setup)

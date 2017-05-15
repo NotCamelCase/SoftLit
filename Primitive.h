@@ -59,25 +59,16 @@ namespace softlit
 			attrib_vec2.clear();
 		}
 
-		template<int N>
-		void PushVertexAttribute(const glm::vec<N, float>& v)
-		{
-			static_assert(N < 4);
-		}
-
-		template<>
 		void PushVertexAttribute(const glm::vec4& v)
 		{
 			attrib_vec4.push_back(v);
 		}
 
-		template<>
 		void PushVertexAttribute(const glm::vec3& v)
 		{
 			attrib_vec3.push_back(v);
 		}
 
-		template<>
 		void PushVertexAttribute(const glm::vec2& v)
 		{
 			attrib_vec2.push_back(v);
@@ -116,25 +107,16 @@ namespace softlit
 
 		const VertexAttributes& getVertexAttributes() const { return m_attribs; }
 
-		template<int N>
-		void appendAttributeBuffer(const AttributeBuffer<N>& attributes)
-		{
-			static_assert(N < 4);
-		}
-
-		template<>
 		void appendAttributeBuffer(const AttributeBuffer<4>& attributes)
 		{
 			m_attribs.attrib_vec4.push_back(attributes);
 		}
 
-		template<>
 		void appendAttributeBuffer(const AttributeBuffer<3>& attributes)
 		{
 			m_attribs.attrib_vec3.push_back(attributes);
 		}
 
-		template<>
 		void appendAttributeBuffer(const AttributeBuffer<2>& attributes)
 		{
 			m_attribs.attrib_vec2.push_back(attributes);

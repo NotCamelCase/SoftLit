@@ -12,9 +12,10 @@
 #define HEIGHT 720
 #define DISPLAY_FULLSCREEN false
 
-using namespace std;
 using namespace glm;
 using namespace softlit;
+
+using std::vector;
 
 //#define SINGLE_FRAME_OUTPUT
 
