@@ -24,7 +24,7 @@ Image::~Image()
 	m_data = nullptr;
 }
 
-Texture::Texture(Image* image)
+Texture::Texture(const Image& image)
 	: m_image(image)
 {
 }

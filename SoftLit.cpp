@@ -84,7 +84,7 @@ int main(int argc, char* argv[])
 		prim->setVS(VS_textured);
 		prim->setFS(FS_textured);
 		prim->setUBO(&ubo);
-		prim->addTexture((i % 2 == 0) ? new Texture(img1) : new Texture(img2));
+		prim->addTexture((i % 2 == 0) ? new Texture(*img1) : new Texture(*img2));
 	}
 
 #ifdef SINGLE_FRAME_OUTPUT

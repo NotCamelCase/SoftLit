@@ -4,9 +4,10 @@
 
 #include <SDL_render.h>
 
-using namespace std;
 using namespace glm;
 using namespace softlit;
+
+using std::vector;
 
 Display::Display(const uint32_t w, const uint32_t h, bool fullscreen)
 	: m_width(w), m_height(h)

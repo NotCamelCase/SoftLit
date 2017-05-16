@@ -2,7 +2,8 @@
 
 #include "Primitive.h"
 
-using namespace std;
+#include "Texture.h"
+
 using namespace glm;
 using namespace softlit;
 
