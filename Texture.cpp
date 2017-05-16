@@ -8,8 +8,6 @@
 using namespace glm;
 using namespace softlit;
 
-static constexpr float s_texColDiv = (1 / 255.f);
-
 Image::Image(const std::string & fileName)
 {
 	m_data = stbi_load(fileName.c_str(), &m_width, &m_height, &m_numChannels, 0);
@@ -33,19 +31,4 @@ Texture::Texture(Image* image)
 
 Texture::~Texture()
 {
-}
-
-vec4 Texture::Sample(const glm::vec2 & uv)
-{
-	//TODO: FILTER!!!
-	uint32_t idxS = (uint32_t)(uv.s * m_image->m_width);
-	uint32_t idxT = (uint32_t)(uv.t * m_image->m_height);
-	int64_t idx = (idxS * m_image->m_width + idxT) * 4;
-
-	float r = (float)(m_image->m_data[idx++] * s_texColDiv);
-	float g = (float)(m_image->m_data[idx++] * s_texColDiv);
-	float b = (float)(m_image->m_data[idx++] * s_texColDiv);
-	float a = (float)(m_image->m_data[idx++] * s_texColDiv);
-
-	return vec4(r, g, b, 1);
 }

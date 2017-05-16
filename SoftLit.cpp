@@ -44,6 +44,7 @@ int main(int argc, char* argv[])
 	Image* img1 = new Image("../assets/container.png");
 	Image* img2 = new Image("../assets/default.png");
 	DBG_ASSERT(img1 && "Failed to load image!");
+	DBG_ASSERT(img2 && "Failed to load image!");
 
 	images.push_back(img1);
 	images.push_back(img2);

@@ -8,7 +8,6 @@
 
 // Force right-handed coordinate system
 #define GLM_FORCE_INLINE 
-#define GLM_COORDINATE_SYSTEM GLM_RIGHT_HANDED
 #include "glm/vec3.hpp"
 #include "glm/vec4.hpp"
 #include "glm/mat4x4.hpp"
