@@ -39,7 +39,7 @@ vec4 VS_Textured(const glm::vec3& pos, const UBO* const ubo, const Vertex_IN* co
 
 vec4 FS_Textured(const UBO* const ubo, const Vertex_OUT* const in, Texture** tbo)
 {
-	const vec4 texcol = tbo[0]->Sample<TextureSampler::SAMPLE_RGBA>(in->attrib_vec2[0]);
+	const vec3 texcol = tbo[0]->Sample<TextureSampler::SAMPLE_RGB>(in->attrib_vec2[0]);
 
-	return vec4(texcol);
+	return vec4(texcol, 1);
 }

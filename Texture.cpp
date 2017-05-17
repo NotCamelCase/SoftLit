@@ -13,11 +13,6 @@ Image::Image(const std::string & fileName)
 	m_data = stbi_load(fileName.c_str(), &m_width, &m_height, &m_numChannels, 0);
 }
 
-Image::Image(uchar* data)
-	: m_data(data)
-{
-}
-
 Image::~Image()
 {
 	stbi_image_free(m_data);

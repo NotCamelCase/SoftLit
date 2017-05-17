@@ -20,8 +20,6 @@ using std::vector;
 
 //#define SINGLE_FRAME_OUTPUT
 
-#define NUM_BOXES 5
-
 void ImportOBJ(vector<Primitive*>& objects, const string&);
 
 int main(int argc, char* argv[])
@@ -34,20 +32,13 @@ int main(int argc, char* argv[])
 	vector<Image*> images;
 
 	//TODO: Handle multiple objects in a single .obj
-	//ImportOBJ(objects, "../assets/bunny.obj");
 
-	for (int i = 0; i < NUM_BOXES; i++)
-		ImportOBJ(objects, "../assets/cube.obj");
+	ImportOBJ(objects, "../assets/chalet.obj");
 
 	DBG_ASSERT(!objects.empty() && "Failed to import models!");
 
-	Image* img1 = new Image("../assets/container.png");
-	Image* img2 = new Image("../assets/default.png");
-	DBG_ASSERT(img1 && "Failed to load image!");
-	DBG_ASSERT(img2 && "Failed to load image!");
-
-	images.push_back(img1);
-	images.push_back(img2);
+	Image* img = new Image("../assets/chalet.jpg");
+	DBG_ASSERT(img);
 
 	RasterizerSetup rasterSetup;
 	rasterSetup.vertexWinding = VertexWinding::COUNTER_CLOCKWISE;
@@ -55,19 +46,13 @@ int main(int argc, char* argv[])
 
 	Rasterizer* rasterizer = new Rasterizer(rasterSetup);
 
-	vec3 eye(-2, 0, -12);
+	vec3 eye(0, 0, -5);
 	vec3 lookat(0, 0, 0);
 	vec3 up(0, 1, 0);
 
 	mat4 view = lookAt(eye, lookat, up);
 	mat4 proj = perspective(glm::radians(fov), (float)width / (float)height, 0.5f, 100.f);
 	vector<mat4> models(objects.size());
-
-	for (int i = 0; i < NUM_BOXES; i++)
-	{
-		mat4& m = models[i];
-		m = translate(mat4(), vec3(i * 3.5f - 7.5f, 0, 0));
-	}
 
 	// Handles to shaders
 	const auto VS = reinterpret_cast<vertex_shader> (&VS_Simple);
@@ -78,13 +63,13 @@ int main(int argc, char* argv[])
 
 	UBO ubo;
 
-	for (int i = 0; i < NUM_BOXES; i++)
+	for (int i = 0; i < objects.size(); i++)
 	{
 		Primitive* prim = objects[i];
 		prim->setVS(VS_textured);
 		prim->setFS(FS_textured);
 		prim->setUBO(&ubo);
-		prim->addTexture((i % 2 == 0) ? new Texture(*img1) : new Texture(*img2));
+		prim->addTexture(new Texture(*img));
 	}
 
 #ifdef SINGLE_FRAME_OUTPUT
@@ -200,7 +185,7 @@ int main(int argc, char* argv[])
 	SAFE_DELETE(rasterizer);
 
 	return EXIT_SUCCESS;
-	}
+}
 
 void ImportOBJ(vector<Primitive*>& objs, const string& filename)
 {
@@ -276,9 +261,9 @@ void ImportOBJ(vector<Primitive*>& objs, const string& filename)
 			{
 				for (size_t f = 0; f < attribs.texcoords.size(); f += 2)
 				{
-					const float uv0 = attribs.texcoords[f];
-					const float uv1 = attribs.texcoords[f + 1];
-					uvs.m_data.push_back(vec2(uv0, uv1));
+					const float u = attribs.texcoords[f];
+					const float v = 1.f - attribs.texcoords[f + 1]; // Flip v as .OBJ assumes bottom-left the origin in texture space
+					uvs.m_data.push_back(vec2(u, v));
 				}
 			}
 

@@ -10,7 +10,6 @@ namespace softlit
 	{
 	public:
 		Image(const std::string& fileName);
-		Image(uchar* data);
 		~Image();
 
 		friend class Texture;
@@ -41,11 +40,12 @@ namespace softlit
 		/*
 		* Function template to sample texture with N components i.e RGB or RGBA
 		* Converts primitive uv -> texel space and fetches indexed texture image color
+		* Responsibility to sample according to the # of channels in the image being sampled belongs to shaders
 		*/
 		template<TextureSampler N>
 		glm::vec<N, float> Sample(const glm::vec2& uv) const
 		{
-			static_assert((N <= 2) || (N > 4));
+			static_assert((N <= SAMPLE_RGB) || (N > SAMPLE_RGBA));
 		}
 
 		template<>
@@ -56,7 +56,7 @@ namespace softlit
 			//TODO: FILTER!!!
 			uint32_t idxS = (uint32_t)glm::floor(uv.s * m_image.m_width);
 			uint32_t idxT = (uint32_t)glm::floor(uv.t * m_image.m_height);
-			int64_t idx = (idxS * m_image.m_width + idxT) * m_image.m_numChannels;
+			uint32_t idx = (idxT * m_image.m_width + idxS) * m_image.m_numChannels;
 
 			float r = (float)(m_image.m_data[idx++] * g_texColDiv);
 			float g = (float)(m_image.m_data[idx++] * g_texColDiv);
@@ -74,7 +74,7 @@ namespace softlit
 			//TODO: FILTER!!!
 			uint32_t idxS = (uint32_t)glm::floor(uv.s * m_image.m_width);
 			uint32_t idxT = (uint32_t)glm::floor(uv.t * m_image.m_height);
-			int64_t idx = (idxS * m_image.m_width + idxT) * m_image.m_numChannels;
+			uint32_t idx = (idxT * m_image.m_width + idxS) * m_image.m_numChannels;
 
 			float r = (float)(m_image.m_data[idx++] * g_texColDiv);
 			float g = (float)(m_image.m_data[idx++] * g_texColDiv);
