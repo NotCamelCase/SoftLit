@@ -2,7 +2,7 @@
 
 Software Rasterizer in progress!
 
-![Test2](http://imgur.com/n5g5je0.gif)
+![Test2](http://imgur.com/F1Mp2L8.gif)
 
 # TODO
 - SSAA/MSAA
