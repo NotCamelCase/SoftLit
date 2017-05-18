@@ -5,19 +5,21 @@
 #include "Texture.h"
 
 using namespace glm;
-using namespace softlit;
 
-Primitive::Primitive(const PrimitiveSetup& setup)
-	: m_setup(setup)
+namespace softlit
 {
-}
+	Primitive::Primitive(const PrimitiveSetup& setup)
+		: m_setup(setup)
+	{
+	}
 
-Primitive::~Primitive()
-{
-	m_vertexBuffer.clear();
-	m_indexBuffer.clear();
+	Primitive::~Primitive()
+	{
+		m_vertexBuffer.clear();
+		m_indexBuffer.clear();
 
-	for (Texture* t : m_tbo)
-		SAFE_DELETE(t);
-	m_tbo.clear();
+		for (Texture* t : m_tbo)
+			SAFE_DELETE(t);
+		m_tbo.clear();
+	}
 }

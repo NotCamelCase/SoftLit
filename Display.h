@@ -14,9 +14,8 @@ namespace softlit
 		Display(const uint32_t w, const uint32_t h, bool fullscreen);
 		~Display();
 
-		// Clear render surface before presenting back buffer content
-		// clearColor [0, 255]
-		void ClearRenderTarget(const glm::ivec3& clearColor);
+		/* Clear depth & frame buffers before re-draw */
+		void ClearRenderTarget();
 
 		// Render frame buffer to SDL render target
 		void Present();

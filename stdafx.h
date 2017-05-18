@@ -1,13 +1,13 @@
 #pragma once
 
 #include <iostream>
-#include <vector>
-#include <chrono>
 #include <assert.h>
 #include <stdint.h>
+#include <vector>
+#include <chrono>
+#include <float.h>
 
-// Force right-handed coordinate system
-#define GLM_FORCE_INLINE 
+#define GLM_FORCE_INLINE
 #include "glm/vec3.hpp"
 #include "glm/vec4.hpp"
 #include "glm/mat4x4.hpp"

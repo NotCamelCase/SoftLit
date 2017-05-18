@@ -37,51 +37,8 @@ namespace softlit
 
 		//TODO: Filter & address modes
 
-		/*
-		* Function template to sample texture with N components i.e RGB or RGBA
-		* Converts primitive uv -> texel space and fetches indexed texture image color
-		* Responsibility to sample according to the # of channels in the image being sampled belongs to shaders
-		*/
-		template<TextureSampler N>
-		glm::vec<N, float> Sample(const glm::vec2& uv) const
-		{
-			static_assert((N <= SAMPLE_RGB) || (N > SAMPLE_RGBA));
-		}
-
-		template<>
-		glm::vec4 Sample(const glm::vec2& uv) const
-		{
-			DBG_ASSERT(m_image.m_numChannels == 4);
-
-			//TODO: FILTER!!!
-			uint32_t idxS = (uint32_t)glm::floor(uv.s * m_image.m_width);
-			uint32_t idxT = (uint32_t)glm::floor(uv.t * m_image.m_height);
-			uint32_t idx = (idxT * m_image.m_width + idxS) * m_image.m_numChannels;
-
-			float r = (float)(m_image.m_data[idx++] * g_texColDiv);
-			float g = (float)(m_image.m_data[idx++] * g_texColDiv);
-			float b = (float)(m_image.m_data[idx++] * g_texColDiv);
-			float a = (float)(m_image.m_data[idx++] * g_texColDiv);
-
-			return glm::vec4(r, g, b, a);
-		}
-
-		template<>
-		glm::vec3 Sample(const glm::vec2& uv) const
-		{
-			DBG_ASSERT(m_image.m_numChannels == 3);
-
-			//TODO: FILTER!!!
-			uint32_t idxS = (uint32_t)glm::floor(uv.s * m_image.m_width);
-			uint32_t idxT = (uint32_t)glm::floor(uv.t * m_image.m_height);
-			uint32_t idx = (idxT * m_image.m_width + idxS) * m_image.m_numChannels;
-
-			float r = (float)(m_image.m_data[idx++] * g_texColDiv);
-			float g = (float)(m_image.m_data[idx++] * g_texColDiv);
-			float b = (float)(m_image.m_data[idx++] * g_texColDiv);
-
-			return glm::vec3(r, g, b);
-		}
+		template<TextureSampler T>
+		glm::vec<T, float> Sample(const glm::vec2& uv) const;
 
 	private:
 		const Image& m_image;

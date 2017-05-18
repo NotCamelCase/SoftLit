@@ -17,6 +17,7 @@ using namespace glm;
 using namespace softlit;
 
 using std::vector;
+using std::string;
 
 //#define SINGLE_FRAME_OUTPUT
 
@@ -24,7 +25,7 @@ void ImportOBJ(vector<Primitive*>& objects, const string&);
 
 int main(int argc, char* argv[])
 {
-	float fov = 60.f;
+	float fov = 45.f;
 	uint32_t width = WIDTH;
 	uint32_t height = HEIGHT;
 
@@ -140,13 +141,13 @@ int main(int argc, char* argv[])
 			}
 		}
 
-		const auto drawBegin = chrono::high_resolution_clock::now();
+		const auto drawBegin = std::chrono::high_resolution_clock::now();
 		if (!paused) // When unpaused, re-draw every frame
 		{
-			display.ClearRenderTarget(ivec3(0, 0, 0));
+			display.ClearRenderTarget();
 
 			// Pre-draw, invalidate frame and depth buffers
-			rasterizer->ClearBuffers();
+			rasterizer->ClearBuffers(vec4(0.5f, 0.5f, 0.5f, 1.f));
 
 			for (size_t i = 0; i < objects.size(); i++)
 			{
@@ -161,26 +162,24 @@ int main(int argc, char* argv[])
 
 				rasterizer->Draw(prim);
 			}
-			const auto drawEnd = chrono::high_resolution_clock::now();
-			//printf("Draw time: %lld\n", chrono::duration_cast<chrono::milliseconds> (drawEnd - drawBegin).count());
+			const auto drawEnd = std::chrono::high_resolution_clock::now();
+			//printf("Draw time: %lld\n", std::chrono::duration_cast<chrono::milliseconds> (drawEnd - drawBegin).count());
 
 			display.UpdateColorBuffer(rasterizer->getFrameBuffer());
 		}
 
-		const auto presentBegin = chrono::high_resolution_clock::now();
+		const auto presentBegin = std::chrono::high_resolution_clock::now();
 		display.Present();
-		const auto presentEnd = chrono::high_resolution_clock::now();
+		const auto presentEnd = std::chrono::high_resolution_clock::now();
 		//printf("Display time: %lld\n", chrono::duration_cast<chrono::milliseconds> (presentEnd - presentBegin).count());
 
-		printf("Frame time: %lld\n", chrono::duration_cast<chrono::milliseconds> (presentEnd - drawBegin).count());
+		printf("Frame time: %lld\n", std::chrono::duration_cast<std::chrono::milliseconds> (presentEnd - drawBegin).count());
 	}
 #endif
 
-	for (Primitive* obj : objects)
-		SAFE_DELETE(obj);
+	for (Primitive* obj : objects) SAFE_DELETE(obj);
 
-	for (Image* img : images)
-		SAFE_DELETE(img);
+	for (Image* img : images) SAFE_DELETE(img);
 
 	SAFE_DELETE(rasterizer);
 
