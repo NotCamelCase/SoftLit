@@ -1,0 +1,9 @@
+[submodule "deps/stb"]
+	path = deps/stb
+	url = https://github.com/nothings/stb.git
+[submodule "deps/tinyobjloader"]
+	path = deps/tinyobjloader
+	url = https://github.com/syoyo/tinyobjloader.git
+[submodule "deps/glm"]
+	path = deps/glm
+	url = https://github.com/g-truc/glm.git
