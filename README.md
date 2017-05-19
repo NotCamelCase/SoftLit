@@ -16,7 +16,7 @@ Software Rasterizer in progress!
   - git submodules update --init --recursive
 2) Install SDL2 packages for your OS/distro (On non-MS systems)
 3) On Windows, CMake needs fix for including/dynamic linking with SDL2 so manually compile and link with SDL2 and point to SDL2.dll
-4) Create and compile the project with CMake (thanks to @mtezych)
+4) Create and compile the project with CMake (thanks to [@mtezych](https://github.com/mtezych))
 5) Put assets/ in the parent directory of binary
 6) Get mesmerized by the beautiful imagery that's being rendered! :-D
 
