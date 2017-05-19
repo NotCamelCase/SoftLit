@@ -62,14 +62,14 @@ int main(int argc, char* argv[])
 	const auto VS_textured = reinterpret_cast<vertex_shader> (&VS_Textured);
 	const auto FS_textured = reinterpret_cast<fragment_shader> (&FS_Textured);
 
-	UBO ubo;
+	UBO primUbo;
 
 	for (int i = 0; i < objects.size(); i++)
 	{
 		Primitive* prim = objects[i];
 		prim->setVS(VS_textured);
 		prim->setFS(FS_textured);
-		prim->setUBO(&ubo);
+		prim->setUBO(&primUbo);
 		prim->addTexture(new Texture(*img));
 	}
 
@@ -83,9 +83,9 @@ int main(int argc, char* argv[])
 		mat3 normal = { mv[0], mv[1], mv[2] };
 		mat4 mvp = proj * mv;
 
-		mat_ubo* ubo = static_cast<mat_ubo*> (prim->UBO());
-		ubo->MVP = mvp;
-		ubo->NORMAL = normal;
+		mat_ubo* primUbo = static_cast<mat_ubo*> (prim->UBO());
+		primUbo->MVP = mvp;
+		primUbo->NORMAL = normal;
 
 		rasterizer->Draw(prim);
 	}
@@ -173,13 +173,13 @@ int main(int argc, char* argv[])
 		const auto presentEnd = std::chrono::high_resolution_clock::now();
 		//printf("Display time: %lld\n", chrono::duration_cast<chrono::milliseconds> (presentEnd - presentBegin).count());
 
-		printf("Frame time: %lld\n", std::chrono::duration_cast<std::chrono::milliseconds> (presentEnd - drawBegin).count());
+		printf("Frame time: %ld\n", std::chrono::duration_cast<std::chrono::milliseconds> (presentEnd - drawBegin).count());
 	}
 #endif
 
 	for (Primitive* obj : objects) SAFE_DELETE(obj);
 
-	for (Image* img : images) SAFE_DELETE(img);
+	for (Image* image : images) SAFE_DELETE(image);
 
 	SAFE_DELETE(rasterizer);
 
