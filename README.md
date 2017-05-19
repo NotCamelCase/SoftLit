@@ -13,7 +13,7 @@ Software Rasterizer in progress!
 
 # Building
 1) Update git submodules if deps/ not fetched when cloning repo
-  - git submodules update --init --recursive
+  - git submodule update --init --recursive
 2) Install SDL2 packages for your OS/distro (On non-MS systems)
 3) On Windows, CMake needs fix for including/dynamic linking with SDL2 so manually compile and link with SDL2 and point to SDL2.dll
 4) Create and compile the project with CMake (thanks to [@mtezych](https://github.com/mtezych))

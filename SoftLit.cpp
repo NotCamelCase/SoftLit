@@ -74,18 +74,18 @@ int main(int argc, char* argv[])
 	}
 
 #ifdef SINGLE_FRAME_OUTPUT
-	rasterizer->ClearBuffers();
+	rasterizer->ClearBuffers(vec4(0.5f, 0.5f, 0.5f, 1.f));
 
-	for (Primitive* prim : objects)
+	for (size_t i = 0; i < objects.size(); i++)
 	{
+		Primitive* prim = objects[i];
 		//model = rotate(model, 0.025f, vec3(0, 1, 0));
-		mat4 mv = view * model;
-		mat3 normal = { mv[0], mv[1], mv[2] };
+		mat4 mv = view * models[i];
 		mat4 mvp = proj * mv;
 
-		mat_ubo* primUbo = static_cast<mat_ubo*> (prim->UBO());
-		primUbo->MVP = mvp;
-		primUbo->NORMAL = normal;
+		UBO* ubo = static_cast<UBO*> (prim->getUBO());
+		ubo->MVP = mvp;
+		ubo->MV = mv;
 
 		rasterizer->Draw(prim);
 	}
@@ -173,7 +173,7 @@ int main(int argc, char* argv[])
 		const auto presentEnd = std::chrono::high_resolution_clock::now();
 		//printf("Display time: %lld\n", chrono::duration_cast<chrono::milliseconds> (presentEnd - presentBegin).count());
 
-		printf("Frame time: %ld\n", std::chrono::duration_cast<std::chrono::milliseconds> (presentEnd - drawBegin).count());
+		printf("Frame time: %lld\n", std::chrono::duration_cast<std::chrono::milliseconds> (presentEnd - drawBegin).count());
 	}
 #endif
 
