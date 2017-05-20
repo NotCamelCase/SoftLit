@@ -39,9 +39,9 @@ namespace softlit
 		uint32_t idxT = (uint32_t)glm::floor(uv.t * m_image.m_height);
 		uint32_t idx = (idxT * m_image.m_width + idxS) * m_image.m_numChannels;
 
+		float r = (float)(m_image.m_data[idx++]);
 		float g = (float)(m_image.m_data[idx++]);
 		float b = (float)(m_image.m_data[idx++]);
-		float r = (float)(m_image.m_data[idx++]);
 		float a = (float)(m_image.m_data[idx++]);
 
 		return glm::vec4(r, g, b, a) * g_texColDiv;
