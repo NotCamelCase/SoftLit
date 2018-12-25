@@ -60,7 +60,7 @@ namespace softlit
 
     void Display::UpdateColorBuffer(const vector<vec4>& frameBuffer)
     {
-        const int32_t fbDim = m_width  * m_height * 4;
+        const int32_t fbDim = m_width * m_height * 4;
 
 #pragma omp parallel for
         for (int32_t i = 0; i < fbDim; i += 4)

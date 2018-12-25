@@ -26,7 +26,7 @@ namespace softlit
           -	 -	 -  -
         vo	-	-	- v2
     */
-    inline float Rasterizer::PixelCoverage(const vec2& a, const vec2& b, const vec2& c) const
+    __forceinline float Rasterizer::PixelCoverage(const vec2& a, const vec2& b, const vec2& c) const
     {
         const int winding = (m_setup.vertexWinding == VertexWinding::COUNTER_CLOCKWISE) ? 1 : -1;
         const float x = (c.x - a.x) * (b.y - a.y) - (c.y - a.y) * (b.x - a.x);
@@ -34,7 +34,7 @@ namespace softlit
         return winding * x;
     }
 
-    void Rasterizer::SetupTriangle(Primitive* prim, const int64_t idx, glm::vec3& v0, glm::vec3& v1, glm::vec3& v2) const
+    __forceinline void Rasterizer::SetupTriangle(Primitive* prim, const int64_t idx, glm::vec3& v0, glm::vec3& v1, glm::vec3& v2) const
     {
         const VertexBuffer& vbo = prim->getVertexBuffer();
         const IndexBuffer& ibo = prim->getIndexBuffer();
@@ -44,7 +44,7 @@ namespace softlit
         v2 = vbo[ibo[idx * 3 + 2]];
     }
 
-    bool softlit::Rasterizer::Clip2D(const glm::vec2 & v0, const glm::vec2 & v1, const glm::vec2 & v2, Viewport& vp) const
+    __forceinline bool softlit::Rasterizer::Clip2D(const glm::vec2 & v0, const glm::vec2 & v1, const glm::vec2 & v2, Viewport& vp) const
     {
         float xmin = min(v0.x, min(v1.x, v2.x));
         float xmax = max(v0.x, max(v1.x, v2.x));
@@ -62,102 +62,72 @@ namespace softlit
         return true;
     }
 
-    void Rasterizer::InterpolateAttributes(const float u, const float v, const float w, const Vertex_OUT& out0, const Vertex_OUT& out1, const Vertex_OUT& out2, Vertex_OUT& attribs) const
+    inline void Rasterizer::InterpolateAttributes(const float u, const float v, const Vertex_OUT& out0, const Vertex_OUT& out1, const Vertex_OUT& out2, Vertex_OUT& attribs) const
     {
-        if (!out0.attrib_vec4.empty())
+        DBG_ASSERT(out0.attrib_vec4.size() == out2.attrib_vec4.size());
+        DBG_ASSERT(out1.attrib_vec4.size() == out2.attrib_vec4.size());
+        for (int i = 0; i < out0.attrib_vec4.size(); i++)
         {
-            DBG_ASSERT(!out1.attrib_vec4.empty());
-            DBG_ASSERT(!out2.attrib_vec4.empty());
+            const vec4& attr0 = out0.attrib_vec4[i];
+            const vec4& attr1 = out1.attrib_vec4[i];
+            const vec4& attr2 = out2.attrib_vec4[i];
 
-            DBG_ASSERT(out0.attrib_vec4.size() == out2.attrib_vec4.size());
-            DBG_ASSERT(out1.attrib_vec4.size() == out2.attrib_vec4.size());
+            vec4 attrib = u * attr0 + v * attr1 + (1.f - u - v) * attr2;
 
-            for (int i = 0; i < out0.attrib_vec4.size(); i++)
-            {
-                const vec4& attr0 = out0.attrib_vec4[i];
-                const vec4& attr1 = out1.attrib_vec4[i];
-                const vec4& attr2 = out2.attrib_vec4[i];
-
-                vec4 attrib = u * attr0 + v * attr1 + w * attr2;
-
-                attribs.PushVertexAttribute(attrib);
-            }
+            attribs.PushVertexAttribute(attrib);
         }
 
-        if (!out0.attrib_vec3.empty())
+        DBG_ASSERT(out0.attrib_vec3.size() == out2.attrib_vec3.size());
+        DBG_ASSERT(out1.attrib_vec3.size() == out2.attrib_vec3.size());
+        for (int i = 0; i < out0.attrib_vec3.size(); i++)
         {
-            DBG_ASSERT(!out1.attrib_vec3.empty());
-            DBG_ASSERT(!out2.attrib_vec3.empty());
+            const vec3& attr0 = out0.attrib_vec3[i];
+            const vec3& attr1 = out1.attrib_vec3[i];
+            const vec3& attr2 = out2.attrib_vec3[i];
 
-            DBG_ASSERT(out0.attrib_vec3.size() == out2.attrib_vec3.size());
-            DBG_ASSERT(out1.attrib_vec3.size() == out2.attrib_vec3.size());
+            vec3 attrib = u * attr0 + v * attr1 + (1.f - u - v) * attr2;
 
-            for (int i = 0; i < out0.attrib_vec3.size(); i++)
-            {
-                const vec3& attr0 = out0.attrib_vec3[i];
-                const vec3& attr1 = out1.attrib_vec3[i];
-                const vec3& attr2 = out2.attrib_vec3[i];
-
-                vec3 attrib = u * attr0 + v * attr1 + w * attr2;
-
-                attribs.PushVertexAttribute(attrib);
-            }
+            attribs.PushVertexAttribute(attrib);
         }
 
-        if (!out0.attrib_vec2.empty())
+        DBG_ASSERT(out0.attrib_vec2.size() == out2.attrib_vec2.size());
+        DBG_ASSERT(out1.attrib_vec2.size() == out2.attrib_vec2.size());
+        for (int i = 0; i < out0.attrib_vec2.size(); i++)
         {
-            DBG_ASSERT(!out1.attrib_vec2.empty());
-            DBG_ASSERT(!out2.attrib_vec2.empty());
+            const vec2& attr0 = out0.attrib_vec2[i];
+            const vec2& attr1 = out1.attrib_vec2[i];
+            const vec2& attr2 = out2.attrib_vec2[i];
 
-            DBG_ASSERT(out0.attrib_vec2.size() == out2.attrib_vec2.size());
-            DBG_ASSERT(out1.attrib_vec2.size() == out2.attrib_vec2.size());
+            vec2 attrib = u * attr0 + v * attr1 + (1.f - u - v) * attr2;
 
-            for (int i = 0; i < out0.attrib_vec2.size(); i++)
-            {
-                const vec2& attr0 = out0.attrib_vec2[i];
-                const vec2& attr1 = out1.attrib_vec2[i];
-                const vec2& attr2 = out2.attrib_vec2[i];
-
-                vec2 attrib = u * attr0 + v * attr1 + w * attr2;
-
-                attribs.PushVertexAttribute(attrib);
-            }
+            attribs.PushVertexAttribute(attrib);
         }
     }
 
-    void Rasterizer::FetchVertexAttributes(const VertexAttributes& attribs, const int64_t idx, Vertex_IN& in0, Vertex_IN& in1, Vertex_IN& in2) const
+    inline void Rasterizer::FetchVertexAttributes(const VertexAttributes& attribs, const int64_t idx, Vertex_IN& in0, Vertex_IN& in1, Vertex_IN& in2) const
     {
         // Fetch attributes of type vec4
-        if (!attribs.attrib_vec4.empty()) // At least one vec4 attribute buffer created
+        for (int i = 0; i < attribs.attrib_vec4.size(); i++)
         {
-            for (int i = 0; i < attribs.attrib_vec4.size(); i++)
-            {
-                in0.PushVertexAttribute(attribs.attrib_vec4[i][idx * 3]);
-                in1.PushVertexAttribute(attribs.attrib_vec4[i][idx * 3 + 1]);
-                in2.PushVertexAttribute(attribs.attrib_vec4[i][idx * 3 + 2]);
-            }
+            in0.PushVertexAttribute(attribs.attrib_vec4[i][idx * 3]);
+            in1.PushVertexAttribute(attribs.attrib_vec4[i][idx * 3 + 1]);
+            in2.PushVertexAttribute(attribs.attrib_vec4[i][idx * 3 + 2]);
         }
 
         // Fetch attributes of type vec3
-        if (!attribs.attrib_vec3.empty()) // At least one vec4 attribute buffer created
+        for (int i = 0; i < attribs.attrib_vec3.size(); i++)
         {
-            for (int i = 0; i < attribs.attrib_vec3.size(); i++)
-            {
-                in0.PushVertexAttribute(attribs.attrib_vec3[i][idx * 3]);
-                in1.PushVertexAttribute(attribs.attrib_vec3[i][idx * 3 + 1]);
-                in2.PushVertexAttribute(attribs.attrib_vec3[i][idx * 3 + 2]);
-            }
+            in0.PushVertexAttribute(attribs.attrib_vec3[i][idx * 3]);
+            in1.PushVertexAttribute(attribs.attrib_vec3[i][idx * 3 + 1]);
+            in2.PushVertexAttribute(attribs.attrib_vec3[i][idx * 3 + 2]);
         }
 
         // Fetch attributes of type vec2
-        if (!attribs.attrib_vec2.empty()) // At least one vec4 attribute buffer created
+        for (int i = 0; i < attribs.attrib_vec2.size(); i++)
         {
-            for (int i = 0; i < attribs.attrib_vec2.size(); i++)
-            {
-                in0.PushVertexAttribute(attribs.attrib_vec2[i][idx * 3]);
-                in1.PushVertexAttribute(attribs.attrib_vec2[i][idx * 3 + 1]);
-                in2.PushVertexAttribute(attribs.attrib_vec2[i][idx * 3 + 2]);
-            }
+            in0.PushVertexAttribute(attribs.attrib_vec2[i][idx * 3]);
+            in1.PushVertexAttribute(attribs.attrib_vec2[i][idx * 3 + 1]);
+            in2.PushVertexAttribute(attribs.attrib_vec2[i][idx * 3 + 2]);
         }
     }
 
@@ -265,9 +235,8 @@ namespace softlit
                             // Calc barycentric coordinates for perspectively-correct interpolation
                             const float u = f0 / (f0 + f1 + f2);
                             const float v = f1 / (f0 + f1 + f2);
-                            const float w = 1.f - u - v;
 
-                            InterpolateAttributes(u, v, w, out0, out1, out2, FS_attribs);
+                            InterpolateAttributes(u, v, out0, out1, out2, FS_attribs);
                             const fragment_shader FS = prim->getFS();
                             const vec4 final_fragment = FS(ubo, &FS_attribs, prim->getTBO());
 

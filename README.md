@@ -1,15 +1,8 @@
 # SoftLit
 
-Software Rasterizer in progress!
+Software Rasterizer
 
 ![Test2](http://imgur.com/F1Mp2L8.gif)
-
-# TODO
-- Parameterize rendering settings, scene setup and all rasterization configuration
-- SSAA/MSAA
-- Render more detailed scenes
-- More complex VS + FS
-- Polygon clipping
 
 # Building
 1) Update git submodules if deps/ not fetched when cloning repo
@@ -25,5 +18,3 @@ Software Rasterizer in progress!
 - [GLM](http://glm.g-truc.net/0.9.8/index.html)
 - [tinyobjloader](http://syoyo.github.io/tinyobjloader/)
 - [stb_image](https://github.com/nothings/stb)
-
-Stay Tuned!

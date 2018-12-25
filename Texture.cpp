@@ -50,7 +50,7 @@ namespace softlit
 	template<>
 	glm::vec3 Texture::Sample<TextureSampler::SAMPLE_RGB>(const glm::vec2& uv) const
 	{
-		DBG_ASSERT(m_image.m_numChannels == 3);
+		//DBG_ASSERT(m_image.m_numChannels == 3);
 
 		//TODO: FILTER!!!
 		uint32_t idxS = (uint32_t)glm::floor(uv.s * m_image.m_width);
